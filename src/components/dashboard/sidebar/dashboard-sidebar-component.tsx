@@ -31,7 +31,7 @@ const DashboardSideBarComponent = () => {
             </SidebarHeader>
 
             {/* Sidebar Content */}
-            <SidebarContent className='overflow-y-auto flex-1'>
+            <SidebarContent className='overflow-y-auto flex-1 gap-2'>
                 {routes.filter(route => route.isShown).map((route) => (
                     <SidebarGroupComponent key={route.path} route={route} />
                 ))}
