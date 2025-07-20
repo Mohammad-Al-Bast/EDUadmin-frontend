@@ -17,7 +17,7 @@ const DashboardSideBarComponent = () => {
         <Sidebar collapsible='icon'>
 
             {/* Sidebar Header */}
-            <SidebarHeader className='flex items-center justify-center h-14'>
+            <SidebarHeader className='flex items-center justify-center h-14 border-b'>
                 <span className='flex items-center gap-2 group-data-[collapsible=icon]:gap-0'>
                     <ShoppingCart className='size-5' />
                     <span className="group-data-[collapsible=icon]:hidden text-xl font-bold">
@@ -25,8 +25,6 @@ const DashboardSideBarComponent = () => {
                     </span>
                 </span>
             </SidebarHeader>
-
-            <Separator orientation='horizontal' className='w-full' />
 
             {/* Sidebar Content */}
             <SidebarContent className='overflow-y-auto flex-1'>

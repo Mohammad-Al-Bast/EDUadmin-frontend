@@ -20,7 +20,7 @@ const createDashboardRoute = (
         path,
         component,
         icon,
-        isShown,
+        isShown,    
         isAuthenticated,
         subRoutes,
     };

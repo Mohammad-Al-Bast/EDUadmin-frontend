@@ -27,8 +27,8 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
                 {/* Sidebar */}
                 <DashboardSideBarComponent />
                 {/* Main Content */}
-                <div className='flex-1 flex flex-col overflow-hidden px-4'>
-                    <nav className='w-full flex justify-between items-center h-14'>
+                <div className='flex-1 flex flex-col overflow-hidden'>
+                    <nav className='w-full flex justify-between items-center h-14 border-b px-2'>
                         <div className="flex items-center gap-2">
                             <SidebarTrigger variant="outline" />
                         </div>
@@ -36,7 +36,7 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
                             <ModeToggle />
                         </div>
                     </nav>
-                    <div className="flex-1 overflow-hidden">
+                    <div className="flex-1 overflow-hidden p-2">
                         <Outlet />
                     </div>
                 </div>

@@ -32,7 +32,7 @@ const DashboardRoutes: React.FC = () => {
 
     return (
         <Routes>
-            <Route index element={<Navigate to="home" replace />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
 
             <Route path="/" element={<MainLayout routes={dashboardRoutesList} />}>
                 {renderRoutes(dashboardRoutesList)}
