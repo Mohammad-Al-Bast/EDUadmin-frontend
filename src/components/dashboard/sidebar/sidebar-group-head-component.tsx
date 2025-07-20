@@ -19,6 +19,7 @@ const SidebarGroupHeadComponent = ({
     onToggle,
 }: SidebarGroupHeadProps) => {
     const hasSubRoutes = (subRoutes?.length ?? 0) > 0;
+    const replaceHyphens = (str: string) => str.replace(/-/g, ' ');
 
     return (
         <SidebarGroupUi>
@@ -42,7 +43,7 @@ const SidebarGroupHeadComponent = ({
                                         : 'text-black dark:text-white'
                                         }`}
                                 >
-                                    {path}
+                                    {replaceHyphens(path)}
                                 </SidebarGroupLabel>
                             </>
                         )}
@@ -69,7 +70,7 @@ const SidebarGroupHeadComponent = ({
                                         : 'text-black dark:text-white'
                                         }`}
                                 >
-                                    {path}
+                                    {replaceHyphens(path)}
                                 </SidebarGroupLabel>
                             </>
                         )}

@@ -26,6 +26,12 @@ const RoutesList = () => {
             component: () => <div>Teams</div>,
             isAuthenticated: true,
             isShown: true,
+        },
+        {
+            path: "change-of-grade-form",
+            component: () => <div>Change of Grade Form</div>,
+            isAuthenticated: true,
+            isShown: true,
         }
     ].map((route) =>
         createDashboardRoute(route.path, route.component, route.icon, route.isShown, route.isAuthenticated)
