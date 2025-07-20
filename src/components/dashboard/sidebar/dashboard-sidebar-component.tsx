@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
-import { LogOutIcon, ShoppingCart } from 'lucide-react';
+import { LogOutIcon } from 'lucide-react';
 import { Tooltip, TooltipTrigger } from '@radix-ui/react-tooltip';
 import { Separator } from "@/components/ui/separator"
 import RoutesList from '@/routes/dashboard/routes';
@@ -17,11 +17,15 @@ const DashboardSideBarComponent = () => {
         <Sidebar collapsible='icon'>
 
             {/* Sidebar Header */}
-            <SidebarHeader className='flex items-center justify-center h-14 border-b'>
+            <SidebarHeader className='flex items-start justify-center h-14 border-b'>
                 <span className='flex items-center gap-2 group-data-[collapsible=icon]:gap-0'>
-                    <ShoppingCart className='size-5' />
+                    <img
+                        src="/images/liu.png"
+                        alt="Logo"
+                        className='h-8 w-8 rounded-full group-data-[collapsible=icon]=hidden'
+                    />
                     <span className="group-data-[collapsible=icon]:hidden text-xl font-bold">
-                        MP
+                        LIU
                     </span>
                 </span>
             </SidebarHeader>
@@ -41,7 +45,7 @@ const DashboardSideBarComponent = () => {
                     <TooltipTrigger asChild>
                         <Button
                             variant="ghost"
-                            className='w-full h-12 group'
+                            className='w-full h-8 group'
                             onClick={handleLogout}
                         >
                             <span className='flex items-center justify-center gap-2 group-data-[collapsible=icon]:gap-0'>
