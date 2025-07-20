@@ -51,7 +51,7 @@ const SidebarGroupHeadComponent = ({
                     <NavLink
                         to={path}
                         className={({ isActive }) => `
-                            flex items-center gap-2 w-full rounded-md px-2 py-1
+                            flex items-center gap-2 w-full rounded-md px-2 py-0.5
                             ${isActive
                                 ? 'bg-black text-white dark:bg-white dark:text-black [&_svg]:text-white dark:[&_svg]:text-black'
                                 : 'text-sidebar-accent-foreground'

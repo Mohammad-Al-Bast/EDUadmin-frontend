@@ -17,7 +17,7 @@ const DashboardSideBarComponent = () => {
         <Sidebar collapsible='icon'>
 
             {/* Sidebar Header */}
-            <SidebarHeader className='flex items-start justify-center h-14 border-b'>
+            <SidebarHeader className='flex items-center justify-center h-14 border-b'>
                 <span className='flex items-center gap-2 group-data-[collapsible=icon]:gap-0'>
                     <img
                         src="/images/liu.png"
@@ -31,7 +31,7 @@ const DashboardSideBarComponent = () => {
             </SidebarHeader>
 
             {/* Sidebar Content */}
-            <SidebarContent className='overflow-y-auto flex-1 gap-2'>
+            <SidebarContent className='overflow-y-auto flex-1 [&>*]:mb-[-1rem]'>
                 {routes.filter(route => route.isShown).map((route) => (
                     <SidebarGroupComponent key={route.path} route={route} />
                 ))}
