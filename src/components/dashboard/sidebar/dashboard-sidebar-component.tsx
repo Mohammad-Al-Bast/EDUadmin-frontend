@@ -9,29 +9,26 @@ import { Button } from '@/components/ui/button';
 const DashboardSideBarComponent = () => {
     const routes = RoutesList();
 
-    const handleLogout = () => {
-        console.log('Logging out...');
-    };
-
     return (
         <Sidebar collapsible='icon'>
 
             {/* Sidebar Header */}
-            <SidebarHeader className='flex items-center justify-center h-14 border-b'>
+            <SidebarHeader className='flex items-start justify-center h-14 border-b'>
                 <span className='flex items-center gap-2 group-data-[collapsible=icon]:gap-0'>
                     <img
                         src="/images/liu.png"
                         alt="Logo"
                         className='h-8 w-8 rounded-full group-data-[collapsible=icon]=hidden'
                     />
-                    <span className="group-data-[collapsible=icon]:hidden text-xl font-bold">
+                    <span className="group-data-[collapsible=icon]:hidden text-xl font-semibold">
                         LIU
                     </span>
                 </span>
             </SidebarHeader>
 
             {/* Sidebar Content */}
-            <SidebarContent className='overflow-y-auto flex-1 [&>*]:mb-[-1rem]'>
+            <SidebarContent className='overflow-y-auto flex-1 [&>*]:mb-[-1.2rem]'>
+                <h2 className='px-2 pb-2 pt-3'>{"Platform"}</h2>
                 {routes.filter(route => route.isShown).map((route) => (
                     <SidebarGroupComponent key={route.path} route={route} />
                 ))}
@@ -46,7 +43,6 @@ const DashboardSideBarComponent = () => {
                         <Button
                             variant="ghost"
                             className='w-full h-8 group'
-                            onClick={handleLogout}
                         >
                             <span className='flex items-center justify-center gap-2 group-data-[collapsible=icon]:gap-0'>
                                 <LogOutIcon className="h-4 w-4" />
