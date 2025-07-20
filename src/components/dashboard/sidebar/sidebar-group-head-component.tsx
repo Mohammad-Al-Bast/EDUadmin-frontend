@@ -34,9 +34,12 @@ const SidebarGroupHeadComponent = ({
                     >
                         {({ isActive }) => (
                             <>
-                                <span className='w-4 group-data-[collapsible=icon]:-ml-[0.2rem]'>
-                                    {icon}
-                                </span>
+                                {
+                                    icon &&
+                                    <span className='w-4 group-data-[collapsible=icon]:-ml-[0.2rem]'>
+                                        {icon}
+                                    </span>
+                                }
                                 <SidebarGroupLabel
                                     className={`text-base ${isActive
                                         ? 'text-white dark:text-black'
@@ -61,9 +64,12 @@ const SidebarGroupHeadComponent = ({
                     >
                         {({ isActive }) => (
                             <>
-                                <span className='w-4 group-data-[collapsible=icon]:-ml-[0.2rem]'>
-                                    {icon}
-                                </span>
+                                {
+                                    icon &&
+                                    <span className='w-4 group-data-[collapsible=icon]:-ml-[0.2rem]'>
+                                        {icon}
+                                    </span>
+                                }
                                 <SidebarGroupLabel
                                     className={`text-base ${isActive
                                         ? 'text-white dark:text-black'
