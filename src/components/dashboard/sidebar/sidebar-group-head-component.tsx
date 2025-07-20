@@ -8,7 +8,7 @@ interface SidebarGroupHeadProps {
     subRoutes: DashboardRouteConfig[] | undefined;
     open: boolean;
     icon: React.ReactNode;
-    onToggle?: () => void; // Add this line
+    onToggle?: () => void; 
 }
 
 const SidebarGroupHeadComponent = ({
@@ -16,7 +16,7 @@ const SidebarGroupHeadComponent = ({
     subRoutes,
     open,
     icon,
-    onToggle, // Add this line
+    onToggle, 
 }: SidebarGroupHeadProps) => {
     const hasSubRoutes = (subRoutes?.length ?? 0) > 0;
 
@@ -24,7 +24,7 @@ const SidebarGroupHeadComponent = ({
         <SidebaGroupUi>
             <div
                 className='flex items-center justify-between w-full capitalize'
-                onClick={hasSubRoutes ? onToggle : undefined} // Add onClick handler
+                onClick={hasSubRoutes ? onToggle : undefined}
             >
                 {hasSubRoutes ? (
                     <div className='flex items-center w-full'>

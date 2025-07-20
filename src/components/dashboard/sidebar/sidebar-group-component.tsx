@@ -10,7 +10,7 @@ interface SidebarGroupProps {
 
 const SidebarGroupComponent = ({ route }: SidebarGroupProps) => {
     const { path, subRoutes, icon, isShown } = route;
-    const [isOpen, setIsOpen] = useState(false); // Add state for open/closed
+    const [isOpen, setIsOpen] = useState(false); 
 
     if (!isShown) return null;
 
@@ -22,8 +22,8 @@ const SidebarGroupComponent = ({ route }: SidebarGroupProps) => {
                         path={path}
                         subRoutes={subRoutes?.filter((subRoute) => subRoute.isShown)}
                         icon={icon}
-                        open={isOpen} // Pass the actual open state
-                        onToggle={() => setIsOpen(!isOpen)} // Pass the toggle handler
+                        open={isOpen} 
+                        onToggle={() => setIsOpen(!isOpen)}
                     />
                 </div>
             </Collapsible.Trigger>
