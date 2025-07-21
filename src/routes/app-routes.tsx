@@ -2,8 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./protected-route";
 import DashboardRoutes from "./dashboard/dashboard-routes";
 import AuthRoutes from "./auth/auth-routes";
+import NotFound from "@/components/pages/not-found";
 
-const Home = () => <div>Home Page</div>; // Placeholder for Home component
+const Home = () => <div>Home Page</div>;
 
 const AppRoutes: React.FC = () => {
     return (
@@ -18,6 +19,7 @@ const AppRoutes: React.FC = () => {
                     </ProtectedRoute>
                 }
             />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 };
