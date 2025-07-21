@@ -1,10 +1,15 @@
+import { ModeToggle } from "@/components/theme/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Home = () => {
     return (
         <div className="h-dvh flex flex-col items-center justify-center space-y-4 px-4">
-            <h1 className="text-2xl font-semibold">Welcome to the Home Page</h1>
+            <h1 className="text-2xl font-semibold">Welcome to{" "}
+                <span className="font-bold underline decoration-wavy decoration-blue-500">
+                    EDU Admin - Suite
+                </span>
+            </h1>
             <p className="text-muted-foreground text-center text-sm">
                 {"This is the landing page of our application,"}
                 <br />
@@ -17,6 +22,7 @@ const Home = () => {
                 <Link to="/dashboard">
                     <Button variant="outline">Go to Dashboard</Button>
                 </Link>
+                <ModeToggle />
             </div>
         </div>
     );
