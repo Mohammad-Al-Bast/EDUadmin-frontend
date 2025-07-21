@@ -42,7 +42,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ routes }) => {
                             <span className="text-2xl font-semibold leading-8 tracking-normal">
                                 {currentRoute.label}
                             </span>
-                            <span className="text-sm font-normal leading-5 tracking-normal text-muted dark:text-muted-foreground">
+                            <span className="text-sm font-normal leading-5 tracking-normal text-muted-foreground">
                                 {currentRoute.subtitle}
                             </span>
                         </div>
