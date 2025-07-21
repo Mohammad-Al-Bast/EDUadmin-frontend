@@ -1,17 +1,17 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-const LoginPage: React.FC = () => {
+const SigninPage: React.FC = () => {
 
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSignin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log('Login form submitted');
+        console.log('Signin form submitted');
     };
 
     return (
         <form
-            onSubmit={handleLogin}
+            onSubmit={handleSignin}
             className='flex flex-col gap-2'
         >
             <Input
@@ -31,12 +31,11 @@ const LoginPage: React.FC = () => {
             <Button
                 type="submit"
                 color="primary"
-                className='mt-3'
             >
-                Login
+                Sign In
             </Button>
         </form>
     );
 };
 
-export default LoginPage;
+export default SigninPage;

@@ -19,7 +19,7 @@ const DashboardRoutes: React.FC = () => {
                         isAuthenticated ? (
                             <route.component />
                         ) : (
-                            <Navigate to="/auth/login" />
+                            <Navigate to="/auth/signin" />
                         )
                     }
                 >
