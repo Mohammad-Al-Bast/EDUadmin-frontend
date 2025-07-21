@@ -1,19 +1,19 @@
-"use client"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { CircleUserRound, EllipsisVertical, LogOut, RotateCcwKey } from "lucide-react"
 
+type SidebarUserProps = {
+    user: {
+        name: string;
+        email: string;
+        avatar: string;
+    };
+};
+
 export function SidebarUser({
     user,
-}: {
-    user: {
-        name: string
-        email: string
-        avatar: string
-    }
-}) {
+}: SidebarUserProps) {
     const { isMobile } = useSidebar()
 
     return (
@@ -71,7 +71,7 @@ export function SidebarUser({
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                            <LogOut className="text-destructive"/>
+                            <LogOut className="text-destructive" />
                             Log out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
