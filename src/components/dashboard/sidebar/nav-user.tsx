@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import { CircleUserRound, CreditCard, EllipsisVertical, LogOut, MessageSquareDot } from "lucide-react"
+import { CircleUserRound, EllipsisVertical, LogOut, MessageSquareDot } from "lucide-react"
 
 export function NavUser({
     user,
@@ -63,10 +63,6 @@ export function NavUser({
                             <DropdownMenuItem>
                                 <CircleUserRound />
                                 Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard />
-                                Billing
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <MessageSquareDot />
