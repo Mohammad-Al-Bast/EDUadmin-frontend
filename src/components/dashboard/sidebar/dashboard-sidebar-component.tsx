@@ -1,13 +1,19 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
-import { LogOutIcon } from 'lucide-react';
-import { Tooltip, TooltipTrigger } from '@radix-ui/react-tooltip';
 import { Separator } from "@/components/ui/separator"
 import RoutesList from '@/routes/dashboard/routes';
 import SidebarGroupComponent from './sidebar-group-component';
-import { Button } from '@/components/ui/button';
+import { NavUser } from './nav-user';
 
 const DashboardSideBarComponent = () => {
     const routes = RoutesList();
+
+    const data = {
+        user: {
+            name: "shadcn",
+            email: "m@example.com",
+            avatar: "/avatars/shadcn.jpg",
+        },
+    };
 
     return (
         <Sidebar collapsible='icon'>
@@ -38,21 +44,7 @@ const DashboardSideBarComponent = () => {
 
             {/* Sidebar Footer */}
             <SidebarFooter>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className='w-full h-8 group'
-                        >
-                            <span className='flex items-center justify-center gap-2 group-data-[collapsible=icon]:gap-0'>
-                                <LogOutIcon className="h-4 w-4" />
-                                <span className="group-data-[collapsible=icon]:hidden">
-                                    Logout
-                                </span>
-                            </span>
-                        </Button>
-                    </TooltipTrigger>
-                </Tooltip>
+                <NavUser user={data.user} />
             </SidebarFooter>
         </Sidebar>
     );
