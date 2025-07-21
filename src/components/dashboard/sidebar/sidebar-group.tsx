@@ -1,7 +1,7 @@
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useState } from 'react';
-import SidebarGroupHeadComponent from './sidebar-group-head-component';
-import SidebarGroupContentComponent from './sidebar-group-content-component';
+import SidebarGroupHeadComponent from './sidebar-group-head';
+import SidebarGroupContentComponent from './sidebar-group-content';
 import type { DashboardRouteConfig } from '@/routes/dashboard/route-config';
 
 interface SidebarGroupProps {

@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { CircleUserRound, EllipsisVertical, LogOut, RotateCcwKey } from "lucide-react"
 
-export function NavUser({
+export function SidebarUser({
     user,
 }: {
     user: {

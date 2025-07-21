@@ -1,8 +1,8 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import { Separator } from "@/components/ui/separator"
 import RoutesList from '@/routes/dashboard/routes';
-import SidebarGroupComponent from './sidebar-group-component';
-import { NavUser } from './nav-user';
+import SidebarGroupComponent from './sidebar-group';
+import { SidebarUser } from './sidebar-user';
 
 const DashboardSideBarComponent = () => {
     const routes = RoutesList();
@@ -44,7 +44,7 @@ const DashboardSideBarComponent = () => {
 
             {/* Sidebar Footer */}
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <SidebarUser user={data.user} />
             </SidebarFooter>
         </Sidebar>
     );

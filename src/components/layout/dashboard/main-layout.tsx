@@ -1,4 +1,4 @@
-import DashboardSideBarComponent from '@/components/dashboard/sidebar/dashboard-sidebar-component';
+import DashboardSideBarComponent from '@/components/dashboard/sidebar/dashboard-sidebar';
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Outlet, useLocation, Link } from 'react-router-dom';
