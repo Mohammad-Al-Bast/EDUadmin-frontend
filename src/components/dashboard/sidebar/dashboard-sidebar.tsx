@@ -3,17 +3,10 @@ import { Separator } from "@/components/ui/separator"
 import RoutesList from '@/routes/dashboard/routes';
 import SidebarGroupComponent from './sidebar-group';
 import { SidebarUser } from './sidebar-user';
+import { USER } from '@/constants/mock-data';
 
 const DashboardSideBarComponent = () => {
     const routes = RoutesList();
-
-    const data = {
-        user: {
-            name: "shadcn",
-            email: "m@example.com",
-            avatar: "/avatars/shadcn.jpg",
-        },
-    };
 
     return (
         <Sidebar collapsible='icon'>
@@ -44,7 +37,7 @@ const DashboardSideBarComponent = () => {
 
             {/* Sidebar Footer */}
             <SidebarFooter>
-                <SidebarUser user={data.user} />
+                <SidebarUser user={USER} />
             </SidebarFooter>
         </Sidebar>
     );

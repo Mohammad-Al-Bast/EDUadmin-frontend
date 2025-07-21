@@ -1,4 +1,4 @@
-import { SidebarGroupContent, SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SidebarGroup, SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
 import type { DashboardRouteConfig } from '@/routes/dashboard/route-config';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { NavLink } from 'react-router-dom';
@@ -8,7 +8,7 @@ interface SidebarGroupContentProps {
     path: string;
 }
 
-const SidebarGroupContentComponent = ({
+const SidebarGroupContent = ({
     subRoutes,
     path,
 }: SidebarGroupContentProps) => {
@@ -16,7 +16,7 @@ const SidebarGroupContentComponent = ({
         <>
             {subRoutes && (
                 <Collapsible.Content>
-                    <SidebarGroupContent>
+                    <SidebarGroup>
                         <SidebarMenu className='gap-2'>
                             {subRoutes?.map((subRoute: DashboardRouteConfig) => (
                                 <SidebarMenuItem key={subRoute.path} className='w-full'>
@@ -38,11 +38,11 @@ const SidebarGroupContentComponent = ({
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
-                    </SidebarGroupContent>
+                    </SidebarGroup>
                 </Collapsible.Content>
             )}
         </>
     );
 };
 
-export default SidebarGroupContentComponent;
+export default SidebarGroupContent;

@@ -1,15 +1,8 @@
-import DashboardSideBarComponent from '@/components/dashboard/sidebar/dashboard-sidebar';
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Outlet, useLocation, Link } from 'react-router-dom';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { DashboardSideBar } from '@/components/dashboard/sidebar';
 
 interface MainLayoutProps {
     routes: {
@@ -31,7 +24,6 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = () => {
     const location = useLocation();
 
-    // Function to format path segments (replace hyphens with spaces and capitalize)
     const formatPathSegment = (segment: string) => {
         return segment
             .replace(/-/g, ' ')
@@ -40,19 +32,16 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
             .join(' ');
     };
 
-    // Generate breadcrumb items from current path
     const generateBreadcrumbs = () => {
         const pathSegments = location.pathname.split('/').filter(segment => segment !== '');
         const breadcrumbs = [];
 
-        // Add Dashboard as root
         breadcrumbs.push({
             label: 'Dashboard',
             path: '/dashboard',
             isLast: pathSegments.length === 1 && pathSegments[0] === 'dashboard'
         });
 
-        // Add path segments (skip 'dashboard' if it's the first segment)
         let currentPath = '';
         pathSegments.forEach((segment, index) => {
             if (segment !== 'dashboard') {
@@ -76,7 +65,7 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
         <SidebarProvider>
             <div className='flex w-full min-h-screen'>
                 {/* Sidebar */}
-                <DashboardSideBarComponent />
+                <DashboardSideBar />
                 {/* Main Content */}
                 <div className='flex-1 flex flex-col overflow-hidden'>
                     <nav className='w-full flex justify-between items-center h-14 border-b px-2'>

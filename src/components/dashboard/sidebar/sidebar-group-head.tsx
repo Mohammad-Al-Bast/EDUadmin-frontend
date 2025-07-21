@@ -11,7 +11,7 @@ interface SidebarGroupHeadProps {
     onToggle?: () => void;
 }
 
-const SidebarGroupHeadComponent = ({
+const SidebarGroupHead = ({
     path,
     subRoutes,
     open,
@@ -95,4 +95,4 @@ const SidebarGroupHeadComponent = ({
     );
 };
 
-export default SidebarGroupHeadComponent;
+export default SidebarGroupHead;
