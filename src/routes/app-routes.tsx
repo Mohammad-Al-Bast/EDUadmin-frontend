@@ -3,8 +3,7 @@ import ProtectedRoute from "./protected-route";
 import DashboardRoutes from "./dashboard/dashboard-routes";
 import AuthRoutes from "./auth/auth-routes";
 import NotFound from "@/components/pages/not-found";
-
-const Home = () => <div>Home Page</div>;
+import Home from "@/components/pages/home/home";
 
 const AppRoutes: React.FC = () => {
     return (
