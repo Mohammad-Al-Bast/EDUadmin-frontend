@@ -68,7 +68,9 @@ export function SidebarUser({
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => navigate('/dashboard/profile')}
+                            >
                                 <CircleUserRound />
                                 Profile
                             </DropdownMenuItem>

@@ -1,6 +1,7 @@
 import { CircleGauge, LayoutList, Users } from "lucide-react";
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
+import Profile from "@/components/pages/profile/profile";
 
 const DashboardHomeComponent = () => <div>Dashboard Home</div>;
 
@@ -32,6 +33,12 @@ const RoutesList = () => {
             component: () => <div>Change of Grade Form</div>,
             isAuthenticated: true,
             isShown: true,
+        },
+        {
+            path: "profile",
+            component: Profile,
+            isAuthenticated: true,
+            isShown: false,
         }
     ].map((route) =>
         createDashboardRoute(route.path, route.component, route.icon, route.isShown, route.isAuthenticated)
