@@ -45,6 +45,8 @@ const ResetPasswordPage: React.FC = () => {
             await new Promise(resolve => setTimeout(resolve, 1000));
             // TODO: Replace with actual API call
             // TODO: Handle successful reset (show notification, redirect, etc.)
+
+            form.reset();
         } catch (err) {
             // TODO: Handle error (show notification, log error, etc.)
             console.log(err);

@@ -34,6 +34,7 @@ const SigninPage: React.FC = () => {
             // TODO: Replace with actual API call
             // TODO: Handle successful signin (redirect, store token, etc.)
 
+            form.reset();
         } catch (err) {
             //TODO: Handle error (show notification, log error, etc.)
             console.log(err);
