@@ -12,7 +12,7 @@ const DashboardSideBarComponent = () => {
         <Sidebar collapsible='icon'>
 
             {/* Sidebar Header */}
-            <SidebarHeader className='flex items-start justify-center h-14 border-b'>
+            <SidebarHeader className='flex items-start justify-center h-12 border-b'>
                 <span className='flex items-center gap-2 group-data-[collapsible=icon]:gap-0'>
                     <img
                         src="/images/liu.png"

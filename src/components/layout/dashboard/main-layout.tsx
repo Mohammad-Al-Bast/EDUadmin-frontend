@@ -68,7 +68,7 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
                 <DashboardSideBar />
                 {/* Main Content */}
                 <div className='flex-1 flex flex-col overflow-hidden'>
-                    <nav className='w-full flex justify-between items-center h-14 border-b px-2'>
+                    <nav className='w-full flex justify-between items-center h-12 border-b px-2'>
                         <div className="flex items-center">
                             <div className="">
                                 <SidebarTrigger className='block md:hidden' />
