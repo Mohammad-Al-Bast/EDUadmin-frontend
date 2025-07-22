@@ -6,7 +6,7 @@ const Home = () => {
     return (
         <div className="h-dvh flex flex-col items-center justify-center space-y-4 px-4">
             <h1 className="text-2xl font-semibold">Welcome to{" "}
-                <span className="font-bold underline decoration-wavy decoration-blue-500">
+                <span className="font-bold bg-gradient-to-r from-blue-600 via-green-600 to-blue-600 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient-x">
                     EDU Admin - Suite
                 </span>
             </h1>
