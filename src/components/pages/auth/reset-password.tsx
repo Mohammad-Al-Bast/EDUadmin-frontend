@@ -248,7 +248,7 @@ const ResetPasswordPage: React.FC = () => {
                         ></div>
                     </div>
                     {/* Password strength description */}
-                    <p id={`${id}-description`} className="text-foreground mb-2 text-sm font-medium">
+                    <p id={`${id}-description`} className="text-foreground my-2 text-sm font-medium">
                         {getStrengthText(strengthScore)}. Must contain:
                     </p>
                     {/* Password requirements list */}
