@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/schemas/auth/reset-password';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const ResetPasswordPage: React.FC = () => {
     const [showOldPassword, setShowOldPassword] = useState(false);
@@ -14,16 +14,28 @@ const ResetPasswordPage: React.FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    const location = useLocation();
+    // Get email from query param if present
+    const searchParams = new URLSearchParams(location.search);
+    const emailFromQuery = searchParams.get('email') || '';
+
     const form = useForm<ResetPasswordFormData>({
         resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
-            email: '',
+            email: emailFromQuery,
             oldPassword: '',
             newPassword: '',
             confirmNewPassword: '',
         },
         mode: 'onChange',
     });
+
+    // If the email query param changes, update the form value
+    useEffect(() => {
+        if (emailFromQuery) {
+            form.setValue('email', emailFromQuery);
+        }
+    }, [emailFromQuery, form]);
 
     const onSubmit = async (data: ResetPasswordFormData) => {
         setIsLoading(true);

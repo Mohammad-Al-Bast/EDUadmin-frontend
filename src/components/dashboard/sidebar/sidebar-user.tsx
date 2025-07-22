@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+import { useNavigate } from "react-router-dom"
 import { CircleUserRound, EllipsisVertical, LogOut, RotateCcwKey } from "lucide-react"
 
 type SidebarUserProps = {
@@ -15,6 +16,8 @@ export function SidebarUser({
     user,
 }: SidebarUserProps) {
     const { isMobile } = useSidebar()
+
+    const navigate = useNavigate();
 
     return (
         <SidebarMenu>
@@ -64,7 +67,9 @@ export function SidebarUser({
                                 <CircleUserRound />
                                 Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => navigate(`/auth/reset-password?email=${encodeURIComponent(user.email)}`)}
+                            >
                                 <RotateCcwKey />
                                 Reset Password
                             </DropdownMenuItem>
