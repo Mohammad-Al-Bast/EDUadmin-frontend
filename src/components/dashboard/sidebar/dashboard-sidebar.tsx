@@ -13,13 +13,13 @@ const DashboardSideBarComponent = () => {
 
             {/* Sidebar Header */}
             <SidebarHeader className='flex items-start justify-center h-12 border-b'>
-                <span className='flex items-center gap-2 group-data-[collapsible=icon]:gap-0'>
+                <span className='flex items-center gap-2'>
                     <img
                         src="/images/liu.png"
                         alt="Logo"
-                        className='h-8 w-8 rounded-full group-data-[collapsible=icon]=hidden'
+                        className='h-8 w-8 rounded-full'
                     />
-                    <span className="group-data-[collapsible=icon]:hidden text-xl font-semibold">
+                    <span className="text-xl font-semibold">
                         LIU
                     </span>
                 </span>
