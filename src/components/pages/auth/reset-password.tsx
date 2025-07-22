@@ -235,7 +235,7 @@ const ResetPasswordPage: React.FC = () => {
                             {req.met ? (
                                 <Check size={16} className="text-emerald-500" aria-hidden="true" />
                             ) : (
-                                <X size={16} className="text-muted-foreground/80" aria-hidden="true" />
+                                <X size={16} className="text-destructive" aria-hidden="true" />
                             )}
                             <span className={`text-xs ${req.met ? 'text-emerald-600' : 'text-muted-foreground'}`}>
                                 {req.text}
