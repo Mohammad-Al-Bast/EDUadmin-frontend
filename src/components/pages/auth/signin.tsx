@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { signinSchema, type SigninFormData } from '@/schemas/auth/signin';
+import { Link } from 'react-router-dom';
 
 const SigninPage: React.FC = () => {
 
@@ -116,6 +117,12 @@ const SigninPage: React.FC = () => {
                     )}
                 </Button>
             </form>
+            <div className="mt-4 text-center text-sm text-muted-foreground">
+                Forgot your password?{' '}
+                <Link to="/auth/reset-password" className="text-primary underline hover:text-primary/80">
+                    Reset it here
+                </Link>
+            </div>
         </Form>
 
     );
