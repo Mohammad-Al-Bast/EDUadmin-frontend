@@ -16,8 +16,13 @@ export function SidebarUser({
     user,
 }: SidebarUserProps) {
     const { isMobile } = useSidebar()
-
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // TODO: Perform real logout logic here
+        console.log('User logged out');
+        navigate('/');
+    };
 
     return (
         <SidebarMenu>
@@ -75,7 +80,9 @@ export function SidebarUser({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={handleLogout}
+                        >
                             <LogOut className="text-destructive" />
                             Log out
                         </DropdownMenuItem>
