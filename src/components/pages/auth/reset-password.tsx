@@ -14,6 +14,7 @@ const ResetPasswordPage: React.FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [newPasswordValue, setNewPasswordValue] = useState('');
+    const [showPasswordInfo, setShowPasswordInfo] = useState(true);
 
     // Password strength logic
     const checkStrength = (pass: string) => {
@@ -145,6 +146,7 @@ const ResetPasswordPage: React.FC = () => {
                     )}
                 />
 
+
                 <FormField
                     control={form.control}
                     name="newPassword"
@@ -162,6 +164,7 @@ const ResetPasswordPage: React.FC = () => {
                                                 field.onChange(e);
                                                 setNewPasswordValue(e.target.value);
                                             }}
+                                            aria-describedby="new-password-strength-description"
                                         />
                                         <Button
                                             type="button"
@@ -217,35 +220,56 @@ const ResetPasswordPage: React.FC = () => {
                     )}
                 />
 
-                {/* Password strength indicator */}
-                <div className="bg-border mt-4 h-1 w-full overflow-hidden rounded-full" role="progressbar" aria-valuenow={strengthScore} aria-valuemin={0} aria-valuemax={totalRequirements} aria-label="Password strength">
-                    <div
-                        className={`h-full ${getStrengthColor(strengthScore)} transition-all duration-500 ease-out`}
-                        style={{ width: `${(strengthScore / totalRequirements) * 100}%` }}
-                    ></div>
+                {/* Toggle for password info */}
+                <div className="flex justify-end mt-3">
+                    <button
+                        type="button"
+                        className="text-xs text-primary underline hover:text-primary/80 focus:outline-none transition-colors"
+                        aria-expanded={showPasswordInfo}
+                        aria-controls="password-info-section"
+                        onClick={() => setShowPasswordInfo((v) => !v)}
+                    >
+                        {showPasswordInfo ? 'Hide password requirements' : 'Show password requirements'}
+                    </button>
                 </div>
-                {/* Password strength description */}
-                <p id={`${id}-description`} className="text-foreground mb-2 text-sm font-medium">
-                    {getStrengthText(strengthScore)}. Must contain:
-                </p>
-                {/* Password requirements list */}
-                <ul className="space-y-1.5 mb-4" aria-label="Password requirements">
-                    {strength.map((req, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                            {req.met ? (
-                                <Check size={16} className="text-emerald-500" aria-hidden="true" />
-                            ) : (
-                                <X size={16} className="text-destructive" aria-hidden="true" />
-                            )}
-                            <span className={`text-xs ${req.met ? 'text-emerald-600' : 'text-muted-foreground'}`}>
-                                {req.text}
-                                <span className="sr-only">
-                                    {req.met ? ' - Requirement met' : ' - Requirement not met'}
+
+
+                {/* Password requirements and strength section, toggled */}
+                <div
+                    id="password-info-section"
+                    aria-hidden={!showPasswordInfo}
+                    className={`overflow-hidden transition-all duration-500 ${showPasswordInfo ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 pointer-events-none'}`}
+                >
+                    {/* Password strength indicator */}
+                    <div className="bg-border h-1 w-full overflow-hidden rounded-full" role="progressbar" aria-valuenow={strengthScore} aria-valuemin={0} aria-valuemax={totalRequirements} aria-label="Password strength">
+                        <div
+                            className={`h-full ${getStrengthColor(strengthScore)} transition-all duration-500 ease-out`}
+                            style={{ width: `${(strengthScore / totalRequirements) * 100}%` }}
+                        ></div>
+                    </div>
+                    {/* Password strength description */}
+                    <p id={`${id}-description`} className="text-foreground mb-2 text-sm font-medium">
+                        {getStrengthText(strengthScore)}. Must contain:
+                    </p>
+                    {/* Password requirements list */}
+                    <ul className="space-y-1.5 mb-4" aria-label="Password requirements">
+                        {strength.map((req, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                                {req.met ? (
+                                    <Check size={16} className="text-emerald-500" aria-hidden="true" />
+                                ) : (
+                                    <X size={16} className="text-destructive" aria-hidden="true" />
+                                )}
+                                <span className={`text-xs ${req.met ? 'text-emerald-600' : 'text-muted-foreground'}`}>
+                                    {req.text}
+                                    <span className="sr-only">
+                                        {req.met ? ' - Requirement met' : ' - Requirement not met'}
+                                    </span>
                                 </span>
-                            </span>
-                        </li>
-                    ))}
-                </ul>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
                 <Button
                     type="submit"
