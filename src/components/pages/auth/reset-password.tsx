@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -13,9 +13,43 @@ const ResetPasswordPage: React.FC = () => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [newPasswordValue, setNewPasswordValue] = useState('');
 
-    const location = useLocation();
+    // Password strength logic
+    const checkStrength = (pass: string) => {
+        const requirements = [
+            { regex: /.{8,}/, text: 'At least 8 characters' },
+            { regex: /[A-Z]/, text: 'At least one uppercase letter' },
+            { regex: /[a-z]/, text: 'At least one lowercase letter' },
+            { regex: /[0-9]/, text: 'At least one number' },
+            { regex: /[^A-Za-z0-9]/, text: 'At least one special character' },
+        ];
+        return requirements.map((req) => ({
+            met: req.regex.test(pass),
+            text: req.text,
+        }));
+    };
+
+    const strength = checkStrength(newPasswordValue);
+    const totalRequirements = 5;
+    const strengthScore = React.useMemo(() => strength.filter((req) => req.met).length, [strength]);
+    const getStrengthColor = (score: number) => {
+        if (score === 0) return 'bg-border';
+        if (score < totalRequirements) return 'bg-yellow-500';
+        if (score === totalRequirements) return 'bg-emerald-500';
+        return 'bg-border';
+    };
+    const getStrengthText = (score: number) => {
+        if (score === 0) return 'Enter a password';
+        if (score < totalRequirements) return 'Password not strong enough';
+        if (score === totalRequirements) return 'Strong password';
+        return 'Enter a password';
+    };
+    const id = 'new-password-strength';
+
+
     // Get email from query param if present
+    const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const emailFromQuery = searchParams.get('email') || '';
 
@@ -114,34 +148,40 @@ const ResetPasswordPage: React.FC = () => {
                 <FormField
                     control={form.control}
                     name="newPassword"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <div className="relative">
-                                    <Input
-                                        type={showNewPassword ? 'text' : 'password'}
-                                        placeholder="Enter your new password"
-                                        disabled={isLoading}
-                                        {...field}
-                                    />
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={() => setShowNewPassword((v) => !v)}
-                                        className="absolute right-0 top-1/2 transform -translate-y-1/2 rounded-l-none border-l-2 focus:outline-none"
-                                        disabled={isLoading}
-                                    >
-                                        {showNewPassword ? (
-                                            <EyeOff className="h-4 w-4" />
-                                        ) : (
-                                            <Eye className="h-4 w-4" />
-                                        )}
-                                    </Button>
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        return (
+                            <FormItem>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Input
+                                            type={showNewPassword ? 'text' : 'password'}
+                                            placeholder="Enter your new password"
+                                            disabled={isLoading}
+                                            {...field}
+                                            onChange={e => {
+                                                field.onChange(e);
+                                                setNewPasswordValue(e.target.value);
+                                            }}
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={() => setShowNewPassword((v) => !v)}
+                                            className="absolute right-0 top-1/2 transform -translate-y-1/2 rounded-l-none border-l-2 focus:outline-none"
+                                            disabled={isLoading}
+                                        >
+                                            {showNewPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        );
+                    }}
                 />
 
                 <FormField
@@ -176,6 +216,36 @@ const ResetPasswordPage: React.FC = () => {
                         </FormItem>
                     )}
                 />
+
+                {/* Password strength indicator */}
+                <div className="bg-border mt-4 h-1 w-full overflow-hidden rounded-full" role="progressbar" aria-valuenow={strengthScore} aria-valuemin={0} aria-valuemax={totalRequirements} aria-label="Password strength">
+                    <div
+                        className={`h-full ${getStrengthColor(strengthScore)} transition-all duration-500 ease-out`}
+                        style={{ width: `${(strengthScore / totalRequirements) * 100}%` }}
+                    ></div>
+                </div>
+                {/* Password strength description */}
+                <p id={`${id}-description`} className="text-foreground mb-2 text-sm font-medium">
+                    {getStrengthText(strengthScore)}. Must contain:
+                </p>
+                {/* Password requirements list */}
+                <ul className="space-y-1.5 mb-4" aria-label="Password requirements">
+                    {strength.map((req, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                            {req.met ? (
+                                <Check size={16} className="text-emerald-500" aria-hidden="true" />
+                            ) : (
+                                <X size={16} className="text-muted-foreground/80" aria-hidden="true" />
+                            )}
+                            <span className={`text-xs ${req.met ? 'text-emerald-600' : 'text-muted-foreground'}`}>
+                                {req.text}
+                                <span className="sr-only">
+                                    {req.met ? ' - Requirement met' : ' - Requirement not met'}
+                                </span>
+                            </span>
+                        </li>
+                    ))}
+                </ul>
 
                 <Button
                     type="submit"
