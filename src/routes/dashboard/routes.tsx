@@ -5,9 +5,9 @@ import Profile from "@/components/pages/profile/profile";
 import TeamsPage from "@/components/pages/team/team";
 import StudentsPage from "@/components/pages/students/students";
 import UploadPage from "@/components/pages/upload/upload";
+import ChangeGradePage from "@/components/pages/ChangeGrade/change-grade";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
-const ChangeOfGradeForm = () => <div>Change Grade</div>;
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
@@ -35,7 +35,7 @@ const RoutesList = () => {
         {
             path: "change-grade",
             icon: <FileCheck className="size-5" />,
-            component: ChangeOfGradeForm,
+            component: ChangeGradePage,
             isAuthenticated: true,
             isShown: true,
         },
