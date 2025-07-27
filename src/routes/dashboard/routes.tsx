@@ -1,4 +1,4 @@
-import { CircleGauge, FileUp, GraduationCap, Users } from "lucide-react";
+import { CircleGauge, FileCheck, FileUp, GraduationCap, Users } from "lucide-react";
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
@@ -7,7 +7,7 @@ import StudentsPage from "@/components/pages/students/students";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
 const UploadCourses = () => <div>Upload Courses</div>;
-const ChangeOfGradeForm = () => <div>Change of Grade Form</div>;
+const ChangeOfGradeForm = () => <div>Change Grade</div>;
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
@@ -33,14 +33,8 @@ const RoutesList = () => {
             isShown: true,
         },
         {
-            path: "teams",
-            icon: <Users className="size-5" />,
-            component: TeamsPage,
-            isAuthenticated: true,
-            isShown: true,
-        },
-        {
-            path: "change-of-grade-form",
+            path: "change-grade",
+            icon: <FileCheck className="size-5" />,
             component: ChangeOfGradeForm,
             isAuthenticated: true,
             isShown: true,
@@ -50,6 +44,13 @@ const RoutesList = () => {
             component: Profile,
             isAuthenticated: true,
             isShown: false,
+        },
+        {
+            path: "teams",
+            icon: <Users className="size-5" />,
+            component: TeamsPage,
+            isAuthenticated: true,
+            isShown: true,
         }
     ].map((route) =>
         createDashboardRoute(route.path, route.component, route.icon, route.isShown, route.isAuthenticated)
