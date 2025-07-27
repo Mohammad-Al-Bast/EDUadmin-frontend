@@ -107,10 +107,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
             {/* Pagination */}
             <div className="flex flex-col space-y-4 pb-2 md:flex-row md:items-center md:justify-between md:space-y-0 md:space-x-2">
-                {/* Row selection info */}
+                {/* Total Number of rows */}
                 <div className="flex-1 text-sm text-muted-foreground text-center md:text-left">
-                    {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-                    selected.
+                    <span className="font-medium">{table.getFilteredRowModel().rows.length}</span>{" "}
+                    {table.getFilteredRowModel().rows.length === 1 ? "result" : "results"} found
                 </div>
 
                 {/* Pagination controls */}
