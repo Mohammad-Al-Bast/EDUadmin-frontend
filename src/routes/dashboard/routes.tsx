@@ -4,9 +4,9 @@ import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
 import TeamsPage from "@/components/pages/team/team";
 import StudentsPage from "@/components/pages/students/students";
+import UploadPage from "@/components/pages/upload/upload";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
-const UploadCourses = () => <div>Upload Courses</div>;
 const ChangeOfGradeForm = () => <div>Change Grade</div>;
 
 const RoutesList = () => {
@@ -21,7 +21,7 @@ const RoutesList = () => {
         {
             path: "upload",
             icon: <FileUp className="size-5" />,
-            component: UploadCourses,
+            component: UploadPage,
             isAuthenticated: true,
             isShown: true,
         },
