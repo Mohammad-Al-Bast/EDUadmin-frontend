@@ -1,11 +1,11 @@
-import { columns } from "@/components/dashboard/students/columns"
-import { DataTable } from "@/components/dashboard/students/data-table"
-import { studentsData } from "@/constants/students"
+import { columns } from "@/components/dashboard/courses"
+import { DataTable } from "@/components/dashboard/courses"
+import { coursesData } from "@/constants/courses"
 
 export default function CoursesPage() {
     return (
         <main className="overflow-x-hidden">
-            <DataTable columns={columns} data={studentsData} />
+            <DataTable columns={columns} data={coursesData} />
         </main>
     )
 }
