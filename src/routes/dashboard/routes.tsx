@@ -2,11 +2,11 @@ import { BookOpen, CircleGauge, FileCheck, FileUp, GraduationCap, Users } from "
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
-import TeamsPage from "@/components/pages/team/team";
-import StudentsPage from "@/components/pages/students/students";
-import UploadPage from "@/components/pages/upload/upload";
-import ChangeGradePage from "@/components/pages/ChangeGrade/change-grade";
-import CoursesPage from "@/components/pages/courses/courses";
+import TeamsPage from "@/components/pages/dashboard/team/team";
+import StudentsPage from "@/components/pages/dashboard/students/students";
+import UploadPage from "@/components/pages/dashboard/upload/upload";
+import ChangeGradePage from "@/components/pages/dashboard/ChangeGrade/change-grade";
+import CoursesPage from "@/components/pages/dashboard/courses/courses";
 
 const DashboardHome = () => <div>To be implemented soon ⌛</div>;
 
