@@ -106,12 +106,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between space-x-2 pb-2">
-                <div className="flex-1 text-sm text-muted-foreground">
+            <div className="flex flex-col space-y-4 pb-2 md:flex-row md:items-center md:justify-between md:space-y-0 md:space-x-2">
+                {/* Row selection info */}
+                <div className="flex-1 text-sm text-muted-foreground text-center md:text-left">
                     {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
                     selected.
                 </div>
-                <div className="flex items-center space-x-6 lg:space-x-8">
+
+                {/* Pagination controls */}
+                <div className="flex flex-col space-y-4 items-center md:flex-row md:items-center md:space-y-0 md:space-x-6">
+                    {/* Rows per page */}
                     <div className="flex items-center space-x-2">
                         <p className="text-sm font-medium">Rows per page</p>
                         <Select
@@ -132,13 +136,17 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             </SelectContent>
                         </Select>
                     </div>
+
+                    {/* Page info */}
                     <div className="flex w-[100px] items-center justify-center text-sm font-medium">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </div>
+
+                    {/* Navigation buttons */}
                     <div className="flex items-center space-x-2">
                         <Button
                             variant="outline"
-                            className="hidden h-8 w-8 p-0 lg:flex bg-transparent"
+                            className="h-8 w-8 p-0 bg-transparent"
                             onClick={() => table.setPageIndex(0)}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -165,7 +173,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         </Button>
                         <Button
                             variant="outline"
-                            className="hidden h-8 w-8 p-0 lg:flex bg-transparent"
+                            className="h-8 w-8 p-0 bg-transparent"
                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                             disabled={!table.getCanNextPage()}
                         >
