@@ -34,8 +34,10 @@ const data: Member[] = [
 export default function TeamsPage() {
     return (
         <div>
-            <div className="mb-3">
-                <h1 className="text-2xl font-bold">Teams</h1>
+            <div className="mb-2">
+                <h1 className="text-3xl font-bold">
+                    Teams
+                </h1>
             </div>
             <DataTable columns={columns} data={data} />
         </div>
