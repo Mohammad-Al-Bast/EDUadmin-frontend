@@ -1,6 +1,6 @@
 const ChangeGradePage = () => {
     return (
-        <div>Change Grade</div>
+        <div>To be implemented soon ⌛</div>
     )
 }
 

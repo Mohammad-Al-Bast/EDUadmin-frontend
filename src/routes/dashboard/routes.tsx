@@ -8,7 +8,7 @@ import UploadPage from "@/components/pages/upload/upload";
 import ChangeGradePage from "@/components/pages/ChangeGrade/change-grade";
 import CoursesPage from "@/components/pages/courses/courses";
 
-const DashboardHome = () => <div>Dashboard Home</div>;
+const DashboardHome = () => <div>To be implemented soon ⌛</div>;
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
