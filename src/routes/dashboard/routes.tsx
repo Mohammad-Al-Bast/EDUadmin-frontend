@@ -3,34 +3,37 @@ import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
 
-const DashboardHomeComponent = () => <div>Dashboard Home</div>;
+const DashboardHome = () => <div>Dashboard Home</div>;
+const UploadCourses = () => <div>Upload Courses</div>;
+const Teams = () => <div>Teams</div>;
+const ChangeOfGradeForm = () => <div>Change of Grade Form</div>;
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
         {
             path: "dashboard",
             icon: <CircleGauge className="size-5" />,
-            component: DashboardHomeComponent,
+            component: DashboardHome,
             isAuthenticated: true,
             isShown: true,
         },
         {
             path: "upload-courses",
             icon: <LayoutList className="size-5" />,
-            component: () => <div>Upload Courses</div>,
+            component: UploadCourses,
             isAuthenticated: true,
             isShown: true,
         },
         {
             path: "teams",
             icon: <Users className="size-5" />,
-            component: () => <div>Teams</div>,
+            component: Teams,
             isAuthenticated: true,
             isShown: true,
         },
         {
             path: "change-of-grade-form",
-            component: () => <div>Change of Grade Form</div>,
+            component: ChangeOfGradeForm,
             isAuthenticated: true,
             isShown: true,
         },

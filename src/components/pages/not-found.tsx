@@ -11,7 +11,7 @@ const NotFound = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-dvh text-center px-4 space-y-6">
-            <Ghost className="w-16 h-16 text-muted-foreground animate-bounce" />
+            <Ghost className="w-16 h-16 text-destructive animate-bounce" />
             <div>
                 <h1 className="text-4xl font-bold">Oops! 404</h1>
                 <p className="text-muted-foreground mt-2 text-sm">
