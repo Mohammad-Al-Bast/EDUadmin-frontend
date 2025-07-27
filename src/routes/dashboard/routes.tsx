@@ -3,6 +3,7 @@ import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
 import TeamsPage from "@/components/pages/team/team";
+import StudentsPage from "@/components/pages/students/students";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
 const UploadCourses = () => <div>Upload Courses</div>;
@@ -27,7 +28,7 @@ const RoutesList = () => {
         {
             path: "students",
             icon: <GraduationCap className="size-5" />,
-            component: () => <div>Students Page</div>,
+            component: StudentsPage,
             isAuthenticated: true,
             isShown: true,
         },
