@@ -1,4 +1,4 @@
-import { CircleGauge, FileCheck, FileUp, GraduationCap, Users } from "lucide-react";
+import { BookOpen, CircleGauge, FileCheck, FileUp, GraduationCap, Users } from "lucide-react";
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
@@ -8,6 +8,7 @@ import UploadPage from "@/components/pages/upload/upload";
 import ChangeGradePage from "@/components/pages/ChangeGrade/change-grade";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
+const CoursesPage = () => <div>Courses Page</div>;
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
@@ -22,6 +23,13 @@ const RoutesList = () => {
             path: "upload",
             icon: <FileUp className="size-5" />,
             component: UploadPage,
+            isAuthenticated: true,
+            isShown: true,
+        },
+        {
+            path: "courses",
+            icon: <BookOpen className="size-5" />,
+            component: CoursesPage,
             isAuthenticated: true,
             isShown: true,
         },
