@@ -1,4 +1,4 @@
-import { CircleGauge, LayoutList, Users } from "lucide-react";
+import { CircleGauge, GraduationCap, LayoutList, Users } from "lucide-react";
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
@@ -21,6 +21,13 @@ const RoutesList = () => {
             path: "upload-courses",
             icon: <LayoutList className="size-5" />,
             component: UploadCourses,
+            isAuthenticated: true,
+            isShown: true,
+        },
+        {
+            path: "students",
+            icon: <GraduationCap className="size-5" />,
+            component: () => <div>Students Page</div>,
             isAuthenticated: true,
             isShown: true,
         },
