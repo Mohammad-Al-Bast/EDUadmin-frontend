@@ -5,7 +5,6 @@ export interface DashboardRouteConfig {
     isShown: boolean;
     isAuthenticated?: boolean;
     permissions?: string[];
-    subRoutes?: DashboardRouteConfig[];
 }
 
 const createDashboardRoute = (
@@ -14,7 +13,6 @@ const createDashboardRoute = (
     icon: React.ReactNode,
     isShown: boolean,
     isAuthenticated?: boolean,
-    subRoutes: DashboardRouteConfig[] = []
 ): DashboardRouteConfig => {
     return {
         path,
@@ -22,7 +20,6 @@ const createDashboardRoute = (
         icon,
         isShown,    
         isAuthenticated,
-        subRoutes,
     };
 };
 

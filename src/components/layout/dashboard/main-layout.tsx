@@ -11,13 +11,6 @@ interface MainLayoutProps {
         icon?: React.ReactNode;
         isShown: boolean;
         isAuthenticated?: boolean;
-        subRoutes?: {
-            path: string;
-            component: React.ComponentType;
-            icon?: React.ReactNode;
-            isShown: boolean;
-            isAuthenticated?: boolean;
-        }[];
     }[];
 }
 
