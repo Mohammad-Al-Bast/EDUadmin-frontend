@@ -6,9 +6,9 @@ import TeamsPage from "@/components/pages/team/team";
 import StudentsPage from "@/components/pages/students/students";
 import UploadPage from "@/components/pages/upload/upload";
 import ChangeGradePage from "@/components/pages/ChangeGrade/change-grade";
+import CoursesPage from "@/components/pages/courses/courses";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
-const CoursesPage = () => <div>Courses Page</div>;
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
