@@ -7,15 +7,14 @@ import StudentsPage from "@/components/pages/dashboard/students/students";
 import UploadPage from "@/components/pages/dashboard/upload/upload";
 import ChangeGradePage from "@/components/pages/dashboard/ChangeGrade/change-grade";
 import CoursesPage from "@/components/pages/dashboard/courses/courses";
-
-const DashboardHome = () => <div>To be implemented soon ⌛</div>;
+import HomePage from "@/components/pages/dashboard/home/home";
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [
         {
             path: "dashboard",
             icon: <CircleGauge className="size-5" />,
-            component: DashboardHome,
+            component: HomePage,
             isAuthenticated: true,
             isShown: true,
         },
