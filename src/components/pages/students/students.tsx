@@ -4,8 +4,8 @@ import { studentsData } from "@/constants/students"
 
 export default function StudentsPage() {
     return (
-        <div>
+        <main className="overflow-x-hidden">
             <DataTable columns={columns} data={studentsData} />
-        </div>
+        </main>
     )
 }

@@ -1,7 +1,5 @@
 import { columns, DataTable, type Member } from "@/components/dashboard/team"
 
-
-
 // Sample data matching your image
 const data: Member[] = [
     {
@@ -33,13 +31,13 @@ const data: Member[] = [
 
 export default function TeamsPage() {
     return (
-        <div>
+        <main className="overflow-x-hidden">
             <div className="mb-2">
                 <h1 className="text-3xl font-bold">
                     Teams
                 </h1>
             </div>
             <DataTable columns={columns} data={data} />
-        </div>
+        </main>
     )
 }
