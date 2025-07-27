@@ -2,10 +2,10 @@ import { CircleGauge, LayoutList, Users } from "lucide-react";
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
+import TeamsPage from "@/components/pages/team/team";
 
 const DashboardHome = () => <div>Dashboard Home</div>;
 const UploadCourses = () => <div>Upload Courses</div>;
-const Teams = () => <div>Teams</div>;
 const ChangeOfGradeForm = () => <div>Change of Grade Form</div>;
 
 const RoutesList = () => {
@@ -27,7 +27,7 @@ const RoutesList = () => {
         {
             path: "teams",
             icon: <Users className="size-5" />,
-            component: Teams,
+            component: TeamsPage,
             isAuthenticated: true,
             isShown: true,
         },
