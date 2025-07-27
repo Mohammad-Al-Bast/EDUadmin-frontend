@@ -4,8 +4,13 @@ import AppRoutes from "./routes/app-routes";
 
 function App() {
   return (
-    <BrowserRouter basename="/">
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+    <BrowserRouter
+      basename="/"
+    >
+      <ThemeProvider
+        defaultTheme="light"
+        storageKey="vite-ui-theme"
+      >
         <AppRoutes />
       </ThemeProvider>
     </BrowserRouter>

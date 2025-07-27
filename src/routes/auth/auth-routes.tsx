@@ -7,7 +7,12 @@ import MainLayout from "@/components/layout/auth/main-layout";
 const AuthRoutes: React.FC = () => {
     return (
         <Routes>
-            <Route path="/" element={<MainLayout routes={authRoutesList} />}>
+            <Route
+                path="/"
+                element={<MainLayout
+                    routes={authRoutesList}
+                />}
+            >
                 {authRoutesList.map((route, index) => (
                     <Route
                         key={index}
@@ -16,8 +21,10 @@ const AuthRoutes: React.FC = () => {
                     />
                 ))}
             </Route>
-
-            <Route path="*" element={<NotFound />} />
+            <Route
+                path="*"
+                element={<NotFound />}
+            />
         </Routes>
     );
 };

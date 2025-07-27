@@ -8,8 +8,14 @@ import Home from "@/components/pages/home/home";
 const AppRoutes: React.FC = () => {
     return (
         <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth/*" element={<AuthRoutes />} />
+            <Route
+                path="/"
+                element={<Home />}
+            />
+            <Route
+                path="/auth/*"
+                element={<AuthRoutes />}
+            />
             <Route
                 path="/dashboard/*"
                 element={
@@ -18,7 +24,10 @@ const AppRoutes: React.FC = () => {
                     </ProtectedRoute>
                 }
             />
-            <Route path="*" element={<NotFound />} />
+            <Route
+                path="*"
+                element={<NotFound />}
+            />
         </Routes>
     );
 };
