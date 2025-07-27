@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-import { MoreVertical } from "lucide-react"
+import { MoreVertical, ShieldBan, ShieldCheck, SquareAsterisk, Trash2 } from "lucide-react"
 
 export type Member = {
     id: string
@@ -35,16 +35,20 @@ export const columns: ColumnDef<Member>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem>
+                            <ShieldCheck className="h-4 w-4" />
                             Verify
                         </DropdownMenuItem>
                         <DropdownMenuItem>
+                            <SquareAsterisk className="h-4 w-4" />
                             Reset Password
                         </DropdownMenuItem>
                         <DropdownMenuItem>
+                            <ShieldBan className="h-4 w-4" />
                             Block
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive hover:text-destructive/90!">
+                            <Trash2 className="h-4 w-4" />
                             Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>

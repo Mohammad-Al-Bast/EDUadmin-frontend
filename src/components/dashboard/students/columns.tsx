@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreVertical } from "lucide-react"
+import { Eye, MoreVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import type { Student } from "@/types/students.types"
@@ -56,9 +56,7 @@ export const columns: ColumnDef<Student>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => {
-            const student = row.original
-
+        cell: () => {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -67,12 +65,11 @@ export const columns: ColumnDef<Student>[] = [
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(student.id)}>
-                            Copy student ID
+                    <DropdownMenuContent>
+                        <DropdownMenuItem>
+                            <Eye className="h-4 w-4" />
+                            View student
                         </DropdownMenuItem>
-                        <DropdownMenuItem>View student</DropdownMenuItem>
-                        <DropdownMenuItem>Edit student</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

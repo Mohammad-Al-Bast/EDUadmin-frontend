@@ -1,4 +1,4 @@
-import { CircleGauge, GraduationCap, LayoutList, Users } from "lucide-react";
+import { CircleGauge, FileUp, GraduationCap, Users } from "lucide-react";
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
@@ -19,8 +19,8 @@ const RoutesList = () => {
             isShown: true,
         },
         {
-            path: "upload-courses",
-            icon: <LayoutList className="size-5" />,
+            path: "upload",
+            icon: <FileUp className="size-5" />,
             component: UploadCourses,
             isAuthenticated: true,
             isShown: true,
