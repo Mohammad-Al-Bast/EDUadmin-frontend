@@ -89,7 +89,7 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
                             <ModeToggle />
                         </div>
                     </nav>
-                    <div className="flex-1 overflow-hidden p-2">
+                    <div className="flex-1 overflow-hidden p-3">
                         <Outlet />
                     </div>
                 </div>
