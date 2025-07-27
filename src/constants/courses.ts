@@ -10,7 +10,7 @@ export const coursesData: Course[] = [
         credits: 3,
         room: "Room 101",
         schedule: {
-            day: "Monday",
+            day: "MW",
             time: "10:00 AM - 11:30 AM"
         },
         school: "Engineering"
@@ -24,7 +24,7 @@ export const coursesData: Course[] = [
         credits: 4,
         room: "Room 202",
         schedule: {
-            day: "Wednesday",
+            day: "TTH",
             time: "1:00 PM - 2:30 PM"
         },
         school: "Science"
