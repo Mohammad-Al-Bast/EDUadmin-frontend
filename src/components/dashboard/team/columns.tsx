@@ -2,14 +2,9 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { MoreVertical, ShieldBan, ShieldCheck, SquareAsterisk, Trash2 } from "lucide-react"
+import type { User } from "@/types/users/users.types"
 
-export type Member = {
-    id: string
-    name: string
-    email: string
-}
-
-export const columns: ColumnDef<Member>[] = [
+export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "id",
         header: "Member ID",

@@ -1,6 +1,8 @@
-export interface GetUserResponse {
+export interface User {
     id: string;
     name: string;
     email: string;
-    // Add other user properties as needed
+    email_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
 }

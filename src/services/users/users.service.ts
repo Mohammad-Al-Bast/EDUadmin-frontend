@@ -1,13 +1,14 @@
 import { API } from "@/api/baseAPI";
-import type { GetUserResponse } from "@/types/users/users.types";
+import type { User } from "@/types/users/users.types";
+
 
 export const usersServices = {
     /**
      * * Fetch all users
-     * * @returns {Promise<GetUserResponse[]>} - List of users
+     * * @returns {Promise<User[]>} - List of users
      */
-    getAllUsers: (): Promise<GetUserResponse[]> => {
-        return API.get<GetUserResponse[]>(
+    getAllUsers: (): Promise<User[]> => {
+        return API.get<User[]>(
             '/users' // http://localhost:8000/api/v1/users
         );
     },
@@ -15,10 +16,10 @@ export const usersServices = {
     /**
      * * Fetch user by ID
      * * @param {string} id - User ID
-     * * @returns {Promise<GetUserResponse>} - User data
+     * * @returns {Promise<User>} - User data
      */
-    getUserById: (id: string): Promise<GetUserResponse> => {
-        return API.get<GetUserResponse>(
+    getUserById: (id: string): Promise<User> => {
+        return API.get<User>(
             `/users/${id}` // http://localhost:8000/api/v1/users/{id}
         );
     },
