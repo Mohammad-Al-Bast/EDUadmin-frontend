@@ -23,3 +23,6 @@ export const usersServices = {
         );
     },
 };
+
+// const response = await usersServices.getAllUsers();
+// console.log(response); // Logs the list of users

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Method, AxiosResponse, AxiosError } from 'axios';
 
-const API_BASE_URL: string = 'http://localhost:8000/api/v1';
+const API_BASE_URL: string = 'http://localhost:8000/api/v1'; // Development base URL
 const API_TIMEOUT: number = 30000;
 
 export const APIinstance = axios.create({
