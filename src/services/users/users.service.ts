@@ -15,10 +15,10 @@ export const usersServices = {
 
     /**
      * * Fetch user by ID
-     * * @param {string} id - User ID
+     * * @param {number} id - User ID
      * * @returns {Promise<User>} - User data
      */
-    getUserById: (id: string): Promise<User> => {
+    getUserById: (id: number): Promise<User> => {
         return API.get<User>(
             `/users/${id}` // http://localhost:8000/api/v1/users/{id}
         );
