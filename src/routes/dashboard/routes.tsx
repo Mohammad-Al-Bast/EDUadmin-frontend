@@ -2,12 +2,12 @@ import { BookOpen, CircleGauge, FileCheck, FileUp, GraduationCap, Users } from "
 import type { DashboardRouteConfig } from "./route-config";
 import createDashboardRoute from "./route-config";
 import Profile from "@/components/pages/profile/profile";
-import TeamsPage from "@/components/pages/dashboard/team/team";
-import StudentsPage from "@/components/pages/dashboard/students/students";
-import UploadPage from "@/components/pages/dashboard/upload/upload";
-import ChangeGradePage from "@/components/pages/dashboard/ChangeGrade/change-grade";
-import CoursesPage from "@/components/pages/dashboard/courses/courses";
-import HomePage from "@/components/pages/dashboard/home/home";
+import TeamsPage from "@/components/pages/Dashboard/team/team";
+import StudentsPage from "@/components/pages/Dashboard/students/students";
+import UploadPage from "@/components/pages/Dashboard/upload/upload";
+import ChangeGradePage from "@/components/pages/Dashboard/ChangeGrade/change-grade";
+import CoursesPage from "@/components/pages/Dashboard/courses/courses";
+import HomePage from "@/components/pages/Dashboard/home/home";
 
 const RoutesList = () => {
     const dashboardRoutesList: DashboardRouteConfig[] = [

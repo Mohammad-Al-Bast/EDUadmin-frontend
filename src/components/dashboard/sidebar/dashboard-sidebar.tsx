@@ -3,10 +3,12 @@ import { Separator } from "@/components/ui/separator"
 import RoutesList from '@/routes/dashboard/routes';
 import SidebarGroupComponent from './sidebar-group';
 import { SidebarUser } from './sidebar-user';
-import { USER } from '@/constants/mock-data';
+import { useAppSelector } from '@/hooks/redux';
+import { selectUser } from '@/store/selectors/authSelectors';
 
 const DashboardSideBarComponent = () => {
     const routes = RoutesList();
+    const user = useAppSelector(selectUser);
 
     return (
         <Sidebar collapsible='icon'>
@@ -37,7 +39,10 @@ const DashboardSideBarComponent = () => {
 
             {/* Sidebar Footer */}
             <SidebarFooter>
-                <SidebarUser user={USER} />
+                <SidebarUser user={{
+                    name: user?.name ?? "Unknown User",
+                    email: user?.email ?? "unknown@example.com",
+                }} />
             </SidebarFooter>
         </Sidebar>
     );
