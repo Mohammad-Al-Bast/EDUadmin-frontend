@@ -8,6 +8,9 @@ export const loginServices = {
      * * @returns {Promise<LoginResponse>} - Login response with token and user data
      */
     login: (credentials: LoginRequest): Promise<LoginResponse> => {
-        return API.post<LoginResponse>('/login', credentials);
+        return API.post<LoginResponse>(
+            '/login',
+            credentials
+        );
     },
 };

@@ -1,7 +1,6 @@
 import { API } from "@/api/baseAPI";
 import type { User } from "@/types/users/users.types";
 
-
 export const usersServices = {
     /**
      * * Fetch all users
@@ -9,7 +8,7 @@ export const usersServices = {
      */
     getAllUsers: (): Promise<User[]> => {
         return API.get<User[]>(
-            '/users' // http://localhost:8000/api/v1/users
+            '/users'
         );
     },
 
@@ -20,10 +19,7 @@ export const usersServices = {
      */
     getUserById: (id: number): Promise<User> => {
         return API.get<User>(
-            `/users/${id}` // http://localhost:8000/api/v1/users/{id}
+            `/users/${id}`
         );
     },
 };
-
-// const response = await usersServices.getAllUsers();
-// console.log(response); // Logs the list of users
