@@ -288,8 +288,8 @@ const ResetPasswordPage: React.FC = () => {
             </form>
             <div className="mt-4 text-center text-sm text-muted-foreground">
                 Remembered your password?{' '}
-                <Link to="/auth/signin" className="text-primary underline hover:text-primary/80">
-                    Sign in here
+                <Link to="/auth/login" className="text-primary underline hover:text-primary/80">
+                    Log in here
                 </Link>
             </div>
         </Form>

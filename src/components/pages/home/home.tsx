@@ -16,8 +16,8 @@ const Home = () => {
                 {"The website is under development."}
             </p>
             <div className="flex gap-4">
-                <Link to="/auth/signin">
-                    <Button variant="default">Sign In</Button>
+                <Link to="/auth/login">
+                    <Button variant="default">Log In</Button>
                 </Link>
                 <Link to="/dashboard">
                     <Button variant="outline">Go to Dashboard</Button>

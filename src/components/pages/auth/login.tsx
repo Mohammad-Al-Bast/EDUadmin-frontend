@@ -5,16 +5,15 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signinSchema, type SigninFormData } from '@/schemas/auth/signin';
+import { loginSchema, type LoginFormData } from '@/schemas/auth/login';
 import { Link } from 'react-router-dom';
 
-const SigninPage: React.FC = () => {
-
+const LoginPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const form = useForm<SigninFormData>({
-        resolver: zodResolver(signinSchema),
+    const form = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
         defaultValues: {
             email: '',
             password: '',
@@ -22,17 +21,17 @@ const SigninPage: React.FC = () => {
         mode: 'onChange',
     });
 
-    const onSubmit = async (data: SigninFormData) => {
+    const onSubmit = async (data: LoginFormData) => {
         setIsLoading(true);
 
         try {
-            console.log('Signin form submitted with data:', data);
+            console.log('Login form submitted with data:', data);
 
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // TODO: Replace with actual API call
-            // TODO: Handle successful signin (redirect, store token, etc.)
+            // TODO: Handle successful login (redirect, store token, etc.)
 
             form.reset();
         } catch (err) {
@@ -111,10 +110,10 @@ const SigninPage: React.FC = () => {
                     {isLoading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Signing In...
+                            Logging In...
                         </>
                     ) : (
-                        'Sign In'
+                        'Log In'
                     )}
                 </Button>
             </form>
@@ -129,4 +128,4 @@ const SigninPage: React.FC = () => {
     );
 };
 
-export default SigninPage;
+export default LoginPage;

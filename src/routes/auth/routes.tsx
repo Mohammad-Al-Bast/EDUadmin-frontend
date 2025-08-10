@@ -1,12 +1,12 @@
-import { ResetPasswordPage, SignInPage } from "@/components/pages/auth";
+import { ResetPasswordPage, LogInPage } from "@/components/pages/auth";
 import createAuthRoute from "./route-config";
 
 const authRoutesList = [
     {
-        path: "signin",
-        component: SignInPage,
-        label: "Sign In",
-        subtitle: "Enter your email & password to sign in",
+        path: "login",
+        component: LogInPage,
+        label: "Log In",
+        subtitle: "Enter your email & password to log in",
     },
     {
         path: "reset-password",
