@@ -5,12 +5,18 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ErrorMessage } from '@/components/ui/error-message';
 import { loginSchema, type LoginFormData } from '@/schemas/auth/login';
-import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/login/use-auth';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { formatApiError } from '@/lib/utils';
 
 const LoginPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    
+    const { login, loading: loginLoading, error: loginError } = useAuth();
 
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
@@ -22,23 +28,26 @@ const LoginPage: React.FC = () => {
     });
 
     const onSubmit = async (data: LoginFormData) => {
-        setIsLoading(true);
-
         try {
-            console.log('Login form submitted with data:', data);
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // TODO: Replace with actual API call
-            // TODO: Handle successful login (redirect, store token, etc.)
-
-            form.reset();
+            await login(data);
+            
+            // Success notification
+            toast.success('Login successful!', {
+                description: 'Welcome back! You have been logged in successfully.',
+            });
+            
+            // Redirect to dashboard or home page
+            navigate('/dashboard');
+            
         } catch (err) {
-            //TODO: Handle error (show notification, log error, etc.)
-            console.log(err);
-        } finally {
-            setIsLoading(false);
+            // Error notification with formatted error
+            const { title, description } = formatApiError(loginError);
+            
+            toast.error(title, {
+                description,
+            });
+            
+            console.error('Login error:', err);
         }
     };
 
@@ -59,7 +68,7 @@ const LoginPage: React.FC = () => {
                                     <Input
                                         type="email"
                                         placeholder="Enter your email"
-                                        disabled={isLoading}
+                                        disabled={loginLoading}
                                         {...field}
                                     />
                                 </div>
@@ -79,7 +88,7 @@ const LoginPage: React.FC = () => {
                                     <Input
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder="Enter your password"
-                                        disabled={isLoading}
+                                        disabled={loginLoading}
                                         {...field}
                                     />
                                     <Button
@@ -87,7 +96,7 @@ const LoginPage: React.FC = () => {
                                         variant="ghost"
                                         onClick={togglePasswordVisibility}
                                         className="absolute right-0 top-1/2 transform -translate-y-1/2 rounded-l-none border-l-2 focus:outline-none"
-                                        disabled={isLoading}
+                                        disabled={loginLoading}
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-4 w-4" />
@@ -102,12 +111,14 @@ const LoginPage: React.FC = () => {
                     )}
                 />
 
+                <ErrorMessage error={loginError} />
+
                 <Button
                     type="submit"
                     className="w-full"
-                    disabled={isLoading || !form.formState.isValid}
+                    disabled={loginLoading || !form.formState.isValid}
                 >
-                    {isLoading ? (
+                    {loginLoading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Logging In...

@@ -20,6 +20,7 @@ type RequestData = Record<string, unknown> | unknown[] | string | number | boole
 // Define error response structure
 interface ErrorResponse {
     message?: string;
+    error?: string; // For single error messages like account verification
     errors?: Record<string, string[]> | string[];
     code?: string | number;
 }
@@ -51,11 +52,24 @@ const APIClient = async <T = unknown>(
         const axiosError = error as AxiosError<ErrorResponse>;
 
         if (axiosError.response) {
+            const responseData = axiosError.response.data;
+            
+            // Handle different error response formats
+            let errorMessage = 'Server error occurred';
+            
+            if (responseData?.error) {
+                // Handle format: { "error": "message" }
+                errorMessage = responseData.error;
+            } else if (responseData?.message) {
+                // Handle format: { "message": "message" }
+                errorMessage = responseData.message;
+            }
+            
             const errorData: ApiError = {
                 status: axiosError.response.status,
-                message: axiosError.response.data?.message || 'Server error occurred',
-                errors: axiosError.response.data?.errors || null,
-                code: axiosError.response.data?.code || null,
+                message: errorMessage,
+                errors: responseData?.errors || null,
+                code: responseData?.code || null,
             };
             throw errorData;
         } else if (axiosError.request) {
