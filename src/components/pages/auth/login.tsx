@@ -5,12 +5,10 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ErrorMessage } from '@/components/ui/error-message';
 import { loginSchema, type LoginFormData } from '@/schemas/auth/login';
 import { useAuth } from '@/hooks/login/use-auth';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { formatApiError } from '@/lib/utils';
 
 const LoginPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -40,11 +38,11 @@ const LoginPage: React.FC = () => {
             navigate('/dashboard');
             
         } catch (err) {
-            // Error notification with formatted error
-            const { title, description } = formatApiError(loginError);
+            // Error notification - the error is now a string from Redux state
+            const errorMessage = loginError || 'An unexpected error occurred';
             
-            toast.error(title, {
-                description,
+            toast.error('Login Failed', {
+                description: errorMessage,
             });
             
             console.error('Login error:', err);
@@ -111,7 +109,11 @@ const LoginPage: React.FC = () => {
                     )}
                 />
 
-                <ErrorMessage error={loginError} />
+                {loginError && (
+                    <div className="text-sm text-destructive">
+                        {loginError}
+                    </div>
+                )}
 
                 <Button
                     type="submit"
