@@ -3,6 +3,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { useNavigate } from "react-router-dom"
 import { CircleUserRound, EllipsisVertical, LogOut, RotateCcwKey } from "lucide-react"
+import { useLogout } from "@/lib/logout"
 
 type SidebarUserProps = {
     user: {
@@ -17,11 +18,10 @@ export function SidebarUser({
 }: SidebarUserProps) {
     const { isMobile } = useSidebar()
     const navigate = useNavigate();
+    const { logout } = useLogout();
 
-    const handleLogout = () => {
-        // TODO: Perform real logout logic here
-        console.log('User logged out');
-        navigate('/');
+    const handleLogout = async () => {
+        await logout();
     };
 
     return (

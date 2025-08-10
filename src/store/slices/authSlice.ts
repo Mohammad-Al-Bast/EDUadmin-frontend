@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { LoginUser } from '@/types/login/login.types';
-import { loginAsync } from '@/store/thunks/authThunks';
+import { loginAsync, logoutAsync } from '@/store/thunks/authThunks';
 
 interface AuthState {
     token: string | null;
@@ -46,11 +46,6 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.loading = false;
             state.error = null;
-            
-            // Clear localStorage as well
-            localStorage.removeItem('persist:root');
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('user_data');
         },
         clearError: (state) => {
             state.error = null;
@@ -78,6 +73,21 @@ const authSlice = createSlice({
                 state.user = null;
                 state.isAuthenticated = false;
                 state.error = action.error.message || 'Login failed';
+            })
+            .addCase(logoutAsync.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(logoutAsync.fulfilled, (state) => {
+                state.loading = false;
+                state.token = null;
+                state.user = null;
+                state.isAuthenticated = false;
+                state.error = null;
+            })
+            .addCase(logoutAsync.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Logout failed';
             });
     },
 });
@@ -90,8 +100,5 @@ export const {
     clearError,
     updateUser,
 } = authSlice.actions;
-
-// Export the async thunk
-export { loginAsync } from '@/store/thunks/authThunks';
 
 export default authSlice.reducer;

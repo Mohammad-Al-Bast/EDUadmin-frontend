@@ -4,9 +4,9 @@ import { APIinstance } from '@/api/baseAPI';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { 
     logout as logoutAction, 
-    clearError as clearErrorAction,
-    loginAsync 
+    clearError as clearErrorAction
 } from '@/store/slices/authSlice';
+import { loginAsync } from '@/store/thunks/authThunks';
 import { selectAuth } from '@/store/selectors/authSelectors';
 
 interface UseAuthReturn {

@@ -13,3 +13,21 @@ export const loginAsync = createAsyncThunk(
         };
     }
 );
+
+// Async thunk for logout
+export const logoutAsync = createAsyncThunk(
+    'auth/logout',
+    async () => {
+        try {
+            // Clear localStorage items
+            localStorage.removeItem('persist:root');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_data');
+            
+            return true;
+        } catch (error) {
+            console.error('Logout error:', error);
+            throw error;
+        }
+    }
+);
