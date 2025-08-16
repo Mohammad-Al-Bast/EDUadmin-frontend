@@ -4,10 +4,7 @@
 // at /api/students endpoint with proper authentication and permission handling.
 
 // The new structure uses university_id as the primary identifier (8-digit number)
-export const studentsData: any[] = []; // Empty array to maintain exports for backward compatibility
-        semester: "Semester 6",
-        year: "2024-2025",
-    },
+export const studentsData: any[] = [
     {
         id: "3",
         studentId: 125,
@@ -668,4 +665,4 @@ export const studentsData: any[] = []; // Empty array to maintain exports for ba
         semester: "Semester 4",
         year: "2025-2026",
     },
-]
+];
