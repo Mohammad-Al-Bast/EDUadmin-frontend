@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { courseImportSchema, studentImportSchema } from "@/schemas/upload/upload"
 import type { CourseImportFormData, StudentImportFormData } from "@/schemas/upload/upload"
+import { importServices } from "@/services/import/import.service"
 import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form"
 
 export default function UploadPage() {
@@ -30,36 +31,34 @@ export default function UploadPage() {
     const handleCourseImport = async (data: CourseImportFormData) => {
         setIsCourseLoading(true)
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            // TODO: Replace with actual upload logic
-            console.log("Course import submitted:", data)
-            courseForm.reset()
-            if (courseFileRef.current) courseFileRef.current.value = ""
+            if (!data.file || !data.semester) throw new Error("File and semester are required.");
+            await importServices.importCourses(data.file, data.semester);
+            courseForm.reset();
+            if (courseFileRef.current) courseFileRef.current.value = "";
+            // Optionally show success notification here
         } catch (err) {
-            // TODO: Handle error
-            console.log(err)
+            // Optionally show error notification here
+            console.log(err);
         } finally {
-            setIsCourseLoading(false)
+            setIsCourseLoading(false);
         }
-    }
+    };
 
     const handleStudentImport = async (data: StudentImportFormData) => {
-        setIsStudentLoading(true)
+        setIsStudentLoading(true);
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            // TODO: Replace with actual upload logic
-            console.log("Student import submitted:", data)
-            studentForm.reset()
-            if (studentFileRef.current) studentFileRef.current.value = ""
+            if (!data.file) throw new Error("File is required.");
+            await importServices.importStudents(data.file);
+            studentForm.reset();
+            if (studentFileRef.current) studentFileRef.current.value = "";
+            // Optionally show success notification here
         } catch (err) {
-            // TODO: Handle error
-            console.log(err)
+            // Optionally show error notification here
+            console.log(err);
         } finally {
-            setIsStudentLoading(false)
+            setIsStudentLoading(false);
         }
-    }
+    };
 
     return (
         <main>
