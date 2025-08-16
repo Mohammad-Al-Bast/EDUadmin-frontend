@@ -1,62 +1,74 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { Eye, MoreVertical } from "lucide-react"
+import type { ColumnDef, Row } from "@tanstack/react-table"
+import { Eye, MoreVertical, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import type { Student } from "@/types/students.types"
 
 export const columns: ColumnDef<Student>[] = [
     {
-        accessorKey: "studentId",
+        accessorKey: "student_id",
         header: "Student ID",
-        cell: ({ row }) => {
-            return <div className="font-medium">{row.getValue("studentId")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            return <div className="font-medium">#{row.getValue("student_id")}</div>
         },
     },
     {
-        accessorKey: "studentName",
+        accessorKey: "student_name",
         header: "Student Name",
-        cell: ({ row }) => {
-            return <div>{row.getValue("studentName")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            return <div className="font-medium">{row.getValue("student_name")}</div>
         },
     },
     {
         accessorKey: "campus",
         header: "Campus",
-        cell: ({ row }) => {
-            return <div>{row.getValue("campus")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            const campus = row.getValue("campus") as string | null;
+            return <div>{campus || "Not specified"}</div>
         },
     },
     {
         accessorKey: "school",
         header: "School",
-        cell: ({ row }) => {
-            return <div>{row.getValue("school")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            const school = row.getValue("school") as string | null;
+            return <div className="max-w-32 truncate">{school || "Not specified"}</div>
         },
     },
     {
         accessorKey: "major",
         header: "Major",
-        cell: ({ row }) => {
-            return <div>{row.getValue("major")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            const major = row.getValue("major") as string | null;
+            return <div className="max-w-40 truncate">{major || "Undeclared"}</div>
         },
     },
     {
         accessorKey: "semester",
         header: "Semester",
-        cell: ({ row }) => {
-            return <div>{row.getValue("semester")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            const semester = row.getValue("semester") as string | null;
+            return semester ? (
+                <Badge variant="outline">{semester}</Badge>
+            ) : (
+                <span className="text-muted-foreground">Not set</span>
+            );
         },
     },
     {
         accessorKey: "year",
         header: "Year",
-        cell: ({ row }) => {
-            return <div>{row.getValue("year")}</div>
+        cell: ({ row }: { row: Row<Student> }) => {
+            const year = row.getValue("year") as number | null;
+            return <div className="text-center">{year || "N/A"}</div>
         },
     },
     {
         id: "actions",
-        cell: () => {
+        cell: ({ row }: { row: Row<Student> }) => {
+            const student = row.original;
+            
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -65,10 +77,21 @@ export const columns: ColumnDef<Student>[] = [
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => console.log('View student:', student.student_id)}>
                             <Eye className="h-4 w-4" />
-                            View student
+                            View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => console.log('Edit student:', student.student_id)}>
+                            <Edit className="h-4 w-4" />
+                            Edit Student
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                            className="text-destructive hover:text-destructive/90!"
+                            onClick={() => console.log('Delete student:', student.student_id)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            Delete Student
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
