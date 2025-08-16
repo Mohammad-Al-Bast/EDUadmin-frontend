@@ -12,6 +12,21 @@ export const APIinstance = axios.create({
     timeout: API_TIMEOUT,
 });
 
+// Add request interceptor to include auth token
+APIinstance.interceptors.request.use(
+    (config) => {
+        // Get token from localStorage (you might want to use your Redux store instead)
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 // Define specific types for API responses and requests
 type ApiClientResponse<T = unknown> = T;
 type ApiParams = Record<string, string | number | boolean | null | undefined>;
