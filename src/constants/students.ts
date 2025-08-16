@@ -1,23 +1,10 @@
-import type { Student } from "@/types/students.types";
+// NOTE: This static data is no longer used. 
+// Students data is now fetched from the API in real-time.
+// The students page now uses the useStudents() hook to fetch data from the backend API
+// at /api/students endpoint with proper authentication and permission handling.
 
-export const studentsData: Student[] = [
-    {
-        id: "1",
-        studentId: 123,
-        studentName: "John Smith",
-        campus: "Zahle",
-        school: "Engineer",
-        major: "ENG",
-        semester: "Semester 4",
-        year: "2025-2026",
-    },
-    {
-        id: "2",
-        studentId: 124,
-        studentName: "Sarah Johnson",
-        campus: "Zahle",
-        school: "Engineer",
-        major: "CS",
+// The new structure uses university_id as the primary identifier (8-digit number)
+export const studentsData: any[] = []; // Empty array to maintain exports for backward compatibility
         semester: "Semester 6",
         year: "2024-2025",
     },

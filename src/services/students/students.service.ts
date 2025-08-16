@@ -13,8 +13,8 @@ export const studentsServices = {
     },
 
     /**
-     * * Fetch student by ID (Own data or Admin)
-     * * @param {number} id - Student ID
+     * * Fetch student by University ID
+     * * @param {number} id - University ID (8-digit number)
      * * @returns {Promise<Student>} - Student data
      */
     getStudentById: (id: number): Promise<Student> => {
@@ -25,7 +25,7 @@ export const studentsServices = {
 
     /**
      * * Create new student (Admin only)
-     * * @param {CreateStudentRequest} studentData - Student data
+     * * @param {CreateStudentRequest} studentData - Student data (including 8-digit university_id)
      * * @returns {Promise<Student>} - Created student data
      */
     createStudent: (studentData: CreateStudentRequest): Promise<Student> => {
@@ -37,7 +37,7 @@ export const studentsServices = {
 
     /**
      * * Update existing student (Own data or Admin)
-     * * @param {number} id - Student ID
+     * * @param {number} id - University ID (8-digit number)
      * * @param {UpdateStudentRequest} studentData - Student data to update
      * * @returns {Promise<{ message: string; student: Student }>} - Update response
      */
@@ -50,7 +50,7 @@ export const studentsServices = {
 
     /**
      * * Delete student (Admin only)
-     * * @param {number} id - Student ID
+     * * @param {number} id - University ID (8-digit number)
      * * @returns {Promise<{ message: string; student: Student }>} - Delete response
      */
     deleteStudent: (id: number): Promise<{ message: string; student: Student }> => {

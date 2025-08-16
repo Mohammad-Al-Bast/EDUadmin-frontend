@@ -7,10 +7,10 @@ import type { Student } from "@/types/students.types"
 
 export const columns: ColumnDef<Student>[] = [
     {
-        accessorKey: "student_id",
-        header: "Student ID",
+        accessorKey: "university_id",
+        header: "University ID",
         cell: ({ row }: { row: Row<Student> }) => {
-            return <div className="font-medium">#{row.getValue("student_id")}</div>
+            return <div className="font-medium">{row.getValue("university_id")}</div>
         },
     },
     {
@@ -78,17 +78,17 @@ export const columns: ColumnDef<Student>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => console.log('View student:', student.student_id)}>
+                        <DropdownMenuItem onClick={() => console.log('View student:', student.university_id)}>
                             <Eye className="h-4 w-4" />
                             View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => console.log('Edit student:', student.student_id)}>
+                        <DropdownMenuItem onClick={() => console.log('Edit student:', student.university_id)}>
                             <Edit className="h-4 w-4" />
                             Edit Student
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                             className="text-destructive hover:text-destructive/90!"
-                            onClick={() => console.log('Delete student:', student.student_id)}
+                            onClick={() => console.log('Delete student:', student.university_id)}
                         >
                             <Trash2 className="h-4 w-4" />
                             Delete Student
