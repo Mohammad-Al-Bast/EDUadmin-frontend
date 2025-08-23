@@ -23,7 +23,7 @@ import { Loader2, AlertCircle } from "lucide-react";
 interface GradeRow {
   id: string;
   gradeType: string;
-  preschoolPercent: string;
+  predefinedPercent: string;
   customPercent: string;
   tenPercent: string;
   grade: string;
@@ -127,7 +127,7 @@ export function ChangeGradeForm() {
     {
       id: "1",
       gradeType: "",
-      preschoolPercent: "",
+      predefinedPercent: "",
       customPercent: "",
       tenPercent: "10%",
       grade: "",
@@ -135,7 +135,7 @@ export function ChangeGradeForm() {
     {
       id: "2",
       gradeType: "",
-      preschoolPercent: "",
+      predefinedPercent: "",
       customPercent: "",
       tenPercent: "10%",
       grade: "",
@@ -274,7 +274,7 @@ export function ChangeGradeForm() {
     const newRow: GradeRow = {
       id: Date.now().toString(),
       gradeType: "",
-      preschoolPercent: "",
+      predefinedPercent: "",
       customPercent: "",
       tenPercent: "10%",
       grade: "",
@@ -521,7 +521,7 @@ export function ChangeGradeForm() {
         {/* Grade Headers */}
         <div className="grid grid-cols-6 gap-2 mb-2 text-xs text-gray-600 font-medium">
           <div>Grade Type</div>
-          <div>Preschool %</div>
+          <div>Predefined %</div>
           <div>Custom %</div>
           <div>10%</div>
           <div>Grade</div>
@@ -537,7 +537,7 @@ export function ChangeGradeForm() {
                 updateGradeRow(row.id, "gradeType", value)
               }
             >
-              <SelectTrigger className="h-8 text-xs">
+              <SelectTrigger className="text-xs">
                 <SelectValue placeholder="Grade Type" />
               </SelectTrigger>
               <SelectContent>
@@ -548,12 +548,12 @@ export function ChangeGradeForm() {
               </SelectContent>
             </Select>
             <Input
-              value={row.preschoolPercent}
+              value={row.predefinedPercent}
               onChange={(e) =>
-                updateGradeRow(row.id, "preschoolPercent", e.target.value)
+                updateGradeRow(row.id, "predefinedPercent", e.target.value)
               }
-              placeholder="Preschool %"
-              className="h-8 text-xs"
+              placeholder="Predefined %"
+              className="text-xs"
             />
             <Input
               value={row.customPercent}
@@ -561,20 +561,20 @@ export function ChangeGradeForm() {
                 updateGradeRow(row.id, "customPercent", e.target.value)
               }
               placeholder="Custom %"
-              className="h-8 text-xs"
+              className="text-xs"
             />
             <Input
               value={row.tenPercent}
               onChange={(e) =>
                 updateGradeRow(row.id, "tenPercent", e.target.value)
               }
-              className="h-8 text-xs"
+              className="text-xs"
             />
             <Input
               value={row.grade}
               onChange={(e) => updateGradeRow(row.id, "grade", e.target.value)}
               placeholder="Grade"
-              className="h-8 text-xs"
+              className="text-xs"
             />
             <div></div>
           </div>

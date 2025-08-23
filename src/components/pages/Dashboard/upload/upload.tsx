@@ -88,9 +88,9 @@ export default function UploadPage() {
                                                     <SelectValue placeholder="Select Semester" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="fall-2023">Fall 2023</SelectItem>
-                                                    <SelectItem value="spring-2024">Spring 2024</SelectItem>
-                                                    <SelectItem value="summer-2024">Summer 2024</SelectItem>
+                                                    <SelectItem value="fall">Fall</SelectItem>
+                                                    <SelectItem value="spring">Spring</SelectItem>
+                                                    <SelectItem value="summer">Summer</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </FormControl>
