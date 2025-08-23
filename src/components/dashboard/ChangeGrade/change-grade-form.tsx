@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import MultipleSelector from "@/components/ui/multiple-selector";
+import type { Option } from "@/components/ui/multiple-selector";
 import { useStudent } from "@/hooks/students/use-students";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
@@ -25,12 +27,51 @@ interface GradeRow {
   grade: string;
 }
 
+// Mock data for course details
+const courseCodeOptions: Option[] = [
+  { value: "CS101", label: "CS101 - Introduction to Computer Science" },
+  { value: "CS201", label: "CS201 - Data Structures" },
+  { value: "CS301", label: "CS301 - Algorithms" },
+  { value: "MATH101", label: "MATH101 - Calculus I" },
+  { value: "MATH201", label: "MATH201 - Linear Algebra" },
+  { value: "ENG101", label: "ENG101 - English Composition" },
+  { value: "PHYS101", label: "PHYS101 - Physics I" },
+  { value: "CHEM101", label: "CHEM101 - General Chemistry" },
+];
+
+const courseNameOptions: Option[] = [
+  { value: "intro-cs", label: "Introduction to Computer Science" },
+  { value: "data-structures", label: "Data Structures and Algorithms" },
+  { value: "advanced-algorithms", label: "Advanced Algorithms" },
+  { value: "calculus-1", label: "Calculus I" },
+  { value: "linear-algebra", label: "Linear Algebra" },
+  { value: "english-comp", label: "English Composition" },
+  { value: "physics-1", label: "Physics I - Mechanics" },
+  { value: "general-chemistry", label: "General Chemistry" },
+];
+
+const sectionOptions: Option[] = [
+  { value: "section-a", label: "Section A" },
+  { value: "section-b", label: "Section B" },
+  { value: "section-c", label: "Section C" },
+  { value: "section-d", label: "Section D" },
+  { value: "section-e", label: "Section E" },
+  { value: "lab-1", label: "Lab Section 1" },
+  { value: "lab-2", label: "Lab Section 2" },
+  { value: "evening", label: "Evening Section" },
+];
+
 export function ChangeGradeForm() {
   // State for student ID and related data
   const [studentId, setStudentId] = useState<string>("");
   const [validStudentId, setValidStudentId] = useState<number | null>(null);
   const [studentData, setStudentData] = useState<Student | null>(null);
   const [inputError, setInputError] = useState<string>("");
+
+  // State for course details selectors
+  const [selectedCourseCode, setSelectedCourseCode] = useState<Option[]>([]);
+  const [selectedCourseName, setSelectedCourseName] = useState<Option[]>([]);
+  const [selectedSection, setSelectedSection] = useState<Option[]>([]);
 
   // Hook for fetching student data
   const {
@@ -227,19 +268,37 @@ export function ChangeGradeForm() {
           <Label htmlFor="courseCode" className="text-sm font-medium">
             Course Code
           </Label>
-          <Input id="courseCode" placeholder="Course Code" className="h-9" />
+          <MultipleSelector
+            value={selectedCourseCode}
+            onChange={setSelectedCourseCode}
+            defaultOptions={courseCodeOptions}
+            placeholder="Select course code"
+            maxSelected={1}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="courseName" className="text-sm font-medium">
             Course Name
           </Label>
-          <Input id="courseName" placeholder="Course Name" className="h-9" />
+          <MultipleSelector
+            value={selectedCourseName}
+            onChange={setSelectedCourseName}
+            defaultOptions={courseNameOptions}
+            placeholder="Select course name"
+            maxSelected={1}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="section" className="text-sm font-medium">
             Section
           </Label>
-          <Input id="section" placeholder="Section" className="h-9" />
+          <MultipleSelector
+            value={selectedSection}
+            onChange={setSelectedSection}
+            defaultOptions={sectionOptions}
+            placeholder="Select section"
+            maxSelected={1}
+          />
         </div>
       </div>
 
