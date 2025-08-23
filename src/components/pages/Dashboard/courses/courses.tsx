@@ -47,7 +47,7 @@ export default function CoursesPage() {
 
     return (
         <main className="overflow-x-hidden">
-            <div className="mb-6">
+            <div className="mb-2">
                 <h1 className="text-3xl font-bold">
                     Courses
                 </h1>
