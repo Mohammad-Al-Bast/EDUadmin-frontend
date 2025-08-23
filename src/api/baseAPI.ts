@@ -1,6 +1,9 @@
 import axios from 'axios';
 import type { Method, AxiosResponse, AxiosError } from 'axios';
 import { store } from '@/store';
+import { persistor } from '@/store';
+import { toast } from 'sonner';
+import { logoutAsync } from '@/store/thunks/authThunks';
 
 const API_BASE_URL: string = 'http://localhost:8000/api/v1'; // Development base URL
 const API_TIMEOUT: number = 30000;
@@ -25,6 +28,32 @@ APIinstance.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Add response interceptor to handle unauthenticated errors
+APIinstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const response = error.response;
+        if (
+            response &&
+            response.data &&
+            response.data.message === 'Unauthenticated.' &&
+            response.data.error === 'Authentication required'
+        ) {
+            // Dispatch logout thunk
+            try {
+                await store.dispatch(logoutAsync()).unwrap();
+                await persistor.purge();
+            } catch (e) {
+                // ignore
+            }
+            toast.error('Session expired', {
+                description: 'You have been logged out. Please log in again.',
+            });
+        }
         return Promise.reject(error);
     }
 );
