@@ -6,7 +6,7 @@ import type { User } from "@/types/users/users.types"
 import { useUserManagement } from "@/hooks/users/use-users"
 import { toast } from "sonner"
 import { useState } from "react"
-import { DeleteUserDialog } from "@/components/ui/delete-user-dialog"
+import { DeleteUserDialog } from "@/components/dashboard/team/delete-user-dialog"
 
 // Cell component for actions to use hooks
 function ActionsCell({ user, onRefetch }: { user: User; onRefetch?: () => void }) {

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { Method, AxiosResponse, AxiosError } from 'axios';
+import { store } from '@/store';
 
 const API_BASE_URL: string = 'http://localhost:8000/api/v1'; // Development base URL
 const API_TIMEOUT: number = 30000;
@@ -12,11 +13,12 @@ export const APIinstance = axios.create({
     timeout: API_TIMEOUT,
 });
 
-// Add request interceptor to include auth token
+// Add request interceptor to include auth token from Redux store
 APIinstance.interceptors.request.use(
     (config) => {
-        // Get token from localStorage (you might want to use your Redux store instead)
-        const token = localStorage.getItem('auth_token');
+        // Get token from Redux store
+        const state = store.getState();
+        const token = state.auth?.token;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
