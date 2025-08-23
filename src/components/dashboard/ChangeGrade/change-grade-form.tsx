@@ -17,6 +17,7 @@ import { useStudent } from "@/hooks/students/use-students";
 import { useCourses } from "@/hooks/courses/use-courses";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
+import type { Course } from "@/types/courses.types";
 import { Loader2, AlertCircle } from "lucide-react";
 
 interface GradeRow {
@@ -39,6 +40,7 @@ export function ChangeGradeForm() {
   const [selectedCourseCode, setSelectedCourseCode] = useState<Option[]>([]);
   const [selectedCourseName, setSelectedCourseName] = useState<Option[]>([]);
   const [selectedSection, setSelectedSection] = useState<Option[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   // Hook for fetching student data
   const {
@@ -58,34 +60,68 @@ export function ChangeGradeForm() {
   // Transform courses data to options format
   const courseCodeOptions: Option[] = useMemo(() => {
     if (!courses) return [];
-    const options = courses.map((course) => ({
-      value: course.course_code,
-      label: `${course.course_code}`,
+    // Get unique course codes
+    const uniqueCodes = [
+      ...new Set(courses.map((course) => course.course_code)),
+    ];
+    const options = uniqueCodes.map((code) => ({
+      value: code,
+      label: code,
     }));
     return options;
   }, [courses]);
 
   const courseNameOptions: Option[] = useMemo(() => {
     if (!courses) return [];
-    const options = courses.map((course) => ({
-      value: course.course_name,
-      label: course.course_name,
+    // Get unique course names
+    const uniqueNames = [
+      ...new Set(courses.map((course) => course.course_name)),
+    ];
+    const options = uniqueNames.map((name) => ({
+      value: name,
+      label: name,
     }));
     return options;
   }, [courses]);
 
+  // Get available sections for the selected course code/name combination
+  const availableSections = useMemo(() => {
+    if (!courses || !selectedCourse) return [];
+
+    // Find all courses that match either the selected code or name
+    const matchingCourses = courses.filter((course) => {
+      const hasMatchingCode =
+        selectedCourseCode.length > 0 &&
+        course.course_code === selectedCourseCode[0]?.value;
+      const hasMatchingName =
+        selectedCourseName.length > 0 &&
+        course.course_name === selectedCourseName[0]?.value;
+
+      // If both are selected, match both
+      if (selectedCourseCode.length > 0 && selectedCourseName.length > 0) {
+        return hasMatchingCode && hasMatchingName;
+      }
+
+      // If only one is selected, match that one
+      return hasMatchingCode || hasMatchingName;
+    });
+
+    return matchingCourses;
+  }, [courses, selectedCourse, selectedCourseCode, selectedCourseName]);
+
   const sectionOptions: Option[] = useMemo(() => {
-    if (!courses) return [];
-    // Get unique sections from all courses
+    if (availableSections.length === 0) return [];
+
+    // Get unique sections from matching courses
     const uniqueSections = [
-      ...new Set(courses.map((course) => course.section)),
+      ...new Set(availableSections.map((course) => course.section)),
     ];
     const options = uniqueSections.map((section) => ({
       value: section,
       label: `Section ${section}`,
     }));
     return options;
-  }, [courses]);
+  }, [availableSections]);
 
   const [gradeRows, setGradeRows] = useState<GradeRow[]>([
     {
@@ -150,6 +186,89 @@ export function ChangeGradeForm() {
       setValidStudentId(null);
     }
   }, []);
+
+  // Handler for course code selection
+  const handleCourseCodeChange = useCallback(
+    (options: Option[]) => {
+      setSelectedCourseCode(options);
+
+      if (options.length > 0 && courses) {
+        // Find the course with this code
+        const selectedCode = options[0].value;
+        const courseWithCode = courses.find(
+          (course) => course.course_code === selectedCode
+        );
+
+        if (courseWithCode) {
+          // Auto-fill course name
+          setSelectedCourseName([
+            {
+              value: courseWithCode.course_name,
+              label: courseWithCode.course_name,
+            },
+          ]);
+          setSelectedCourse(courseWithCode);
+        }
+      } else {
+        // Clear course name and selected course if no code is selected
+        setSelectedCourseName([]);
+        setSelectedCourse(null);
+      }
+
+      // Always clear section when course changes
+      setSelectedSection([]);
+    },
+    [courses]
+  );
+
+  // Handler for course name selection
+  const handleCourseNameChange = useCallback(
+    (options: Option[]) => {
+      setSelectedCourseName(options);
+
+      if (options.length > 0 && courses) {
+        // Find the course with this name
+        const selectedName = options[0].value;
+        const courseWithName = courses.find(
+          (course) => course.course_name === selectedName
+        );
+
+        if (courseWithName) {
+          // Auto-fill course code
+          setSelectedCourseCode([
+            {
+              value: courseWithName.course_code,
+              label: courseWithName.course_code,
+            },
+          ]);
+          setSelectedCourse(courseWithName);
+        }
+      } else {
+        // Clear course code and selected course if no name is selected
+        setSelectedCourseCode([]);
+        setSelectedCourse(null);
+      }
+
+      // Always clear section when course changes
+      setSelectedSection([]);
+    },
+    [courses]
+  );
+
+  // Handler for section selection
+  const handleSectionChange = useCallback((options: Option[]) => {
+    setSelectedSection(options);
+  }, []);
+
+  // Effect to clear course selections when courses data changes
+  useEffect(() => {
+    if (coursesError) {
+      setSelectedCourseCode([]);
+      setSelectedCourseName([]);
+      setSelectedSection([]);
+      setSelectedCourse(null);
+    }
+  }, [coursesError]);
 
   const addGradeRow = () => {
     const newRow: GradeRow = {
@@ -274,20 +393,21 @@ export function ChangeGradeForm() {
         <div className="space-y-2">
           <Label htmlFor="courseCode" className="text-sm font-medium">
             Course Code
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 ml-1">
               Only one value can be selected
             </span>
           </Label>
           <div className="relative">
             <MultipleSelector
               value={selectedCourseCode}
-              onChange={setSelectedCourseCode}
+              onChange={handleCourseCodeChange}
               options={courseCodeOptions}
               placeholder={
                 coursesLoading ? "Loading courses..." : "Select course code"
               }
               maxSelected={1}
               disabled={coursesLoading}
+              className={coursesError ? "border-red-300" : ""}
             />
             {coursesLoading && (
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -312,20 +432,21 @@ export function ChangeGradeForm() {
         <div className="space-y-2">
           <Label htmlFor="courseName" className="text-sm font-medium">
             Course Name
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 ml-1">
               Only one value can be selected
             </span>
           </Label>
           <div className="relative">
             <MultipleSelector
               value={selectedCourseName}
-              onChange={setSelectedCourseName}
+              onChange={handleCourseNameChange}
               options={courseNameOptions}
               placeholder={
                 coursesLoading ? "Loading courses..." : "Select course name"
               }
               maxSelected={1}
               disabled={coursesLoading}
+              className={coursesError ? "border-red-300" : ""}
             />
             {coursesLoading && (
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -343,20 +464,29 @@ export function ChangeGradeForm() {
         <div className="space-y-2">
           <Label htmlFor="section" className="text-sm font-medium">
             Section
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 ml-1">
               Only one value can be selected
             </span>
           </Label>
           <div className="relative">
             <MultipleSelector
               value={selectedSection}
-              onChange={setSelectedSection}
+              onChange={handleSectionChange}
               options={sectionOptions}
               placeholder={
-                coursesLoading ? "Loading sections..." : "Select section"
+                coursesLoading
+                  ? "Loading sections..."
+                  : !selectedCourse
+                  ? "Select a course first"
+                  : sectionOptions.length === 0
+                  ? "No sections available"
+                  : "Select section"
               }
               maxSelected={1}
-              disabled={coursesLoading}
+              disabled={
+                coursesLoading || !selectedCourse || sectionOptions.length === 0
+              }
+              className={coursesError ? "border-red-300" : ""}
             />
             {coursesLoading && (
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -368,6 +498,12 @@ export function ChangeGradeForm() {
             <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
               <AlertCircle className="h-3 w-3" />
               <span>Failed to load sections</span>
+            </div>
+          )}
+          {!coursesError && selectedCourse && sectionOptions.length === 0 && (
+            <div className="flex items-center gap-1 text-xs text-amber-600 mt-1">
+              <AlertCircle className="h-3 w-3" />
+              <span>No sections available for this course</span>
             </div>
           )}
         </div>
