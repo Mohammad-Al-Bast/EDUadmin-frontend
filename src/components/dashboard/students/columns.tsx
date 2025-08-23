@@ -1,5 +1,5 @@
 import type { ColumnDef, Row } from "@tanstack/react-table"
-import { Eye, MoreVertical, Edit, Trash2 } from "lucide-react"
+import { Eye, MoreVertical, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -81,10 +81,6 @@ export const columns: ColumnDef<Student>[] = [
                         <DropdownMenuItem onClick={() => console.log('View student:', student.university_id)}>
                             <Eye className="h-4 w-4" />
                             View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => console.log('Edit student:', student.university_id)}>
-                            <Edit className="h-4 w-4" />
-                            Edit Student
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                             className="text-destructive hover:text-destructive/90!"

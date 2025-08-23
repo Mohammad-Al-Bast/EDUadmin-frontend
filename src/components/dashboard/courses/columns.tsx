@@ -3,7 +3,7 @@ import type { Course } from "@/types/courses.types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Trash2, Edit, Eye } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 
 export const columns: ColumnDef<Course>[] = [
     {
@@ -82,14 +82,6 @@ export const columns: ColumnDef<Course>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => console.log('View course:', course.course_id)}>
-                            <Eye className="h-4 w-4" />
-                            View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => console.log('Edit course:', course.course_id)}>
-                            <Edit className="h-4 w-4" />
-                            Edit Course
-                        </DropdownMenuItem>
                         <DropdownMenuItem 
                             className="text-destructive hover:text-destructive/90!"
                             onClick={() => console.log('Delete course:', course.course_id)}
