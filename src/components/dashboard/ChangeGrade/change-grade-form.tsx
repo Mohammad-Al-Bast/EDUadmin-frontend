@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,9 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import type { Option } from "@/components/ui/multiple-selector";
 import { useStudent } from "@/hooks/students/use-students";
+import { useCourses } from "@/hooks/courses/use-courses";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 interface GradeRow {
   id: string;
@@ -26,40 +27,6 @@ interface GradeRow {
   tenPercent: string;
   grade: string;
 }
-
-// Mock data for course details
-const courseCodeOptions: Option[] = [
-  { value: "CS101", label: "CS101 - Introduction to Computer Science" },
-  { value: "CS201", label: "CS201 - Data Structures" },
-  { value: "CS301", label: "CS301 - Algorithms" },
-  { value: "MATH101", label: "MATH101 - Calculus I" },
-  { value: "MATH201", label: "MATH201 - Linear Algebra" },
-  { value: "ENG101", label: "ENG101 - English Composition" },
-  { value: "PHYS101", label: "PHYS101 - Physics I" },
-  { value: "CHEM101", label: "CHEM101 - General Chemistry" },
-];
-
-const courseNameOptions: Option[] = [
-  { value: "intro-cs", label: "Introduction to Computer Science" },
-  { value: "data-structures", label: "Data Structures and Algorithms" },
-  { value: "advanced-algorithms", label: "Advanced Algorithms" },
-  { value: "calculus-1", label: "Calculus I" },
-  { value: "linear-algebra", label: "Linear Algebra" },
-  { value: "english-comp", label: "English Composition" },
-  { value: "physics-1", label: "Physics I - Mechanics" },
-  { value: "general-chemistry", label: "General Chemistry" },
-];
-
-const sectionOptions: Option[] = [
-  { value: "section-a", label: "Section A" },
-  { value: "section-b", label: "Section B" },
-  { value: "section-c", label: "Section C" },
-  { value: "section-d", label: "Section D" },
-  { value: "section-e", label: "Section E" },
-  { value: "lab-1", label: "Lab Section 1" },
-  { value: "lab-2", label: "Lab Section 2" },
-  { value: "evening", label: "Evening Section" },
-];
 
 export function ChangeGradeForm() {
   // State for student ID and related data
@@ -79,6 +46,46 @@ export function ChangeGradeForm() {
     loading: studentLoading,
     error: studentError,
   } = useStudent(validStudentId!);
+
+  // Hook for fetching courses data
+  const {
+    courses,
+    loading: coursesLoading,
+    error: coursesError,
+    refetch: refetchCourses,
+  } = useCourses();
+
+  // Transform courses data to options format
+  const courseCodeOptions: Option[] = useMemo(() => {
+    if (!courses) return [];
+    const options = courses.map((course) => ({
+      value: course.course_code,
+      label: `${course.course_code}`,
+    }));
+    return options;
+  }, [courses]);
+
+  const courseNameOptions: Option[] = useMemo(() => {
+    if (!courses) return [];
+    const options = courses.map((course) => ({
+      value: course.course_name,
+      label: course.course_name,
+    }));
+    return options;
+  }, [courses]);
+
+  const sectionOptions: Option[] = useMemo(() => {
+    if (!courses) return [];
+    // Get unique sections from all courses
+    const uniqueSections = [
+      ...new Set(courses.map((course) => course.section)),
+    ];
+    const options = uniqueSections.map((section) => ({
+      value: section,
+      label: `Section ${section}`,
+    }));
+    return options;
+  }, [courses]);
 
   const [gradeRows, setGradeRows] = useState<GradeRow[]>([
     {
@@ -267,38 +274,102 @@ export function ChangeGradeForm() {
         <div className="space-y-2">
           <Label htmlFor="courseCode" className="text-sm font-medium">
             Course Code
+            <span className="text-sm text-gray-500">
+              Only one value can be selected
+            </span>
           </Label>
-          <MultipleSelector
-            value={selectedCourseCode}
-            onChange={setSelectedCourseCode}
-            defaultOptions={courseCodeOptions}
-            placeholder="Select course code"
-            maxSelected={1}
-          />
+          <div className="relative">
+            <MultipleSelector
+              value={selectedCourseCode}
+              onChange={setSelectedCourseCode}
+              options={courseCodeOptions}
+              placeholder={
+                coursesLoading ? "Loading courses..." : "Select course code"
+              }
+              maxSelected={1}
+              disabled={coursesLoading}
+            />
+            {coursesLoading && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+              </div>
+            )}
+          </div>
+          {coursesError && (
+            <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+              <AlertCircle className="h-3 w-3" />
+              <span>Failed to load courses</span>
+              <button
+                onClick={refetchCourses}
+                className="text-blue-500 underline hover:no-underline"
+                type="button"
+              >
+                Retry
+              </button>
+            </div>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="courseName" className="text-sm font-medium">
             Course Name
+            <span className="text-sm text-gray-500">
+              Only one value can be selected
+            </span>
           </Label>
-          <MultipleSelector
-            value={selectedCourseName}
-            onChange={setSelectedCourseName}
-            defaultOptions={courseNameOptions}
-            placeholder="Select course name"
-            maxSelected={1}
-          />
+          <div className="relative">
+            <MultipleSelector
+              value={selectedCourseName}
+              onChange={setSelectedCourseName}
+              options={courseNameOptions}
+              placeholder={
+                coursesLoading ? "Loading courses..." : "Select course name"
+              }
+              maxSelected={1}
+              disabled={coursesLoading}
+            />
+            {coursesLoading && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+              </div>
+            )}
+          </div>
+          {coursesError && (
+            <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+              <AlertCircle className="h-3 w-3" />
+              <span>Failed to load courses</span>
+            </div>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="section" className="text-sm font-medium">
             Section
+            <span className="text-sm text-gray-500">
+              Only one value can be selected
+            </span>
           </Label>
-          <MultipleSelector
-            value={selectedSection}
-            onChange={setSelectedSection}
-            defaultOptions={sectionOptions}
-            placeholder="Select section"
-            maxSelected={1}
-          />
+          <div className="relative">
+            <MultipleSelector
+              value={selectedSection}
+              onChange={setSelectedSection}
+              options={sectionOptions}
+              placeholder={
+                coursesLoading ? "Loading sections..." : "Select section"
+              }
+              maxSelected={1}
+              disabled={coursesLoading}
+            />
+            {coursesLoading && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+              </div>
+            )}
+          </div>
+          {coursesError && (
+            <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+              <AlertCircle className="h-3 w-3" />
+              <span>Failed to load sections</span>
+            </div>
+          )}
         </div>
       </div>
 
