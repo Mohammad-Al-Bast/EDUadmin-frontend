@@ -1,6 +1,8 @@
+import { ChangeGradeForm } from "@/components/dashboard/ChangeGrade/change-grade-form"
+
 const ChangeGradePage = () => {
     return (
-        <div>To be implemented soon ⌛</div>
+        <ChangeGradeForm />
     )
 }
 
