@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { studentsServices } from '@/services/students/students.service';
-import type { Student, CreateStudentRequest, UpdateStudentRequest } from '@/types/students.types';
+import type { Student, CreateStudentRequest, UpdateStudentRequest } from '@/types/students/students.types';
 import type { ApiError } from '@/api/baseAPI';
 
 // Custom hook for fetching all students (Admin only)

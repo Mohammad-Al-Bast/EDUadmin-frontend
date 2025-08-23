@@ -1,5 +1,5 @@
 import { API } from "@/api/baseAPI";
-import type { Student, CreateStudentRequest, UpdateStudentRequest } from "@/types/students.types";
+import type { Student, CreateStudentRequest, UpdateStudentRequest } from "@/types/students/students.types";
 
 export const studentsServices = {
     /**
