@@ -1,8 +1,11 @@
 import { ModeToggle } from "@/components/theme/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/login/use-auth";
 
 const Home = () => {
+    const { isAuthenticated } = useAuth();
+
     return (
         <div className="h-dvh flex flex-col items-center justify-center space-y-4 px-4">
             <h1 className="text-2xl font-semibold">Welcome to{" "}
@@ -10,18 +13,21 @@ const Home = () => {
                     EDU Admin - Suite
                 </span>
             </h1>
-            <p className="text-muted-foreground text-center text-sm">
-                {"This is the landing page of our application,"}
-                <br />
-                {"The website is under development."}
-            </p>
             <div className="flex gap-4">
-                <Link to="/auth/login">
-                    <Button variant="default">Log In</Button>
-                </Link>
-                <Link to="/dashboard">
-                    <Button variant="outline">Go to Dashboard</Button>
-                </Link>
+                {!isAuthenticated ? (
+                    <Link to="/auth/login">
+                        <Button variant="default">Log In</Button>
+                    </Link>
+                ) : (
+                    <Link to="/dashboard">
+                        <Button 
+                        variant="outline"
+                        className="bg-gradient-to-r from-green-600 to-blue-600 text-white"
+                        >
+                            Go to Dashboard
+                        </Button>
+                    </Link>
+                )}
                 <ModeToggle />
             </div>
         </div>
