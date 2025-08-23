@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useStudent } from "@/hooks/students/use-students";
+import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
+import type { Student } from "@/types/students/students.types";
+import { Loader2 } from "lucide-react";
 
 interface GradeRow {
   id: string;
@@ -22,6 +26,19 @@ interface GradeRow {
 }
 
 export function ChangeGradeForm() {
+  // State for student ID and related data
+  const [studentId, setStudentId] = useState<string>("");
+  const [validStudentId, setValidStudentId] = useState<number | null>(null);
+  const [studentData, setStudentData] = useState<Student | null>(null);
+  const [inputError, setInputError] = useState<string>("");
+
+  // Hook for fetching student data
+  const {
+    student,
+    loading: studentLoading,
+    error: studentError,
+  } = useStudent(validStudentId!);
+
   const [gradeRows, setGradeRows] = useState<GradeRow[]>([
     {
       id: "1",
@@ -40,6 +57,51 @@ export function ChangeGradeForm() {
       grade: "",
     },
   ]);
+
+  // Effect to update student data when fetched
+  useEffect(() => {
+    if (student) {
+      setStudentData(student);
+    }
+  }, [student]);
+
+  // Effect to clear student data and errors when validStudentId changes
+  useEffect(() => {
+    if (!validStudentId) {
+      setStudentData(null);
+    }
+  }, [validStudentId]);
+
+  // Handler for student ID input change
+  const handleStudentIdChange = useCallback((value: string) => {
+    // Reset previous errors
+    setInputError("");
+
+    // Validate input format (only digits, max 8 characters)
+    const inputValidation = studentIdInputSchema.safeParse(value);
+    if (!inputValidation.success) {
+      setInputError("Only digits allowed, maximum 8 characters");
+      return;
+    }
+
+    setStudentId(value);
+
+    // If we have exactly 8 digits, validate and fetch student data
+    if (value.length === 8) {
+      const validation = universityIdSchema.safeParse(value);
+      if (validation.success) {
+        setValidStudentId(validation.data);
+      } else {
+        setInputError(
+          validation.error.issues[0]?.message || "Invalid student ID"
+        );
+        setValidStudentId(null);
+      }
+    } else {
+      // Clear student data if input is not complete
+      setValidStudentId(null);
+    }
+  }, []);
 
   const addGradeRow = () => {
     const newRow: GradeRow = {
@@ -68,7 +130,29 @@ export function ChangeGradeForm() {
           <Label htmlFor="studentId" className="text-sm font-medium">
             Student ID
           </Label>
-          <Input id="studentId" placeholder="Student ID" className="h-9" />
+          <div className="relative">
+            <Input
+              id="studentId"
+              placeholder="Enter 8-digit Student ID"
+              className={`h-9 pr-8 ${inputError ? "border-red-500" : ""}`}
+              value={studentId}
+              onChange={(e) => handleStudentIdChange(e.target.value)}
+              maxLength={8}
+            />
+            {studentLoading && studentId.length > 0 && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+              </div>
+            )}
+          </div>
+          {inputError && (
+            <p className="text-xs text-red-500 mt-1">{inputError}</p>
+          )}
+          {studentError && !inputError && (
+            <p className="text-xs text-red-500 mt-1">
+              {studentError.message || "Failed to fetch student data"}
+            </p>
+          )}
         </div>
 
         {/* Student full name */}
@@ -80,6 +164,7 @@ export function ChangeGradeForm() {
             id="studentName"
             placeholder="Auto-filled from student ID"
             className="h-9"
+            value={studentData?.student_name || ""}
             disabled
           />
         </div>
@@ -93,6 +178,13 @@ export function ChangeGradeForm() {
             id="semester"
             placeholder="Auto-filled from student ID"
             className="h-9"
+            value={
+              studentData
+                ? `${studentData.semester || "N/A"}/${
+                    studentData.year || "N/A"
+                  }`
+                : ""
+            }
             disabled
           />
         </div>
@@ -109,6 +201,7 @@ export function ChangeGradeForm() {
             id="major"
             placeholder="Auto-filled from student ID"
             className="h-9"
+            value={studentData?.major || ""}
             disabled
           />
         </div>
@@ -122,6 +215,7 @@ export function ChangeGradeForm() {
             id="campus"
             placeholder="Auto-filled from student ID"
             className="h-9"
+            value={studentData?.campus || ""}
             disabled
           />
         </div>
