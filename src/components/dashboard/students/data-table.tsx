@@ -51,13 +51,22 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         },
     })
 
+    // TODO: replace with real logic
+    const handleDeleteAll = () => {
+        console.log('Delete all students')
+    }
+
     return (
         <div className="w-full space-y-4">
             {/* Search Input */}
             <div className="flex flex-col md:flex-row justify-between items-center">
-                <h1 className="text-3xl font-bold">
-                    Students
-                </h1>
+                <div className="flex gap-2">
+                    <Button 
+                    variant="destructive"
+                    onClick={handleDeleteAll}
+                    >
+                        Delete All
+                    </Button>
                 <div className="relative flex-1 w-full md:max-w-sm">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -65,7 +74,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         value={globalFilter ?? ""}
                         onChange={(event) => setGlobalFilter(String(event.target.value))}
                         className="pl-8"
-                    />
+                        />
+                        </div>
                 </div>
             </div>
 

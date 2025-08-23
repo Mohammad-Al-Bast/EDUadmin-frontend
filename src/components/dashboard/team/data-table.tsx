@@ -7,17 +7,8 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-
-    const sortedData = Array.isArray(data) && data.length > 0 && typeof (data[0] as any).id !== 'undefined'
-        ? [...data].sort((a, b) => {
-            const idA = (a as any).id;
-            const idB = (b as any).id;
-            return idA - idB;
-        })
-        : data;
-
     const table = useReactTable({
-        data: sortedData,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
