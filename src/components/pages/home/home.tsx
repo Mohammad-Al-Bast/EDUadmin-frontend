@@ -8,6 +8,10 @@ const Home = () => {
 
     return (
         <div className="h-dvh flex flex-col items-center justify-center space-y-4 px-4">
+            {/* Mode Toggle at top right */}
+            <div className="absolute top-4 right-4">
+                <ModeToggle />
+            </div>
             <h1 className="text-2xl font-semibold">Welcome to{" "}
                 <span className="font-bold bg-gradient-to-r from-blue-600 via-green-600 to-blue-600 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient-x">
                     EDU Admin - Suite
@@ -22,13 +26,12 @@ const Home = () => {
                     <Link to="/dashboard">
                         <Button 
                         variant="outline"
-                        className="bg-gradient-to-r from-green-600 to-blue-600 text-white"
+                        className="bg-gradient-to-r from-green-600 to-blue-600 text-white hover:text-white hover:from-blue-600 hover:to-green-600 transition-colors duration-500"
                         >
                             Go to Dashboard
                         </Button>
                     </Link>
                 )}
-                <ModeToggle />
             </div>
         </div>
     );
