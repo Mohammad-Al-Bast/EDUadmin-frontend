@@ -63,79 +63,66 @@ export function ChangeGradeForm() {
     <div className="">
       {/* Student Information Row */}
       <div className="grid grid-cols-3 gap-4 mb-6">
+        {/* Student id */}
         <div className="space-y-2">
           <Label htmlFor="studentId" className="text-sm font-medium">
             Student ID
           </Label>
           <Input id="studentId" placeholder="Student ID" className="h-9" />
         </div>
+
+        {/* Student full name */}
         <div className="space-y-2">
           <Label htmlFor="studentName" className="text-sm font-medium">
             Student Full Name
           </Label>
           <Input
             id="studentName"
-            placeholder="Student Full Name"
+            placeholder="Auto-filled from student ID"
             className="h-9"
+            disabled
           />
         </div>
+
+        {/* Semester/Year */}
         <div className="space-y-2">
           <Label htmlFor="semester" className="text-sm font-medium">
             Semester/Year
           </Label>
-          <Select>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Select Semester/Year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fall2024">Fall 2024</SelectItem>
-              <SelectItem value="spring2024">Spring 2024</SelectItem>
-              <SelectItem value="summer2024">Summer 2024</SelectItem>
-            </SelectContent>
-          </Select>
+          <Input
+            id="semester"
+            placeholder="Auto-filled from student ID"
+            className="h-9"
+            disabled
+          />
         </div>
       </div>
 
       {/* Course Information Row */}
       <div className="grid grid-cols-3 gap-4 mb-6">
+        {/* Major */}
         <div className="space-y-2">
           <Label htmlFor="major" className="text-sm font-medium">
             Major
           </Label>
-          <Select>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Select Major" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="cs">Computer Science</SelectItem>
-              <SelectItem value="eng">Engineering</SelectItem>
-              <SelectItem value="bus">Business</SelectItem>
-            </SelectContent>
-          </Select>
+          <Input
+            id="major"
+            placeholder="Auto-filled from student ID"
+            className="h-9"
+            disabled
+          />
         </div>
+
+        {/* Campus */}
         <div className="space-y-2">
           <Label htmlFor="campus" className="text-sm font-medium">
             Campus
           </Label>
-          <Select>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Select Campus" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="main">Main Campus</SelectItem>
-              <SelectItem value="north">North Campus</SelectItem>
-              <SelectItem value="south">South Campus</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="instructor" className="text-sm font-medium">
-            Instructor Name
-          </Label>
           <Input
-            id="instructor"
-            placeholder="Instructor Name"
+            id="campus"
+            placeholder="Auto-filled from student ID"
             className="h-9"
+            disabled
           />
         </div>
       </div>
@@ -276,9 +263,7 @@ export function ChangeGradeForm() {
 
       {/* Send Request Button */}
       <div className="flex justify-end">
-        <Button >
-          Send Request
-        </Button>
+        <Button>Send Request</Button>
       </div>
     </div>
   );
