@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { usersServices } from '@/services/users/users.service';
 import type { User } from '@/types/users/users.types';
 import type { ApiError } from '@/api/baseAPI';
-import type { VerifyUserResponse, BlockUserResponse, ResetPasswordResponse, DeleteUserResponse } from '@/services/users/users.service';
+import type { VerifyUserResponse, BlockUserResponse, DeleteUserResponse, AdminSetPasswordResponse } from '@/services/users/users.service';
 
 // Custom hook for fetching all users
 export function useUsers() {
@@ -118,11 +118,11 @@ export function useUserManagement() {
         }
     };
 
-    const resetUserPassword = async (id: number): Promise<ResetPasswordResponse | null> => {
+    const adminSetUserPassword = async (id: number, password: string): Promise<AdminSetPasswordResponse | null> => {
         try {
             setActionLoading(true);
             setActionError(null);
-            const response = await usersServices.resetUserPassword(id);
+            const response = await usersServices.adminSetUserPassword(id, password);
             return response;
         } catch (err) {
             setActionError(err as ApiError);
@@ -149,7 +149,7 @@ export function useUserManagement() {
     return {
         verifyUser,
         blockUser,
-        resetUserPassword,
+        adminSetUserPassword,
         deleteUser,
         actionLoading,
         actionError,

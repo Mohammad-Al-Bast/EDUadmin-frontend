@@ -12,9 +12,8 @@ export interface BlockUserResponse {
     user: User;
 }
 
-export interface ResetPasswordResponse {
+export interface AdminSetPasswordResponse {
     message: string;
-    new_password: string;
     user: User;
 }
 
@@ -102,13 +101,15 @@ export const usersServices = {
     },
 
     /**
-     * * Reset user password (Admin only)
+     * * Set user password (Admin only) - Admin sets custom password
      * * @param {number} id - User ID
-     * * @returns {Promise<ResetPasswordResponse>} - Reset password response with new password
+     * * @param {string} password - New password
+     * * @returns {Promise<AdminSetPasswordResponse>} - Set password response
      */
-    resetUserPassword: (id: number): Promise<ResetPasswordResponse> => {
-        return API.post<ResetPasswordResponse>(
-            `/admin/users/${id}/reset-password`
+    adminSetUserPassword: (id: number, password: string): Promise<AdminSetPasswordResponse> => {
+        return API.put<AdminSetPasswordResponse>(
+            `/admin/users/${id}/reset-password`,
+            { password }
         );
     },
 
