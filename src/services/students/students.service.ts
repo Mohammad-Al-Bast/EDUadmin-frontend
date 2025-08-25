@@ -3,7 +3,7 @@ import type { Student, CreateStudentRequest, UpdateStudentRequest } from "@/type
 
 export const studentsServices = {
     /**
-     * * Fetch all students (Admin only)
+     * * Fetch all students
      * * @returns {Promise<Student[]>} - List of students
      */
     getAllStudents: (): Promise<Student[]> => {
@@ -30,20 +30,20 @@ export const studentsServices = {
      */
     createStudent: (studentData: CreateStudentRequest): Promise<Student> => {
         return API.post<Student>(
-            '/students',
+            '/admin/students',
             studentData
         );
     },
 
     /**
-     * * Update existing student (Own data or Admin)
+     * * Update existing student (Admin only)
      * * @param {number} id - University ID (8-digit number)
      * * @param {UpdateStudentRequest} studentData - Student data to update
      * * @returns {Promise<{ message: string; student: Student }>} - Update response
      */
     updateStudent: (id: number, studentData: UpdateStudentRequest): Promise<{ message: string; student: Student }> => {
         return API.put<{ message: string; student: Student }>(
-            `/students/${id}`,
+            `/admin/students/${id}`,
             studentData
         );
     },
@@ -55,7 +55,17 @@ export const studentsServices = {
      */
     deleteStudent: (id: number): Promise<{ message: string; student: Student }> => {
         return API.delete<{ message: string; student: Student }>(
-            `/students/${id}`
+            `/admin/students/${id}`
+        );
+    },
+
+    /**
+     * * Delete all students (Admin only)
+     * * @returns {Promise<{ message: string; deleted_count: number }>} - Delete all response
+     */
+    deleteAllStudents: (): Promise<{ message: string; deleted_count: number }> => {
+        return API.delete<{ message: string; deleted_count: number }>(
+            '/admin/students'
         );
     },
 };

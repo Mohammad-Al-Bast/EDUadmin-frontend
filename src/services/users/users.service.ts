@@ -24,69 +24,102 @@ export interface DeleteUserResponse {
     user_id: string;
 }
 
+export interface CreateUserRequest {
+    name: string;
+    email: string;
+    password?: string;
+    role?: string;
+    [key: string]: unknown;
+}
+
 export const usersServices = {
     /**
-     * * Fetch all users
+     * * Fetch all users (Admin only)
      * * @returns {Promise<User[]>} - List of users
      */
     getAllUsers: (): Promise<User[]> => {
         return API.get<User[]>(
-            '/users'
+            '/admin/users'
         );
     },
 
     /**
-     * * Fetch user by ID
+     * * Fetch user by ID (Admin only)
      * * @param {number} id - User ID
      * * @returns {Promise<User>} - User data
      */
     getUserById: (id: number): Promise<User> => {
         return API.get<User>(
-            `/users/${id}`
+            `/admin/users/${id}`
         );
     },
 
     /**
-     * * Verify a user
+     * * Create new user (Admin only)
+     * * @param {CreateUserRequest} userData - User data
+     * * @returns {Promise<User>} - Created user data
+     */
+    createUser: (userData: CreateUserRequest): Promise<User> => {
+        return API.post<User>(
+            '/admin/users',
+            userData
+        );
+    },
+
+    /**
+     * * Update user (Admin only)
+     * * @param {number} id - User ID
+     * * @param {Partial<CreateUserRequest>} userData - User data to update
+     * * @returns {Promise<User>} - Updated user data
+     */
+    updateUser: (id: number, userData: Partial<CreateUserRequest>): Promise<User> => {
+        return API.put<User>(
+            `/admin/users/${id}`,
+            userData
+        );
+    },
+
+    /**
+     * * Verify a user (Admin only)
      * * @param {number} id - User ID
      * * @returns {Promise<VerifyUserResponse>} - Verification response
      */
     verifyUser: (id: number): Promise<VerifyUserResponse> => {
         return API.post<VerifyUserResponse>(
-            `/users/${id}/verify`
+            `/admin/users/${id}/verify`
         );
     },
 
     /**
-     * * Block a user
+     * * Block a user (Admin only)
      * * @param {number} id - User ID
      * * @returns {Promise<BlockUserResponse>} - Block response
      */
     blockUser: (id: number): Promise<BlockUserResponse> => {
         return API.post<BlockUserResponse>(
-            `/users/${id}/block`
+            `/admin/users/${id}/block`
         );
     },
 
     /**
-     * * Reset user password
+     * * Reset user password (Admin only)
      * * @param {number} id - User ID
      * * @returns {Promise<ResetPasswordResponse>} - Reset password response with new password
      */
     resetUserPassword: (id: number): Promise<ResetPasswordResponse> => {
         return API.post<ResetPasswordResponse>(
-            `/users/${id}/reset-password`
+            `/admin/users/${id}/reset-password`
         );
     },
 
     /**
-     * * Delete a user
+     * * Delete a user (Admin only)
      * * @param {number} id - User ID
      * * @returns {Promise<DeleteUserResponse>} - Delete response
      */
     deleteUser: (id: number): Promise<DeleteUserResponse> => {
         return API.delete<DeleteUserResponse>(
-            `/users/${id}/delete`
+            `/admin/users/${id}/delete`
         );
     },
 };

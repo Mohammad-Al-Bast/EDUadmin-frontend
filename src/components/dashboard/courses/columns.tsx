@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreVertical, Trash2, Loader2 } from "lucide-react";
 import { useDeleteCourse } from "@/hooks/courses/use-courses";
 import { toast } from "sonner";
+import { DeleteCourseDialog } from "./delete-course-dialog";
+import { useState } from "react";
 
 interface ColumnsProps {
   onDeleteSuccess?: () => void;
@@ -86,53 +88,88 @@ export const createColumns = ({
     cell: ({ row }: { row: Row<Course> }) => {
       const course = row.original;
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { deleteCourse, loading } = useDeleteCourse();
+      // Component to use hooks properly
+      function ActionsCell({
+        course,
+        onDeleteSuccess,
+      }: {
+        course: Course;
+        onDeleteSuccess?: () => void;
+      }) {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const { deleteCourse, loading } = useDeleteCourse();
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-      const handleDelete = async () => {
-        if (
-          window.confirm(
-            `Are you sure you want to delete the course "${course.course_name}"?`
-          )
-        ) {
-          const success = await deleteCourse(course.course_id);
-          if (success) {
-            toast.success("Course deleted successfully!", {
-              description: `${course.course_name} has been removed from the system.`,
-            });
-            onDeleteSuccess?.();
-          } else {
+        const handleDelete = async () => {
+          try {
+            console.log(
+              "Attempting to delete course:",
+              course.course_id,
+              course.course_name
+            );
+            const success = await deleteCourse(course.course_id);
+            console.log("Delete result:", success);
+            if (success) {
+              toast.success("Course deleted successfully!", {
+                description: `${course.course_name} has been removed from the system.`,
+              });
+              onDeleteSuccess?.();
+              setShowDeleteDialog(false);
+            } else {
+              console.error("Delete failed - success was false");
+              toast.error("Failed to delete course", {
+                description: "Please try again later.",
+              });
+            }
+          } catch (error) {
+            console.error("Delete error:", error);
             toast.error("Failed to delete course", {
-              description: "Please try again later.",
+              description: "An unexpected error occurred.",
             });
           }
-        }
-      };
+        };
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              disabled={loading}
-            >
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              className="text-destructive hover:text-destructive/90!"
-              onClick={handleDelete}
-              disabled={loading}
-            >
-              <Trash2 className="h-4 w-4" />
-              {loading ? "Deleting..." : "Delete Course"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+        return (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  disabled={loading}
+                >
+                  <span className="sr-only">Open menu</span>
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MoreVertical className="h-4 w-4" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive hover:text-destructive/90!"
+                  onClick={() => setShowDeleteDialog(true)}
+                  disabled={loading}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete Course
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DeleteCourseDialog
+              open={showDeleteDialog}
+              onOpenChange={setShowDeleteDialog}
+              onConfirm={handleDelete}
+              courseName={course.course_name}
+              isLoading={loading}
+            />
+          </>
+        );
+      }
+
+      return <ActionsCell course={course} onDeleteSuccess={onDeleteSuccess} />;
     },
   },
 ];

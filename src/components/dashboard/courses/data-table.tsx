@@ -31,6 +31,7 @@ import {
 import { useState } from "react";
 import { useDeleteAllCourses } from "@/hooks/courses/use-courses";
 import { toast } from "sonner";
+import { DeleteAllCoursesDialog } from "./delete-all-courses-dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -48,6 +49,7 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
 
   const { deleteAllCourses, loading: deleteAllLoading } = useDeleteAllCourses();
 
@@ -79,22 +81,27 @@ export function DataTable<TData, TValue>({
       return;
     }
 
-    if (
-      window.confirm(
-        `Are you sure you want to delete ALL ${data.length} courses? This action cannot be undone.`
-      )
-    ) {
+    try {
+      console.log("Attempting to delete all courses, count:", data.length);
       const result = await deleteAllCourses();
+      console.log("Delete all result:", result);
       if (result.success) {
         toast.success("All courses deleted successfully!", {
           description: `${result.deletedCount} courses have been removed from the system.`,
         });
         onDeleteAllSuccess?.();
+        setShowDeleteAllDialog(false);
       } else {
+        console.error("Delete all failed - success was false");
         toast.error("Failed to delete all courses", {
           description: "Please try again later.",
         });
       }
+    } catch (error) {
+      console.error("Delete all error:", error);
+      toast.error("Failed to delete all courses", {
+        description: "An unexpected error occurred.",
+      });
     }
   };
 
@@ -105,7 +112,7 @@ export function DataTable<TData, TValue>({
         <div className="flex gap-2">
           <Button
             variant="destructive"
-            onClick={handleDeleteAll}
+            onClick={() => setShowDeleteAllDialog(true)}
             disabled={deleteAllLoading || data.length === 0}
           >
             {deleteAllLoading ? "Deleting..." : "Delete All"}
@@ -258,6 +265,13 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       </div>
+      <DeleteAllCoursesDialog
+        open={showDeleteAllDialog}
+        onOpenChange={setShowDeleteAllDialog}
+        onConfirm={handleDeleteAll}
+        courseCount={data.length}
+        isLoading={deleteAllLoading}
+      />
     </div>
   );
 }

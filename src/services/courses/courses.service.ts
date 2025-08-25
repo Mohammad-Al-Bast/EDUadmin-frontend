@@ -24,48 +24,48 @@ export const coursesServices = {
     },
 
     /**
-     * * Create new course
+     * * Create new course (Admin only)
      * * @param {CreateCourseRequest} courseData - Course data
      * * @returns {Promise<Course>} - Created course data
      */
     createCourse: (courseData: CreateCourseRequest): Promise<Course> => {
         return API.post<Course>(
-            '/courses',
+            '/admin/courses',
             courseData
         );
     },
 
     /**
-     * * Update existing course
+     * * Update existing course (Admin only)
      * * @param {number} id - Course ID
      * * @param {UpdateCourseRequest} courseData - Course data to update
      * * @returns {Promise<{ message: string; course: Course }>} - Update response
      */
     updateCourse: (id: number, courseData: UpdateCourseRequest): Promise<{ message: string; course: Course }> => {
         return API.put<{ message: string; course: Course }>(
-            `/courses/${id}`,
+            `/admin/courses/${id}`,
             courseData
         );
     },
 
     /**
-     * * Delete course
+     * * Delete course (Admin only)
      * * @param {number} id - Course ID
      * * @returns {Promise<{ message: string; course: Course }>} - Delete response
      */
     deleteCourse: (id: number): Promise<{ message: string; course: Course }> => {
         return API.delete<{ message: string; course: Course }>(
-            `/courses/${id}`
+            `/admin/courses/${id}`
         );
     },
 
     /**
-     * * Delete all courses
+     * * Delete all courses (Admin only)
      * * @returns {Promise<{ message: string; deleted_count: number }>} - Delete all response
      */
     deleteAllCourses: (): Promise<{ message: string; deleted_count: number }> => {
         return API.delete<{ message: string; deleted_count: number }>(
-            '/courses'
+            '/admin/courses'
         );
     },
 };

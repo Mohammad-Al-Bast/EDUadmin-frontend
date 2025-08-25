@@ -161,3 +161,29 @@ export function useDeleteStudent() {
         error,
     };
 }
+
+// Custom hook for deleting all students (Admin only)
+export function useDeleteAllStudents() {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<ApiError | null>(null);
+
+    const deleteAllStudents = async (): Promise<{ success: boolean; deletedCount?: number }> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await studentsServices.deleteAllStudents();
+            return { success: true, deletedCount: response.deleted_count };
+        } catch (err) {
+            setError(err as ApiError);
+            return { success: false };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        deleteAllStudents,
+        loading,
+        error,
+    };
+}

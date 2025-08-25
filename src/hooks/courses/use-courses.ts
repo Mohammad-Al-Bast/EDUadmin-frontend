@@ -143,11 +143,14 @@ export function useDeleteCourse() {
 
     const deleteCourse = async (id: number): Promise<boolean> => {
         try {
+            console.log("Hook: Starting delete course for ID:", id);
             setLoading(true);
             setError(null);
-            await coursesServices.deleteCourse(id);
+            const response = await coursesServices.deleteCourse(id);
+            console.log("Hook: Delete course response:", response);
             return true;
         } catch (err) {
+            console.error("Hook: Delete course error:", err);
             setError(err as ApiError);
             return false;
         } finally {
@@ -169,11 +172,14 @@ export function useDeleteAllCourses() {
 
     const deleteAllCourses = async (): Promise<{ success: boolean; deletedCount?: number }> => {
         try {
+            console.log("Hook: Starting delete all courses");
             setLoading(true);
             setError(null);
             const response = await coursesServices.deleteAllCourses();
+            console.log("Hook: Delete all courses response:", response);
             return { success: true, deletedCount: response.deleted_count };
         } catch (err) {
+            console.error("Hook: Delete all courses error:", err);
             setError(err as ApiError);
             return { success: false };
         } finally {
