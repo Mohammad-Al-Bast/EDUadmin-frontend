@@ -58,4 +58,14 @@ export const coursesServices = {
             `/courses/${id}`
         );
     },
+
+    /**
+     * * Delete all courses
+     * * @returns {Promise<{ message: string; deleted_count: number }>} - Delete all response
+     */
+    deleteAllCourses: (): Promise<{ message: string; deleted_count: number }> => {
+        return API.delete<{ message: string; deleted_count: number }>(
+            '/courses'
+        );
+    },
 };

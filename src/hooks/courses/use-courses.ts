@@ -161,3 +161,29 @@ export function useDeleteCourse() {
         error,
     };
 }
+
+// Custom hook for deleting all courses
+export function useDeleteAllCourses() {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<ApiError | null>(null);
+
+    const deleteAllCourses = async (): Promise<{ success: boolean; deletedCount?: number }> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await coursesServices.deleteAllCourses();
+            return { success: true, deletedCount: response.deleted_count };
+        } catch (err) {
+            setError(err as ApiError);
+            return { success: false };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        deleteAllCourses,
+        loading,
+        error,
+    };
+}
