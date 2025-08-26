@@ -23,6 +23,12 @@ export const importServices = {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("semester", semester);
+    
+    // Debug logging
+    console.log("Import service - FormData being sent:");
+    console.log("- file:", file.name, file.size, file.type);
+    console.log("- semester:", semester);
+    
     // Note: Don't set Content-Type header for FormData - browser sets it automatically
     return APIinstance.post("/admin/import/courses", formData);
   },

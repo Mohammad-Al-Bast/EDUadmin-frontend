@@ -25,6 +25,12 @@ APIinstance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // Remove Content-Type header for FormData requests to let browser set it automatically
+        if (config.data instanceof FormData) {
+            delete config.headers['Content-Type'];
+        }
+        
         return config;
     },
     (error) => {
