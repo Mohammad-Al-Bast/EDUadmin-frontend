@@ -384,7 +384,7 @@ export default function UploadPage() {
                     <FormControl>
                       <Input
                         type="file"
-                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                        accept=".csv,.xls,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                         ref={courseFileRef}
                         disabled={isCourseLoading}
                         onChange={(e) => {
@@ -434,7 +434,7 @@ export default function UploadPage() {
                   <FormControl>
                     <Input
                       type="file"
-                      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                      accept=".csv,.xls,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                       ref={studentFileRef}
                       disabled={isStudentLoading}
                       onChange={(e) => {
