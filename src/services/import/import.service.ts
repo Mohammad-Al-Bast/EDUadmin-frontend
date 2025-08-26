@@ -9,9 +9,8 @@ export const importServices = {
   importStudents: (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    return APIinstance.post("/admin/import/students", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    // Note: Don't set Content-Type header for FormData - browser sets it automatically
+    return APIinstance.post("/admin/import/students", formData);
   },
 
   /**
@@ -24,9 +23,8 @@ export const importServices = {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("semester", semester);
-    return APIinstance.post("/admin/import/courses", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    // Note: Don't set Content-Type header for FormData - browser sets it automatically
+    return APIinstance.post("/admin/import/courses", formData);
   },
 
   /**
