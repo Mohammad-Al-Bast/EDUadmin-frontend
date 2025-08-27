@@ -18,7 +18,7 @@ import { useCourses } from "@/hooks/courses/use-courses";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
 import type { Course } from "@/types/courses.types";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Plus, Minus } from "lucide-react";
 
 interface GradeRow {
   id: string;
@@ -142,6 +142,9 @@ export function ChangeGradeForm() {
     },
   ]);
 
+  // State for curve adjustment
+  const [curve, setCurve] = useState<number>(0);
+
   // Effect to update student data when fetched
   useEffect(() => {
     if (student) {
@@ -259,6 +262,80 @@ export function ChangeGradeForm() {
   const handleSectionChange = useCallback((options: Option[]) => {
     setSelectedSection(options);
   }, []);
+
+  // Handlers for curve adjustment
+  const increaseCurve = useCallback(() => {
+    setCurve((prev) => prev + 1);
+  }, []);
+
+  const decreaseCurve = useCallback(() => {
+    setCurve((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const handleCurveInputChange = useCallback((value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      setCurve(numValue);
+    } else if (value === "") {
+      setCurve(0);
+    }
+  }, []);
+
+  // Function to convert numerical grade to letter grade
+  const getLetterGrade = useCallback((grade: number): string => {
+    if (grade >= 90) return "A";
+    if (grade >= 85) return "B+";
+    if (grade >= 80) return "B";
+    if (grade >= 75) return "C+";
+    if (grade >= 70) return "C";
+    if (grade >= 65) return "D+";
+    if (grade >= 60) return "D";
+    return "F";
+  }, []);
+
+  // Function to calculate weighted final grade
+  const calculateWeightedGrade = useCallback(() => {
+    let weightedSum = 0;
+    let totalWeight = 0;
+
+    gradeRows.forEach((row) => {
+      const grade = parseFloat(row.grade) || 0;
+      const percentageStr = row.tenPercent.replace("%", "");
+      const percentage = parseFloat(percentageStr) || 0;
+
+      weightedSum += grade * percentage;
+      totalWeight += percentage;
+    });
+
+    return totalWeight > 0 ? weightedSum / totalWeight : 0;
+  }, [gradeRows]);
+
+  // Function to validate if percentages sum to 100%
+  const validatePercentages = useCallback(() => {
+    const totalPercentage = gradeRows.reduce((sum, row) => {
+      const percentageStr = row.tenPercent.replace("%", "");
+      const percentage = parseFloat(percentageStr) || 0;
+      return sum + percentage;
+    }, 0);
+
+    return Math.abs(totalPercentage - 100) < 0.01; // Allow for small floating point errors
+  }, [gradeRows]);
+
+  // Get validation error message
+  const getPercentageError = useCallback(() => {
+    const totalPercentage = gradeRows.reduce((sum, row) => {
+      const percentageStr = row.tenPercent.replace("%", "");
+      const percentage = parseFloat(percentageStr) || 0;
+      return sum + percentage;
+    }, 0);
+
+    if (Math.abs(totalPercentage - 100) >= 0.01) {
+      return `Grade percentages must equal 100% (currently ${totalPercentage.toFixed(
+        1
+      )}%)`;
+    }
+    return null;
+  }, [gradeRows]);
 
   // Effect to clear course selections when courses data changes
   useEffect(() => {
@@ -521,9 +598,9 @@ export function ChangeGradeForm() {
         {/* Grade Headers */}
         <div className="grid grid-cols-6 gap-2 mb-2 text-xs text-gray-600 font-medium">
           <div>Grade Type</div>
-          <div>Predefined %</div>
-          <div>Custom %</div>
-          <div>10%</div>
+          {/* <div>Predefined %</div>
+          <div>Custom %</div> */}
+          <div>Grade Percentage</div>
           <div>Grade</div>
           <div></div>
         </div>
@@ -541,13 +618,15 @@ export function ChangeGradeForm() {
                 <SelectValue placeholder="Grade Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="midterm">Midterm</SelectItem>
-                <SelectItem value="final">Final</SelectItem>
+                <SelectItem value="participation">Participation</SelectItem>
                 <SelectItem value="quiz">Quiz</SelectItem>
                 <SelectItem value="assignment">Assignment</SelectItem>
+                <SelectItem value="midterm">Midterm</SelectItem>
+                <SelectItem value="final">Final</SelectItem>
+                
               </SelectContent>
             </Select>
-            <Input
+            {/* <Input
               value={row.predefinedPercent}
               onChange={(e) =>
                 updateGradeRow(row.id, "predefinedPercent", e.target.value)
@@ -562,7 +641,7 @@ export function ChangeGradeForm() {
               }
               placeholder="Custom %"
               className="text-xs"
-            />
+            /> */}
             <Input
               value={row.tenPercent}
               onChange={(e) =>
@@ -579,6 +658,71 @@ export function ChangeGradeForm() {
             <div></div>
           </div>
         ))}
+      </div>
+
+      {/* Validation Error */}
+      {getPercentageError() && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <div className="flex items-center gap-2 text-red-700">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm font-medium">{getPercentageError()}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Curve and Final Grade Headers */}
+      <div className="grid grid-cols-6 gap-2 mb-2 text-xs text-gray-600 font-medium">
+        <div>Curve Adjustment</div>
+        <div>Final Grade</div>
+        <div>Letter Grade</div>
+        <div></div>
+        <div></div>
+      </div>
+
+      {/* Curve and Final Grade Row */}
+      <div className="grid grid-cols-6 gap-2 mb-6">
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={decreaseCurve}
+            className="h-7 w-7 p-0"
+          >
+            <Minus className="h-3 w-3" />
+          </Button>
+          <Input
+            id="curve"
+            value={curve.toString()}
+            onChange={(e) => handleCurveInputChange(e.target.value)}
+            className="text-xs text-center h-7"
+            placeholder="0"
+            min="0"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={increaseCurve}
+            className="h-7 w-7 p-0"
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+        <Input
+          id="final-grade"
+          value={(calculateWeightedGrade() + curve).toFixed(1)}
+          disabled
+          className="text-xs"
+        />
+        <Input
+          id="letter-grade"
+          value={getLetterGrade(calculateWeightedGrade() + curve)}
+          disabled
+          className="text-xs text-center font-medium"
+        />
+        <div></div>
+        <div></div>
       </div>
 
       {/* Reason for Change */}
