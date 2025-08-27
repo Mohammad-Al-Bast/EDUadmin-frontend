@@ -2,10 +2,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useStudent } from "@/hooks/students/use-students";
 import { Button } from "@/components/ui/button";
 import { ErrorDisplay } from "@/components/ui/error-display";
-// import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { AlertCircle, ArrowLeft, Loader2, Plus, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCourses } from "@/hooks/courses/use-courses";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import type { Option } from "@/components/ui/multiple-selector";
@@ -13,15 +12,29 @@ import { Label } from "@/components/ui/label";
 import { useCallback, useMemo, useState } from "react";
 import type { Course } from "@/types/courses.types";
 
+// Interface for individual course card data
+interface CourseCard {
+  id: string;
+  selectedCourseCode: Option[];
+  selectedCourseName: Option[];
+  selectedSection: Option[];
+  selectedCourse: Course | null;
+}
+
 export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // State for course details selectors
-  const [selectedCourseCode, setSelectedCourseCode] = useState<Option[]>([]);
-  const [selectedCourseName, setSelectedCourseName] = useState<Option[]>([]);
-  const [selectedSection, setSelectedSection] = useState<Option[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  // State for multiple course cards
+  const [courseCards, setCourseCards] = useState<CourseCard[]>([
+    {
+      id: "1",
+      selectedCourseCode: [],
+      selectedCourseName: [],
+      selectedSection: [],
+      selectedCourse: null,
+    },
+  ]);
 
   // Convert string ID to number
   const studentId = id ? parseInt(id, 10) : 0;
@@ -61,45 +74,88 @@ export default function StudentDetailPage() {
     return options;
   }, [courses]);
 
-  // Get available sections for the selected course code/name combination
-  const availableSections = useMemo(() => {
-    if (!courses || !selectedCourse) return [];
+  // Get available sections for a specific course card
+  const getAvailableSections = useCallback(
+    (cardId: string) => {
+      const card = courseCards.find((c) => c.id === cardId);
+      if (!courses || !card) return [];
 
-    const matchingCourses = courses.filter((course) => {
-      const hasMatchingCode =
-        selectedCourseCode.length > 0 &&
-        course.course_code === selectedCourseCode[0]?.value;
-      const hasMatchingName =
-        selectedCourseName.length > 0 &&
-        course.course_name === selectedCourseName[0]?.value;
+      const matchingCourses = courses.filter((course) => {
+        const hasMatchingCode =
+          card.selectedCourseCode.length > 0 &&
+          course.course_code === card.selectedCourseCode[0]?.value;
+        const hasMatchingName =
+          card.selectedCourseName.length > 0 &&
+          course.course_name === card.selectedCourseName[0]?.value;
 
-      if (selectedCourseCode.length > 0 && selectedCourseName.length > 0) {
-        return hasMatchingCode && hasMatchingName;
-      }
+        if (
+          card.selectedCourseCode.length > 0 &&
+          card.selectedCourseName.length > 0
+        ) {
+          return hasMatchingCode && hasMatchingName;
+        }
 
-      return hasMatchingCode || hasMatchingName;
-    });
+        return hasMatchingCode || hasMatchingName;
+      });
 
-    return matchingCourses;
-  }, [courses, selectedCourse, selectedCourseCode, selectedCourseName]);
+      return matchingCourses;
+    },
+    [courses, courseCards]
+  );
 
-  const sectionOptions: Option[] = useMemo(() => {
-    if (availableSections.length === 0) return [];
+  const getSectionOptions = useCallback(
+    (cardId: string) => {
+      const availableSections = getAvailableSections(cardId);
+      if (availableSections.length === 0) return [];
 
-    const uniqueSections = [
-      ...new Set(availableSections.map((course) => course.section)),
-    ];
-    const options = uniqueSections.map((section) => ({
-      value: section,
-      label: `Section ${section}`,
-    }));
-    return options;
-  }, [availableSections]);
+      const uniqueSections = [
+        ...new Set(availableSections.map((course) => course.section)),
+      ];
+      const options = uniqueSections.map((section) => ({
+        value: section,
+        label: `Section ${section}`,
+      }));
+      return options;
+    },
+    [getAvailableSections]
+  );
+
+  // Add new course card
+  const addCourseCard = useCallback(() => {
+    const newCard: CourseCard = {
+      id: Date.now().toString(),
+      selectedCourseCode: [],
+      selectedCourseName: [],
+      selectedSection: [],
+      selectedCourse: null,
+    };
+    setCourseCards((prev) => [...prev, newCard]);
+  }, []);
+
+  // Remove course card
+  const removeCourseCard = useCallback((cardId: string) => {
+    setCourseCards((prev) => prev.filter((card) => card.id !== cardId));
+  }, []);
+
+  // Update course card field
+  const updateCourseCard = useCallback(
+    (cardId: string, field: keyof CourseCard, value: any) => {
+      setCourseCards((prev) =>
+        prev.map((card) =>
+          card.id === cardId ? { ...card, [field]: value } : card
+        )
+      );
+    },
+    []
+  );
 
   // Handler for course code selection
   const handleCourseCodeChange = useCallback(
-    (options: Option[]) => {
-      setSelectedCourseCode(options);
+    (cardId: string, options: Option[]) => {
+      const card = courseCards.find((c) => c.id === cardId);
+      if (!card) return;
+
+      updateCourseCard(cardId, "selectedCourseCode", options);
 
       if (options.length > 0 && courses) {
         const selectedCode = options[0].value;
@@ -108,28 +164,31 @@ export default function StudentDetailPage() {
         );
 
         if (courseWithCode) {
-          setSelectedCourseName([
+          updateCourseCard(cardId, "selectedCourseName", [
             {
               value: courseWithCode.course_name,
               label: courseWithCode.course_name,
             },
           ]);
-          setSelectedCourse(courseWithCode);
+          updateCourseCard(cardId, "selectedCourse", courseWithCode);
         }
       } else {
-        setSelectedCourseName([]);
-        setSelectedCourse(null);
+        updateCourseCard(cardId, "selectedCourseName", []);
+        updateCourseCard(cardId, "selectedCourse", null);
       }
 
-      setSelectedSection([]);
+      updateCourseCard(cardId, "selectedSection", []);
     },
-    [courses]
+    [courses, courseCards, updateCourseCard]
   );
 
   // Handler for course name selection
   const handleCourseNameChange = useCallback(
-    (options: Option[]) => {
-      setSelectedCourseName(options);
+    (cardId: string, options: Option[]) => {
+      const card = courseCards.find((c) => c.id === cardId);
+      if (!card) return;
+
+      updateCourseCard(cardId, "selectedCourseName", options);
 
       if (options.length > 0 && courses) {
         const selectedName = options[0].value;
@@ -138,38 +197,41 @@ export default function StudentDetailPage() {
         );
 
         if (courseWithName) {
-          setSelectedCourseCode([
+          updateCourseCard(cardId, "selectedCourseCode", [
             {
               value: courseWithName.course_code,
               label: courseWithName.course_code,
             },
           ]);
-          setSelectedCourse(courseWithName);
+          updateCourseCard(cardId, "selectedCourse", courseWithName);
         }
       } else {
-        setSelectedCourseCode([]);
-        setSelectedCourse(null);
+        updateCourseCard(cardId, "selectedCourseCode", []);
+        updateCourseCard(cardId, "selectedCourse", null);
       }
 
-      setSelectedSection([]);
+      updateCourseCard(cardId, "selectedSection", []);
     },
-    [courses]
+    [courses, courseCards, updateCourseCard]
   );
 
   // Handler for section selection
   const handleSectionChange = useCallback(
-    (options: Option[]) => {
-      setSelectedSection(options);
+    (cardId: string, options: Option[]) => {
+      const card = courseCards.find((c) => c.id === cardId);
+      if (!card) return;
+
+      updateCourseCard(cardId, "selectedSection", options);
 
       if (
         options.length > 0 &&
         courses &&
-        selectedCourseCode.length > 0 &&
-        selectedCourseName.length > 0
+        card.selectedCourseCode.length > 0 &&
+        card.selectedCourseName.length > 0
       ) {
         const selectedSectionValue = options[0].value;
-        const selectedCodeValue = selectedCourseCode[0].value;
-        const selectedNameValue = selectedCourseName[0].value;
+        const selectedCodeValue = card.selectedCourseCode[0].value;
+        const selectedNameValue = card.selectedCourseName[0].value;
 
         const exactCourse = courses.find(
           (course) =>
@@ -179,15 +241,15 @@ export default function StudentDetailPage() {
         );
 
         if (exactCourse) {
-          setSelectedCourse(exactCourse);
+          updateCourseCard(cardId, "selectedCourse", exactCourse);
         }
       } else if (
         courses &&
-        selectedCourseCode.length > 0 &&
-        selectedCourseName.length > 0
+        card.selectedCourseCode.length > 0 &&
+        card.selectedCourseName.length > 0
       ) {
-        const selectedCodeValue = selectedCourseCode[0].value;
-        const selectedNameValue = selectedCourseName[0].value;
+        const selectedCodeValue = card.selectedCourseCode[0].value;
+        const selectedNameValue = card.selectedCourseName[0].value;
 
         const courseWithCodeAndName = courses.find(
           (course) =>
@@ -196,13 +258,13 @@ export default function StudentDetailPage() {
         );
 
         if (courseWithCodeAndName) {
-          setSelectedCourse(courseWithCodeAndName);
+          updateCourseCard(cardId, "selectedCourse", courseWithCodeAndName);
         }
       } else {
-        setSelectedCourse(null);
+        updateCourseCard(cardId, "selectedCourse", null);
       }
     },
-    [courses, selectedCourseCode, selectedCourseName]
+    [courses, courseCards, updateCourseCard]
   );
 
   if (loading) {
@@ -281,182 +343,267 @@ export default function StudentDetailPage() {
       </div>
 
       <div className="">
-        <h2 className="text-lg font-medium mb-2">Register Courses</h2>
-        {/* Course Details Row */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="space-y-2">
-            <Label htmlFor="courseCode" className="text-sm font-medium">
-              Course Code
-              <span className="text-sm text-gray-500 ml-1">
-                Only one value can be selected
-              </span>
-            </Label>
-            <div className="relative">
-              <MultipleSelector
-                value={selectedCourseCode}
-                onChange={handleCourseCodeChange}
-                options={courseCodeOptions}
-                placeholder={
-                  coursesLoading ? "Loading courses..." : "Select course code"
-                }
-                maxSelected={1}
-                disabled={coursesLoading}
-                className={coursesError ? "border-red-300" : ""}
-              />
-              {coursesLoading && (
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                </div>
-              )}
-            </div>
-            {coursesError && (
-              <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
-                <AlertCircle className="h-3 w-3" />
-                <span>Failed to load courses</span>
-                <button
-                  onClick={refetchCourses}
-                  className="text-blue-500 underline hover:no-underline"
-                  type="button"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="courseName" className="text-sm font-medium">
-              Course Name
-              <span className="text-sm text-gray-500 ml-1">
-                Only one value can be selected
-              </span>
-            </Label>
-            <div className="relative">
-              <MultipleSelector
-                value={selectedCourseName}
-                onChange={handleCourseNameChange}
-                options={courseNameOptions}
-                placeholder={
-                  coursesLoading ? "Loading courses..." : "Select course name"
-                }
-                maxSelected={1}
-                disabled={coursesLoading}
-                className={coursesError ? "border-red-300" : ""}
-              />
-              {coursesLoading && (
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                </div>
-              )}
-            </div>
-            {coursesError && (
-              <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
-                <AlertCircle className="h-3 w-3" />
-                <span>Failed to load courses</span>
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="section" className="text-sm font-medium">
-              Section
-              <span className="text-sm text-gray-500 ml-1">
-                Only one value can be selected
-              </span>
-            </Label>
-            <div className="relative">
-              <MultipleSelector
-                value={selectedSection}
-                onChange={handleSectionChange}
-                options={sectionOptions}
-                placeholder={
-                  coursesLoading
-                    ? "Loading sections..."
-                    : !selectedCourse
-                    ? "Select a course first"
-                    : sectionOptions.length === 0
-                    ? "No sections available"
-                    : "Select section"
-                }
-                maxSelected={1}
-                disabled={
-                  coursesLoading ||
-                  !selectedCourse ||
-                  sectionOptions.length === 0
-                }
-                className={coursesError ? "border-red-300" : ""}
-              />
-              {coursesLoading && (
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                </div>
-              )}
-            </div>
-            {coursesError && (
-              <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
-                <AlertCircle className="h-3 w-3" />
-                <span>Failed to load sections</span>
-              </div>
-            )}
-            {!coursesError && selectedCourse && sectionOptions.length === 0 && (
-              <div className="flex items-center gap-1 text-xs text-amber-600 mt-1">
-                <AlertCircle className="h-3 w-3" />
-                <span>No sections available for this course</span>
-              </div>
-            )}
-          </div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium">Register Courses</h2>
+          <Button
+            onClick={addCourseCard}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Course
+          </Button>
         </div>
 
-        {/* Course Information Display */}
-        {selectedCourse && (
-          <div className="mt-6 mb-3">
-            <h3 className="text-md font-medium mb-3">Course Information</h3>
-            <div className="grid grid-cols-4 gap-x-4 gap-y-3 text-sm">
-              <div>
-                <div className="text-gray-500">Course Code</div>
-                <div className="font-medium">{selectedCourse.course_code}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Course Name</div>
-                <div className="font-medium">{selectedCourse.course_name}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Section</div>
-                <div className="font-medium">{selectedCourse.section}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Instructor</div>
-                <div className="font-medium">{selectedCourse.instructor}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Credits</div>
-                <div className="font-medium">{selectedCourse.credits}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Room</div>
-                <div className="font-medium">{selectedCourse.room}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Schedule</div>
-                <div className="font-medium">{selectedCourse.schedule}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Days</div>
-                <div className="font-medium">{selectedCourse.days}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">Time</div>
-                <div className="font-medium">{selectedCourse.time}</div>
-              </div>
-              <div>
-                <div className="text-gray-500">School</div>
-                <div className="font-medium">{selectedCourse.school}</div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Multiple Course Cards */}
+        <div className="space-y-6">
+          {courseCards.map((card, index) => {
+            const sectionOptions = getSectionOptions(card.id);
+
+            return (
+              <Card key={card.id} className="border-gray-200">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base font-medium">
+                      Course {index + 1}
+                    </CardTitle>
+                    {courseCards.length > 1 && (
+                      <Button
+                        onClick={() => removeCourseCard(card.id)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Course Selection Row */}
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={`courseCode-${card.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Course Code
+                        <span className="text-sm text-gray-500 ml-1">
+                          Only one value can be selected
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <MultipleSelector
+                          value={card.selectedCourseCode}
+                          onChange={(options) =>
+                            handleCourseCodeChange(card.id, options)
+                          }
+                          options={courseCodeOptions}
+                          placeholder={
+                            coursesLoading
+                              ? "Loading courses..."
+                              : "Select course code"
+                          }
+                          maxSelected={1}
+                          disabled={coursesLoading}
+                          className={coursesError ? "border-red-300" : ""}
+                        />
+                        {coursesLoading && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      {coursesError && (
+                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>Failed to load courses</span>
+                          <button
+                            onClick={refetchCourses}
+                            className="text-blue-500 underline hover:no-underline"
+                            type="button"
+                          >
+                            Retry
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={`courseName-${card.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Course Name
+                        <span className="text-sm text-gray-500 ml-1">
+                          Only one value can be selected
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <MultipleSelector
+                          value={card.selectedCourseName}
+                          onChange={(options) =>
+                            handleCourseNameChange(card.id, options)
+                          }
+                          options={courseNameOptions}
+                          placeholder={
+                            coursesLoading
+                              ? "Loading courses..."
+                              : "Select course name"
+                          }
+                          maxSelected={1}
+                          disabled={coursesLoading}
+                          className={coursesError ? "border-red-300" : ""}
+                        />
+                        {coursesLoading && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      {coursesError && (
+                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>Failed to load courses</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={`section-${card.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Section
+                        <span className="text-sm text-gray-500 ml-1">
+                          Only one value can be selected
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <MultipleSelector
+                          value={card.selectedSection}
+                          onChange={(options) =>
+                            handleSectionChange(card.id, options)
+                          }
+                          options={sectionOptions}
+                          placeholder={
+                            coursesLoading
+                              ? "Loading sections..."
+                              : !card.selectedCourse
+                              ? "Select a course first"
+                              : sectionOptions.length === 0
+                              ? "No sections available"
+                              : "Select section"
+                          }
+                          maxSelected={1}
+                          disabled={
+                            coursesLoading ||
+                            !card.selectedCourse ||
+                            sectionOptions.length === 0
+                          }
+                          className={coursesError ? "border-red-300" : ""}
+                        />
+                        {coursesLoading && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      {coursesError && (
+                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>Failed to load sections</span>
+                        </div>
+                      )}
+                      {!coursesError &&
+                        card.selectedCourse &&
+                        sectionOptions.length === 0 && (
+                          <div className="flex items-center gap-1 text-xs text-amber-600 mt-1">
+                            <AlertCircle className="h-3 w-3" />
+                            <span>No sections available for this course</span>
+                          </div>
+                        )}
+                    </div>
+                  </div>
+
+                  {/* Course Information Display */}
+                  {card.selectedCourse && (
+                    <div className="mt-6">
+                      <h3 className="text-md font-medium mb-3">
+                        Course Information
+                      </h3>
+                      <div className="grid grid-cols-4 gap-x-4 gap-y-3 text-sm">
+                        <div>
+                          <div className="text-gray-500">Course Code</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.course_code}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Course Name</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.course_name}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Section</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.section}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Instructor</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.instructor}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Credits</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.credits}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Room</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.room}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Schedule</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.schedule}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Days</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.days}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Time</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.time}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">School</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.school}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
 
       {/* Your Comments Section */}
-      <div>
+      <div className="mt-8">
         <h2 className="text-lg font-medium mb-2">Your Comments</h2>
         <div className="relative">
           <Textarea
