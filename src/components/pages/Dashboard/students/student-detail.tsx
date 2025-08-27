@@ -51,7 +51,6 @@ export default function StudentDetailPage() {
 
   const courseNameOptions: Option[] = useMemo(() => {
     if (!courses) return [];
-    // Get unique course names
     const uniqueNames = [
       ...new Set(courses.map((course) => course.course_name)),
     ];
@@ -87,7 +86,6 @@ export default function StudentDetailPage() {
   const sectionOptions: Option[] = useMemo(() => {
     if (availableSections.length === 0) return [];
 
-    // Get unique sections from matching courses
     const uniqueSections = [
       ...new Set(availableSections.map((course) => course.section)),
     ];
@@ -283,7 +281,7 @@ export default function StudentDetailPage() {
       </div>
 
       <div className="">
-        <h2 className="text-lg font-medium mb-2">Courses</h2>
+        <h2 className="text-lg font-medium mb-2">Register Courses</h2>
         {/* Course Details Row */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="space-y-2">
