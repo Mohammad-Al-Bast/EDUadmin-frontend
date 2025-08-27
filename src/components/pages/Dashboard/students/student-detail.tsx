@@ -39,7 +39,6 @@ export default function StudentDetailPage() {
   // Transform courses data to options format
   const courseCodeOptions: Option[] = useMemo(() => {
     if (!courses) return [];
-    // Get unique course codes
     const uniqueCodes = [
       ...new Set(courses.map((course) => course.course_code)),
     ];
@@ -67,7 +66,6 @@ export default function StudentDetailPage() {
   const availableSections = useMemo(() => {
     if (!courses || !selectedCourse) return [];
 
-    // Find all courses that match either the selected code or name
     const matchingCourses = courses.filter((course) => {
       const hasMatchingCode =
         selectedCourseCode.length > 0 &&
@@ -76,12 +74,10 @@ export default function StudentDetailPage() {
         selectedCourseName.length > 0 &&
         course.course_name === selectedCourseName[0]?.value;
 
-      // If both are selected, match both
       if (selectedCourseCode.length > 0 && selectedCourseName.length > 0) {
         return hasMatchingCode && hasMatchingName;
       }
 
-      // If only one is selected, match that one
       return hasMatchingCode || hasMatchingName;
     });
 
@@ -108,14 +104,12 @@ export default function StudentDetailPage() {
       setSelectedCourseCode(options);
 
       if (options.length > 0 && courses) {
-        // Find the course with this code
         const selectedCode = options[0].value;
         const courseWithCode = courses.find(
           (course) => course.course_code === selectedCode
         );
 
         if (courseWithCode) {
-          // Auto-fill course name
           setSelectedCourseName([
             {
               value: courseWithCode.course_name,
@@ -125,12 +119,10 @@ export default function StudentDetailPage() {
           setSelectedCourse(courseWithCode);
         }
       } else {
-        // Clear course name and selected course if no code is selected
         setSelectedCourseName([]);
         setSelectedCourse(null);
       }
 
-      // Always clear section when course changes
       setSelectedSection([]);
     },
     [courses]
@@ -142,14 +134,12 @@ export default function StudentDetailPage() {
       setSelectedCourseName(options);
 
       if (options.length > 0 && courses) {
-        // Find the course with this name
         const selectedName = options[0].value;
         const courseWithName = courses.find(
           (course) => course.course_name === selectedName
         );
 
         if (courseWithName) {
-          // Auto-fill course code
           setSelectedCourseCode([
             {
               value: courseWithName.course_code,
@@ -159,12 +149,10 @@ export default function StudentDetailPage() {
           setSelectedCourse(courseWithName);
         }
       } else {
-        // Clear course code and selected course if no name is selected
         setSelectedCourseCode([]);
         setSelectedCourse(null);
       }
 
-      // Always clear section when course changes
       setSelectedSection([]);
     },
     [courses]
@@ -175,7 +163,6 @@ export default function StudentDetailPage() {
     (options: Option[]) => {
       setSelectedSection(options);
 
-      // When section is selected, find and set the complete course
       if (
         options.length > 0 &&
         courses &&
@@ -186,7 +173,6 @@ export default function StudentDetailPage() {
         const selectedCodeValue = selectedCourseCode[0].value;
         const selectedNameValue = selectedCourseName[0].value;
 
-        // Find the exact course that matches code, name, and section
         const exactCourse = courses.find(
           (course) =>
             course.course_code === selectedCodeValue &&
@@ -197,8 +183,24 @@ export default function StudentDetailPage() {
         if (exactCourse) {
           setSelectedCourse(exactCourse);
         }
+      } else if (
+        courses &&
+        selectedCourseCode.length > 0 &&
+        selectedCourseName.length > 0
+      ) {
+        const selectedCodeValue = selectedCourseCode[0].value;
+        const selectedNameValue = selectedCourseName[0].value;
+
+        const courseWithCodeAndName = courses.find(
+          (course) =>
+            course.course_code === selectedCodeValue &&
+            course.course_name === selectedNameValue
+        );
+
+        if (courseWithCodeAndName) {
+          setSelectedCourse(courseWithCodeAndName);
+        }
       } else {
-        // Clear selected course if no section is selected
         setSelectedCourse(null);
       }
     },
