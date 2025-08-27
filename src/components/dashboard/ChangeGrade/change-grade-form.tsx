@@ -190,10 +190,10 @@ export function ChangeGradeForm() {
   // Hook for report generation
   const { isGenerating, generateReportPreview, downloadReport, emailReport } =
     useReportGenerator({
-      onSuccess: (reportData) => {
+      onSuccess: (_reportData) => {
         // Report generated successfully
       },
-      onError: (error) => {
+      onError: (_error) => {
         // Handle report generation error
       },
     });
@@ -471,15 +471,17 @@ export function ChangeGradeForm() {
     };
 
     try {
-      const result = await submitForm(formData);
-      if (result) {
-        // Mark submission as successful and store form data for reports
-        setIsSubmissionSuccessful(true);
-        setSubmittedFormData(formData);
-        setShowSuccessModal(true); // Show the success modal
-      }
+      await submitForm(formData);
+
+      // Mark submission as successful and store form data for reports
+      setIsSubmissionSuccessful(true);
+      setSubmittedFormData(formData);
+
+      // Always show the success modal after successful submission
+      setShowSuccessModal(true);
     } catch (error) {
       // Handle form submission error
+      console.error("Form submission error:", error);
 
       // Show detailed error information if available
       if (error && typeof error === "object" && "errors" in error) {
@@ -1028,13 +1030,6 @@ export function ChangeGradeForm() {
 
       {/* Action Buttons */}
       <div className="space-y-4">
-        {/* Debug info - remove in production */}
-        <div className="text-xs text-gray-500 text-center">
-          Debug: Submission successful = {String(isSubmissionSuccessful)} |
-          Modal open = {String(showSuccessModal)}
-          {isSubmissionSuccessful && " | ✅ Ready for reports"}
-        </div>
-
         {/* Submit Section */}
         <div className="flex justify-end gap-2">
           <Button
@@ -1086,7 +1081,34 @@ export function ChangeGradeForm() {
                   setIsSubmissionSuccessful(false);
                   setSubmittedFormData(null);
                   setShowSuccessModal(false);
-                  // Reset form fields
+                  // Reset only the requested fields
+                  setStudentId("");
+                  setValidStudentId(null);
+                  setStudentData(null);
+                  setInputError("");
+                  setSelectedCourseCode([]);
+                  setSelectedCourseName([]);
+                  setSelectedSection([]);
+                  setSelectedCourse(null);
+                  setGradeRows([
+                    {
+                      id: "1",
+                      gradeType: "",
+                      predefinedPercent: "",
+                      customPercent: "",
+                      tenPercent: "10%",
+                      grade: "",
+                    },
+                    {
+                      id: "2",
+                      gradeType: "",
+                      predefinedPercent: "",
+                      customPercent: "",
+                      tenPercent: "10%",
+                      grade: "",
+                    },
+                  ]);
+                  setCurve(0);
                   setReason("");
                   setAttachments({
                     original_report: false,
@@ -1198,7 +1220,34 @@ export function ChangeGradeForm() {
                   setIsSubmissionSuccessful(false);
                   setSubmittedFormData(null);
                   setShowSuccessModal(false);
-                  // Reset form fields
+                  // Reset only the requested fields
+                  setStudentId("");
+                  setValidStudentId(null);
+                  setStudentData(null);
+                  setInputError("");
+                  setSelectedCourseCode([]);
+                  setSelectedCourseName([]);
+                  setSelectedSection([]);
+                  setSelectedCourse(null);
+                  setGradeRows([
+                    {
+                      id: "1",
+                      gradeType: "",
+                      predefinedPercent: "",
+                      customPercent: "",
+                      tenPercent: "10%",
+                      grade: "",
+                    },
+                    {
+                      id: "2",
+                      gradeType: "",
+                      predefinedPercent: "",
+                      customPercent: "",
+                      tenPercent: "10%",
+                      grade: "",
+                    },
+                  ]);
+                  setCurve(0);
                   setReason("");
                   setAttachments({
                     original_report: false,
