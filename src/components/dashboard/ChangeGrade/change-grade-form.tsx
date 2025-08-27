@@ -11,16 +11,33 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import type { Option } from "@/components/ui/multiple-selector";
 import { useStudent } from "@/hooks/students/use-students";
 import { useCourses } from "@/hooks/courses/use-courses";
 import { useChangeGradeForm } from "@/hooks/change-grade";
+import { useReportGenerator } from "@/hooks/reports/use-report-generator";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
 import type { Course } from "@/types/courses.types";
 import type { ChangeGradeFormData } from "@/services/change-grade";
-import { Loader2, AlertCircle, Plus, Minus, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  Plus,
+  Minus,
+  Trash2,
+  FileText,
+  Download,
+  Mail,
+} from "lucide-react";
 
 interface GradeRow {
   id: string;
@@ -156,12 +173,30 @@ export function ChangeGradeForm() {
     final_pages: false,
   });
 
+  // State to track successful submission
+  const [isSubmissionSuccessful, setIsSubmissionSuccessful] =
+    useState<boolean>(false);
+  const [submittedFormData, setSubmittedFormData] =
+    useState<ChangeGradeFormData | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
   // Hook for form submission
   const {
     submitForm,
     isSubmitting,
     error: submissionError,
   } = useChangeGradeForm();
+
+  // Hook for report generation
+  const { isGenerating, generateReportPreview, downloadReport, emailReport } =
+    useReportGenerator({
+      onSuccess: (reportData) => {
+        // Report generated successfully
+      },
+      onError: (error) => {
+        // Handle report generation error
+      },
+    });
 
   // Effect to update student data when fetched
   useEffect(() => {
@@ -389,7 +424,6 @@ export function ChangeGradeForm() {
   const handleSubmit = useCallback(async () => {
     // Validate form data
     if (!validStudentId || !studentData) {
-      alert("Please enter a valid student ID");
       return;
     }
 
@@ -398,22 +432,18 @@ export function ChangeGradeForm() {
       selectedCourseName.length === 0 ||
       selectedSection.length === 0
     ) {
-      alert("Please select course code, name, and section");
       return;
     }
 
     if (!validatePercentages()) {
-      alert("Grade percentages must equal 100%");
       return;
     }
 
     if (!reason.trim()) {
-      alert("Please provide a reason for the grade change");
       return;
     }
 
     if (!selectedCourse?.instructor) {
-      alert("Please select a course to get instructor information");
       return;
     }
 
@@ -440,21 +470,20 @@ export function ChangeGradeForm() {
       attachments,
     };
 
-    // Debug: Log the form data being sent
-    console.log("Form data being submitted:", formData);
-
     try {
       const result = await submitForm(formData);
       if (result) {
-        // Reset form or redirect as needed
-        console.log("Form submitted successfully:", result);
+        // Mark submission as successful and store form data for reports
+        setIsSubmissionSuccessful(true);
+        setSubmittedFormData(formData);
+        setShowSuccessModal(true); // Show the success modal
       }
     } catch (error) {
-      console.error("Form submission error:", error);
+      // Handle form submission error
 
       // Show detailed error information if available
       if (error && typeof error === "object" && "errors" in error) {
-        console.error("Validation errors:", error.errors);
+        // Handle validation errors
       }
     }
   }, [
@@ -473,6 +502,28 @@ export function ChangeGradeForm() {
     attachments,
     submitForm,
   ]);
+
+  // Report generation handlers
+  const handlePreviewReport = useCallback(() => {
+    if (!submittedFormData) {
+      return;
+    }
+    generateReportPreview(submittedFormData);
+  }, [submittedFormData, generateReportPreview]);
+
+  const handleDownloadReport = useCallback(() => {
+    if (!submittedFormData) {
+      return;
+    }
+    downloadReport(submittedFormData);
+  }, [submittedFormData, downloadReport]);
+
+  const handleEmailReport = useCallback(() => {
+    if (!submittedFormData) {
+      return;
+    }
+    emailReport(submittedFormData);
+  }, [submittedFormData, emailReport]);
 
   // Effect to clear course selections when courses data changes
   useEffect(() => {
@@ -975,56 +1026,194 @@ export function ChangeGradeForm() {
         </div>
       )}
 
-      {/* Send Request Button */}
-      <div className="flex justify-end gap-2">
-        {/* Debug Button - Remove in production */}
-        <Button
-          variant="outline"
-          onClick={() => {
-            const debugData = {
-              university_id: validStudentId,
-              student_full_name: studentData?.student_name,
-              semester_year: `${studentData?.semester || ""}/${
-                studentData?.year || ""
-              }`,
-              major: studentData?.major || "",
-              campus: studentData?.campus || "",
-              course_code: selectedCourseCode[0]?.value || "",
-              course_name: selectedCourseName[0]?.value || "",
-              section: selectedSection[0]?.value || "",
-              instructor_name: selectedCourse?.instructor || "",
-              grades: gradeRows.map((row) => ({
-                gradeType: row.gradeType,
-                gradePercentage: row.tenPercent,
-                grade: row.grade,
-              })),
-              curve,
-              final_grade: calculateWeightedGrade() + curve,
-              letter_grade: getLetterGrade(calculateWeightedGrade() + curve),
-              reason_for_change: reason,
-              attachments,
-            };
-            console.log("Debug - Form data that would be sent:", debugData);
-            alert("Check console for form data details");
-          }}
-        >
-          Debug Data
-        </Button>
+      {/* Action Buttons */}
+      <div className="space-y-4">
+        {/* Debug info - remove in production */}
+        <div className="text-xs text-gray-500 text-center">
+          Debug: Submission successful = {String(isSubmissionSuccessful)} |
+          Modal open = {String(showSuccessModal)}
+          {isSubmissionSuccessful && " | ✅ Ready for reports"}
+        </div>
 
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting || !validatePercentages()}
-        >
-          {isSubmitting ? (
+        {/* Submit Section */}
+        <div className="flex justify-end gap-2">
+          <Button
+            onClick={handleSubmit}
+            disabled={
+              isSubmitting || !validatePercentages() || isSubmissionSuccessful
+            }
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : isSubmissionSuccessful ? (
+              <>
+                <svg
+                  className="mr-2 h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Submitted Successfully
+              </>
+            ) : (
+              "Send Request"
+            )}
+          </Button>
+
+          {/* Show report generation and reset buttons after successful submission */}
+          {isSubmissionSuccessful && (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
+              <Button
+                variant="default"
+                onClick={() => setShowSuccessModal(true)}
+                className="flex items-center gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                Generate Reports
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsSubmissionSuccessful(false);
+                  setSubmittedFormData(null);
+                  setShowSuccessModal(false);
+                  // Reset form fields
+                  setReason("");
+                  setAttachments({
+                    original_report: false,
+                    graded_exam: false,
+                    tuition_report: false,
+                    final_pages: false,
+                  });
+                }}
+              >
+                Submit Another Request
+              </Button>
             </>
-          ) : (
-            "Send Request"
           )}
-        </Button>
+        </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-green-700">
+              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Form Submitted Successfully!
+            </DialogTitle>
+            <DialogDescription>
+              Your change grade request has been submitted and is now being
+              processed. You can generate reports for your records.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-4">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-4 font-medium">
+                Generate Report
+              </p>
+              <div className="flex gap-2 justify-center flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handlePreviewReport();
+                    setShowSuccessModal(false);
+                  }}
+                  disabled={isGenerating}
+                  className="flex items-center gap-2"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FileText className="h-4 w-4" />
+                  )}
+                  Preview
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleDownloadReport();
+                    setShowSuccessModal(false);
+                  }}
+                  disabled={isGenerating}
+                  className="flex items-center gap-2"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  Download
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleEmailReport();
+                    setShowSuccessModal(false);
+                  }}
+                  disabled={isGenerating}
+                  className="flex items-center gap-2"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Mail className="h-4 w-4" />
+                  )}
+                  Email
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-2 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => setShowSuccessModal(false)}
+              >
+                Close
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setIsSubmissionSuccessful(false);
+                  setSubmittedFormData(null);
+                  setShowSuccessModal(false);
+                  // Reset form fields
+                  setReason("");
+                  setAttachments({
+                    original_report: false,
+                    graded_exam: false,
+                    tuition_report: false,
+                    final_pages: false,
+                  });
+                }}
+              >
+                Submit Another Request
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

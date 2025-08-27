@@ -103,13 +103,7 @@ export const createColumns = ({
 
         const handleDelete = async () => {
           try {
-            console.log(
-              "Attempting to delete course:",
-              course.course_id,
-              course.course_name
-            );
             const success = await deleteCourse(course.course_id);
-            console.log("Delete result:", success);
             if (success) {
               toast.success("Course deleted successfully!", {
                 description: `${course.course_name} has been removed from the system.`,
@@ -117,13 +111,11 @@ export const createColumns = ({
               onDeleteSuccess?.();
               setShowDeleteDialog(false);
             } else {
-              console.error("Delete failed - success was false");
               toast.error("Failed to delete course", {
                 description: "Please try again later.",
               });
             }
           } catch (error) {
-            console.error("Delete error:", error);
             toast.error("Failed to delete course", {
               description: "An unexpected error occurred.",
             });

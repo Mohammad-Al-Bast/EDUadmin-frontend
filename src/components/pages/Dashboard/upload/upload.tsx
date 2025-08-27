@@ -52,77 +52,12 @@ export default function UploadPage() {
       if (!data.file || !data.semester)
         throw new Error("File and semester are required.");
 
-      // Log detailed debug information
-      console.log("Course import debug info:", {
-        fileName: data.file.name,
-        fileSize: data.file.size,
-        fileType: data.file.type,
-        semester: data.semester,
-        lastModified: new Date(data.file.lastModified).toISOString(),
-      });
-
-      // Test FormData construction
-      const testFormData = new FormData();
-      testFormData.append("file", data.file);
-      testFormData.append("semester", data.semester);
-
-      console.log("FormData contents:");
-      for (let [key, value] of testFormData.entries()) {
-        console.log(`${key}:`, value);
-        if (value instanceof File) {
-          console.log(
-            `  File details - name: ${value.name}, size: ${value.size}, type: ${value.type}`
-          );
-        }
-      }
-
       await importServices.importCourses(data.file, data.semester);
       courseForm.reset();
       if (courseFileRef.current) courseFileRef.current.value = "";
-      console.log("Course import successful");
-      // Optionally show success notification here
+      // Course import successful
     } catch (err: any) {
-      // Enhanced error logging
-      console.error("Course import error:", {
-        message: err?.message,
-        status: err?.response?.status,
-        statusText: err?.response?.statusText,
-        data: err?.response?.data,
-        config: {
-          url: err?.config?.url,
-          method: err?.config?.method,
-          headers: err?.config?.headers,
-        },
-      });
-
-      // Show detailed server error message if available
-      if (err?.response?.data) {
-        console.error("Server error details:", err.response.data);
-
-        // Check for validation errors array (common Laravel format)
-        if (err.response.data.errors) {
-          console.error("Validation errors:", err.response.data.errors);
-
-          // Format validation errors for display
-          const validationErrors = Object.entries(err.response.data.errors)
-            .map(
-              ([field, errors]: [string, any]) =>
-                `${field}: ${
-                  Array.isArray(errors) ? errors.join(", ") : errors
-                }`
-            )
-            .join("\n");
-
-          alert(`Validation Errors:\n${validationErrors}`);
-        } else {
-          // Display user-friendly error message
-          const errorMessage =
-            err.response.data.message ||
-            err.response.data.error ||
-            "File upload failed. Please check your file format and try again.";
-          alert(`Upload Error: ${errorMessage}`);
-        }
-      }
+      // Handle import error
     } finally {
       setIsCourseLoading(false);
     }
@@ -133,61 +68,12 @@ export default function UploadPage() {
     try {
       if (!data.file) throw new Error("File is required.");
 
-      // Log detailed debug information
-      console.log("Student import debug info:", {
-        fileName: data.file.name,
-        fileSize: data.file.size,
-        fileType: data.file.type,
-        lastModified: new Date(data.file.lastModified).toISOString(),
-      });
-
       await importServices.importStudents(data.file);
       studentForm.reset();
       if (studentFileRef.current) studentFileRef.current.value = "";
-      console.log("Student import successful");
-      // Optionally show success notification here
+      // Student import successful
     } catch (err: any) {
-      // Enhanced error logging
-      console.error("Student import error:", {
-        message: err?.message,
-        status: err?.response?.status,
-        statusText: err?.response?.statusText,
-        data: err?.response?.data,
-        config: {
-          url: err?.config?.url,
-          method: err?.config?.method,
-          headers: err?.config?.headers,
-        },
-      });
-
-      // Show detailed server error message if available
-      if (err?.response?.data) {
-        console.error("Server error details:", err.response.data);
-
-        // Check for validation errors array (common Laravel format)
-        if (err.response.data.errors) {
-          console.error("Validation errors:", err.response.data.errors);
-
-          // Format validation errors for display
-          const validationErrors = Object.entries(err.response.data.errors)
-            .map(
-              ([field, errors]: [string, any]) =>
-                `${field}: ${
-                  Array.isArray(errors) ? errors.join(", ") : errors
-                }`
-            )
-            .join("\n");
-
-          alert(`Validation Errors:\n${validationErrors}`);
-        } else {
-          // Display user-friendly error message
-          const errorMessage =
-            err.response.data.message ||
-            err.response.data.error ||
-            "File upload failed. Please check your file format and try again.";
-          alert(`Upload Error: ${errorMessage}`);
-        }
-      }
+      // Handle import error
     } finally {
       setIsStudentLoading(false);
     }
@@ -196,16 +82,7 @@ export default function UploadPage() {
   // Template download handlers
   const handleDownloadCoursesTemplate = async () => {
     try {
-      console.log("Downloading courses template...");
       const response = await importServices.getCoursesTemplate();
-
-      // Log response details for debugging
-      console.log("Template response:", {
-        status: response.status,
-        headers: response.headers,
-        dataType: typeof response.data,
-        contentType: response.headers["content-type"],
-      });
 
       // Determine if it's CSV or Excel based on content type
       const contentType = response.headers["content-type"] || "";
@@ -244,32 +121,15 @@ export default function UploadPage() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      console.log("Template downloaded successfully:", filename);
+      // Template downloaded successfully
     } catch (error: any) {
-      console.error("Failed to download courses template:", error);
-      console.error("Error details:", {
-        message: error?.message,
-        status: error?.response?.status,
-        data: error?.response?.data,
-      });
-      alert(
-        "Failed to download template. Please try again or contact support."
-      );
+      // Handle download error
     }
   };
 
   const handleDownloadStudentsTemplate = async () => {
     try {
-      console.log("Downloading students template...");
       const response = await importServices.getStudentsTemplate();
-
-      // Log response details for debugging
-      console.log("Template response:", {
-        status: response.status,
-        headers: response.headers,
-        dataType: typeof response.data,
-        contentType: response.headers["content-type"],
-      });
 
       // Determine if it's CSV or Excel based on content type
       const contentType = response.headers["content-type"] || "";
@@ -308,17 +168,9 @@ export default function UploadPage() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      console.log("Template downloaded successfully:", filename);
+      // Template downloaded successfully
     } catch (error: any) {
-      console.error("Failed to download students template:", error);
-      console.error("Error details:", {
-        message: error?.message,
-        status: error?.response?.status,
-        data: error?.response?.data,
-      });
-      alert(
-        "Failed to download template. Please try again or contact support."
-      );
+      // Handle download error
     }
   };
 

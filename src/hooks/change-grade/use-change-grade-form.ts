@@ -34,8 +34,6 @@ export const useChangeGradeForm = (): UseChangeGradeFormReturn => {
     setIsSubmitting(true);
     setError(null);
     
-    console.log('Submitting form data:', data);
-    
     try {
       const response = await changeGradeAPI.create(data);
       const form = response.data;
@@ -47,8 +45,6 @@ export const useChangeGradeForm = (): UseChangeGradeFormReturn => {
       
       return form;
     } catch (err: any) {
-      console.error('API Error Details:', err);
-      
       let errorMessage = 'Failed to submit form';
       let detailedErrors = '';
       

@@ -149,7 +149,6 @@ const ResetPasswordPage: React.FC = () => {
         err?.message ||
         "An error occurred. Please try again.";
       toast.error(errorMessage);
-      console.error("Password operation failed:", err);
     } finally {
       setIsLoading(false);
     }

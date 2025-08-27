@@ -133,9 +133,9 @@ export const createColumns = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() =>
-                    console.log("View student:", student.university_id)
-                  }
+                  onClick={() => {
+                    // View student functionality
+                  }}
                 >
                   <Eye className="h-4 w-4" />
                   View Details

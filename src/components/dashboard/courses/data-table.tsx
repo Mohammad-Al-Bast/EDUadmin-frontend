@@ -82,9 +82,7 @@ export function DataTable<TData, TValue>({
     }
 
     try {
-      console.log("Attempting to delete all courses, count:", data.length);
       const result = await deleteAllCourses();
-      console.log("Delete all result:", result);
       if (result.success) {
         toast.success("All courses deleted successfully!", {
           description: `${result.deletedCount} courses have been removed from the system.`,
@@ -92,13 +90,11 @@ export function DataTable<TData, TValue>({
         onDeleteAllSuccess?.();
         setShowDeleteAllDialog(false);
       } else {
-        console.error("Delete all failed - success was false");
         toast.error("Failed to delete all courses", {
           description: "Please try again later.",
         });
       }
     } catch (error) {
-      console.error("Delete all error:", error);
       toast.error("Failed to delete all courses", {
         description: "An unexpected error occurred.",
       });
