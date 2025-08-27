@@ -281,6 +281,7 @@ export default function StudentDetailPage() {
       </div>
 
       <div className="">
+        <h2 className="text-lg font-medium mb-2">Courses</h2>
         {/* Course Details Row */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="space-y-2">
@@ -403,6 +404,55 @@ export default function StudentDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Course Information Display */}
+        {selectedCourse && (
+          <div className="mt-6 mb-3">
+            <h3 className="text-md font-medium mb-3">Course Information</h3>
+            <div className="grid grid-cols-4 gap-x-4 gap-y-3 text-sm">
+              <div>
+                <div className="text-gray-500">Course Code</div>
+                <div className="font-medium">{selectedCourse.course_code}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Course Name</div>
+                <div className="font-medium">{selectedCourse.course_name}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Section</div>
+                <div className="font-medium">{selectedCourse.section}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Instructor</div>
+                <div className="font-medium">{selectedCourse.instructor}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Credits</div>
+                <div className="font-medium">{selectedCourse.credits}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Room</div>
+                <div className="font-medium">{selectedCourse.room}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Schedule</div>
+                <div className="font-medium">{selectedCourse.schedule}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Days</div>
+                <div className="font-medium">{selectedCourse.days}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Time</div>
+                <div className="font-medium">{selectedCourse.time}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">School</div>
+                <div className="font-medium">{selectedCourse.school}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Your Comments Section */}
