@@ -13,6 +13,7 @@ import { useDeleteStudent } from "@/hooks/students/use-students";
 import { toast } from "sonner";
 import { DeleteStudentDialog } from "./delete-student-dialog";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ColumnsProps {
   onDeleteSuccess?: () => void;
@@ -114,6 +115,8 @@ export const createColumns = ({
           }
         };
 
+        const navigate = useNavigate();
+
         return (
           <>
             <DropdownMenu>
@@ -134,7 +137,7 @@ export const createColumns = ({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={() => {
-                    // View student functionality
+                    navigate(`/dashboard/students/${student.university_id}`);
                   }}
                 >
                   <Eye className="h-4 w-4" />
