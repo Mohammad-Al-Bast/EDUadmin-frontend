@@ -18,7 +18,7 @@ import { useCourses } from "@/hooks/courses/use-courses";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
 import type { Course } from "@/types/courses.types";
-import { Loader2, AlertCircle, Plus, Minus } from "lucide-react";
+import { Loader2, AlertCircle, Plus, Minus, Trash2 } from "lucide-react";
 
 interface GradeRow {
   id: string;
@@ -359,6 +359,13 @@ export function ChangeGradeForm() {
     setGradeRows([...gradeRows, newRow]);
   };
 
+  const removeGradeRow = (id: string) => {
+    // Only allow removal if there are more than 2 rows and the row is not one of the initial rows
+    if (gradeRows.length > 2 && id !== "1" && id !== "2") {
+      setGradeRows(gradeRows.filter((row) => row.id !== id));
+    }
+  };
+
   const updateGradeRow = (id: string, field: keyof GradeRow, value: string) => {
     setGradeRows(
       gradeRows.map((row) => (row.id === id ? { ...row, [field]: value } : row))
@@ -602,7 +609,7 @@ export function ChangeGradeForm() {
           <div>Custom %</div> */}
           <div>Grade Percentage</div>
           <div>Grade</div>
-          <div></div>
+          <div>Remove</div>
         </div>
 
         {/* Grade Rows */}
@@ -655,7 +662,21 @@ export function ChangeGradeForm() {
               placeholder="Grade"
               className="text-xs"
             />
-            <div></div>
+            <div className="flex justify-start">
+              {gradeRows.length > 2 && row.id !== "1" && row.id !== "2" ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeGradeRow(row.id)}
+                  className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              ) : (
+                <div className="h-7 w-7"></div>
+              )}
+            </div>
           </div>
         ))}
       </div>
