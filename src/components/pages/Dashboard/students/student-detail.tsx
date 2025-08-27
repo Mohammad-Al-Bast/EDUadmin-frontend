@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useStudent } from "@/hooks/students/use-students";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErrorDisplay } from "@/components/ui/error-display";
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -16,28 +17,7 @@ export default function StudentDetailPage() {
   const { student, loading, error } = useStudent(studentId);
 
   if (loading) {
-    return (
-      <main className="container mx-auto p-6 space-y-6">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-10" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </CardContent>
-        </Card>
-      </main>
-    );
+    return <main className="container mx-auto p-6 space-y-6">loading...</main>;
   }
 
   if (error) {
@@ -78,43 +58,55 @@ export default function StudentDetailPage() {
   return (
     <main className="">
       {/* Student Information Card */}
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">Overview</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-4 gap-x-8 gap-y-2 text-sm">
-            <div>
-              <div className="text-gray-500">Student ID</div>
-              <div>{student.university_id}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">Campus</div>
-              <div>{student.campus}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">Major</div>
-              <div>{student.major}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">Year</div>
-              <div>{student.year}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">Student Name</div>
-              <div>{student.student_name}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">School</div>
-              <div>{student.school}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">Semester</div>
-              <div>{student.semester}</div>
-            </div>
+      <h2 className="text-lg font-medium mb-2">Overview</h2>
+
+      <div className="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mb-4">
+        <div>
+          <div className="text-gray-500">Student ID</div>
+          <div>{student.university_id}</div>
+        </div>
+        <div>
+          <div className="text-gray-500">Campus</div>
+          <div>{student.campus}</div>
+        </div>
+        <div>
+          <div className="text-gray-500">Major</div>
+          <div>{student.major}</div>
+        </div>
+        <div>
+          <div className="text-gray-500">Year</div>
+          <div>{student.year}</div>
+        </div>
+        <div>
+          <div className="text-gray-500">Student Name</div>
+          <div>{student.student_name}</div>
+        </div>
+        <div>
+          <div className="text-gray-500">School</div>
+          <div>{student.school}</div>
+        </div>
+        <div>
+          <div className="text-gray-500">Semester</div>
+          <div>{student.semester}</div>
+        </div>
+      </div>
+
+      {/* Your Comments Section */}
+      <div>
+        <h2 className="text-lg font-medium mb-2">Your Comments</h2>
+        <div className="relative">
+          <Textarea
+            placeholder="Type your message here."
+            className="min-h-[120px] resize-none border-gray-200 text-sm"
+          />
+
+          <div className="flex justify-end mt-4">
+            <Button className="bg-black text-white text-sm px-6 py-2 rounded">
+              Send Request
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </main>
   );
 }
