@@ -15,9 +15,11 @@ import MultipleSelector from "@/components/ui/multiple-selector";
 import type { Option } from "@/components/ui/multiple-selector";
 import { useStudent } from "@/hooks/students/use-students";
 import { useCourses } from "@/hooks/courses/use-courses";
+import { useChangeGradeForm } from "@/hooks/change-grade";
 import { universityIdSchema, studentIdInputSchema } from "@/schemas/students";
 import type { Student } from "@/types/students/students.types";
 import type { Course } from "@/types/courses.types";
+import type { ChangeGradeFormData } from "@/services/change-grade";
 import { Loader2, AlertCircle, Plus, Minus, Trash2 } from "lucide-react";
 
 interface GradeRow {
@@ -145,6 +147,22 @@ export function ChangeGradeForm() {
   // State for curve adjustment
   const [curve, setCurve] = useState<number>(0);
 
+  // State for form fields
+  const [reason, setReason] = useState<string>("");
+  const [attachments, setAttachments] = useState({
+    original_report: false,
+    graded_exam: false,
+    tuition_report: false,
+    final_pages: false,
+  });
+
+  // Hook for form submission
+  const {
+    submitForm,
+    isSubmitting,
+    error: submissionError,
+  } = useChangeGradeForm();
+
   // Effect to update student data when fetched
   useEffect(() => {
     if (student) {
@@ -259,9 +277,39 @@ export function ChangeGradeForm() {
   );
 
   // Handler for section selection
-  const handleSectionChange = useCallback((options: Option[]) => {
-    setSelectedSection(options);
-  }, []);
+  const handleSectionChange = useCallback(
+    (options: Option[]) => {
+      setSelectedSection(options);
+
+      // When section is selected, find and set the complete course
+      if (
+        options.length > 0 &&
+        courses &&
+        selectedCourseCode.length > 0 &&
+        selectedCourseName.length > 0
+      ) {
+        const selectedSectionValue = options[0].value;
+        const selectedCodeValue = selectedCourseCode[0].value;
+        const selectedNameValue = selectedCourseName[0].value;
+
+        // Find the exact course that matches code, name, and section
+        const exactCourse = courses.find(
+          (course) =>
+            course.course_code === selectedCodeValue &&
+            course.course_name === selectedNameValue &&
+            course.section === selectedSectionValue
+        );
+
+        if (exactCourse) {
+          setSelectedCourse(exactCourse);
+        }
+      } else {
+        // Clear selected course if no section is selected
+        setSelectedCourse(null);
+      }
+    },
+    [courses, selectedCourseCode, selectedCourseName]
+  );
 
   // Handlers for curve adjustment
   const increaseCurve = useCallback(() => {
@@ -336,6 +384,95 @@ export function ChangeGradeForm() {
     }
     return null;
   }, [gradeRows]);
+
+  // Form submission handler
+  const handleSubmit = useCallback(async () => {
+    // Validate form data
+    if (!validStudentId || !studentData) {
+      alert("Please enter a valid student ID");
+      return;
+    }
+
+    if (
+      selectedCourseCode.length === 0 ||
+      selectedCourseName.length === 0 ||
+      selectedSection.length === 0
+    ) {
+      alert("Please select course code, name, and section");
+      return;
+    }
+
+    if (!validatePercentages()) {
+      alert("Grade percentages must equal 100%");
+      return;
+    }
+
+    if (!reason.trim()) {
+      alert("Please provide a reason for the grade change");
+      return;
+    }
+
+    if (!selectedCourse?.instructor) {
+      alert("Please select a course to get instructor information");
+      return;
+    }
+
+    // Prepare form data with correct field names for backend
+    const formData: ChangeGradeFormData = {
+      university_id: validStudentId,
+      student_full_name: studentData.student_name,
+      semester_year: `${studentData.semester || ""}/${studentData.year || ""}`,
+      major: studentData.major || "",
+      campus: studentData.campus || "",
+      course_code: selectedCourseCode[0]?.value || "",
+      course_name: selectedCourseName[0]?.value || "",
+      section: selectedSection[0]?.value || "",
+      instructor_name: selectedCourse.instructor,
+      grades: gradeRows.map((row) => ({
+        gradeType: row.gradeType,
+        gradePercentage: row.tenPercent,
+        grade: row.grade,
+      })),
+      curve,
+      final_grade: calculateWeightedGrade() + curve,
+      letter_grade: getLetterGrade(calculateWeightedGrade() + curve),
+      reason_for_change: reason,
+      attachments,
+    };
+
+    // Debug: Log the form data being sent
+    console.log("Form data being submitted:", formData);
+
+    try {
+      const result = await submitForm(formData);
+      if (result) {
+        // Reset form or redirect as needed
+        console.log("Form submitted successfully:", result);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+
+      // Show detailed error information if available
+      if (error && typeof error === "object" && "errors" in error) {
+        console.error("Validation errors:", error.errors);
+      }
+    }
+  }, [
+    validStudentId,
+    studentData,
+    selectedCourseCode,
+    selectedCourseName,
+    selectedSection,
+    selectedCourse,
+    validatePercentages,
+    reason,
+    gradeRows,
+    curve,
+    calculateWeightedGrade,
+    getLetterGrade,
+    attachments,
+    submitForm,
+  ]);
 
   // Effect to clear course selections when courses data changes
   useEffect(() => {
@@ -467,6 +604,20 @@ export function ChangeGradeForm() {
             placeholder="Auto-filled from student ID"
             className="h-9"
             value={studentData?.campus || ""}
+            disabled
+          />
+        </div>
+
+        {/* Instructor Name */}
+        <div className="space-y-2">
+          <Label htmlFor="instructorName" className="text-sm font-medium">
+            Instructor Name
+          </Label>
+          <Input
+            id="instructorName"
+            placeholder="Auto-filled from course selection"
+            className="h-9"
+            value={selectedCourse?.instructor || ""}
             disabled
           />
         </div>
@@ -630,7 +781,6 @@ export function ChangeGradeForm() {
                 <SelectItem value="assignment">Assignment</SelectItem>
                 <SelectItem value="midterm">Midterm</SelectItem>
                 <SelectItem value="final">Final</SelectItem>
-                
               </SelectContent>
             </Select>
             {/* <Input
@@ -755,40 +905,125 @@ export function ChangeGradeForm() {
           id="reason"
           placeholder="Type your message here."
           className="min-h-[100px] resize-none"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
         />
       </div>
 
       {/* Report Options */}
       <div className="space-y-3 mb-6">
         <div className="flex items-center space-x-2">
-          <Checkbox id="original-report" />
+          <Checkbox
+            id="original-report"
+            checked={attachments.original_report}
+            onCheckedChange={(checked) =>
+              setAttachments((prev) => ({
+                ...prev,
+                original_report: !!checked,
+              }))
+            }
+          />
           <Label htmlFor="original-report" className="text-sm">
             Copy of the original grading report showing the original grades.
           </Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox id="graded-exam" />
+          <Checkbox
+            id="graded-exam"
+            checked={attachments.graded_exam}
+            onCheckedChange={(checked) =>
+              setAttachments((prev) => ({ ...prev, graded_exam: !!checked }))
+            }
+          />
           <Label htmlFor="graded-exam" className="text-sm">
             Copy of the graded final exam.
           </Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox id="tuition-report" />
+          <Checkbox
+            id="tuition-report"
+            checked={attachments.tuition_report}
+            onCheckedChange={(checked) =>
+              setAttachments((prev) => ({ ...prev, tuition_report: !!checked }))
+            }
+          />
           <Label htmlFor="tuition-report" className="text-sm">
             Tuition report.
           </Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox id="final-pages" />
+          <Checkbox
+            id="final-pages"
+            checked={attachments.final_pages}
+            onCheckedChange={(checked) =>
+              setAttachments((prev) => ({ ...prev, final_pages: !!checked }))
+            }
+          />
           <Label htmlFor="final-pages" className="text-sm">
             Copy of the first 10 pages of the final report.
           </Label>
         </div>
       </div>
 
+      {/* Submission Error */}
+      {submissionError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <div className="flex items-center gap-2 text-red-700">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm font-medium">{submissionError}</span>
+          </div>
+        </div>
+      )}
+
       {/* Send Request Button */}
-      <div className="flex justify-end">
-        <Button>Send Request</Button>
+      <div className="flex justify-end gap-2">
+        {/* Debug Button - Remove in production */}
+        <Button
+          variant="outline"
+          onClick={() => {
+            const debugData = {
+              university_id: validStudentId,
+              student_full_name: studentData?.student_name,
+              semester_year: `${studentData?.semester || ""}/${
+                studentData?.year || ""
+              }`,
+              major: studentData?.major || "",
+              campus: studentData?.campus || "",
+              course_code: selectedCourseCode[0]?.value || "",
+              course_name: selectedCourseName[0]?.value || "",
+              section: selectedSection[0]?.value || "",
+              instructor_name: selectedCourse?.instructor || "",
+              grades: gradeRows.map((row) => ({
+                gradeType: row.gradeType,
+                gradePercentage: row.tenPercent,
+                grade: row.grade,
+              })),
+              curve,
+              final_grade: calculateWeightedGrade() + curve,
+              letter_grade: getLetterGrade(calculateWeightedGrade() + curve),
+              reason_for_change: reason,
+              attachments,
+            };
+            console.log("Debug - Form data that would be sent:", debugData);
+            alert("Check console for form data details");
+          }}
+        >
+          Debug Data
+        </Button>
+
+        <Button
+          onClick={handleSubmit}
+          disabled={isSubmitting || !validatePercentages()}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Send Request"
+          )}
+        </Button>
       </div>
     </div>
   );

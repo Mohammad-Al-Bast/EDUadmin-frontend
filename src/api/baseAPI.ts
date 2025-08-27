@@ -5,7 +5,7 @@ import { persistor } from '@/store';
 import { toast } from 'sonner';
 import { logoutAsync } from '@/store/thunks/authThunks';
 
-const API_BASE_URL: string = 'http://localhost:8000/api/v1'; // Development base URL
+const API_BASE_URL: string = 'http://localhost:8000/api/v1'; // Updated to match Laravel routes
 const API_TIMEOUT: number = 30000;
 
 export const APIinstance = axios.create({
