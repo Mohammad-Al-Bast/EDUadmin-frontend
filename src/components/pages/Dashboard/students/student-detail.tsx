@@ -11,6 +11,7 @@ import type { Option } from "@/components/ui/multiple-selector";
 import { Label } from "@/components/ui/label";
 import { useCallback, useMemo, useState } from "react";
 import type { Course } from "@/types/courses.types";
+import { Separator } from "@/components/ui/separator";
 
 // Interface for individual course card data
 interface CourseCard {
@@ -25,10 +26,21 @@ export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // State for multiple course cards
+  // State for multiple course cards (register)
   const [courseCards, setCourseCards] = useState<CourseCard[]>([
     {
       id: "1",
+      selectedCourseCode: [],
+      selectedCourseName: [],
+      selectedSection: [],
+      selectedCourse: null,
+    },
+  ]);
+
+  // State for multiple drop course cards
+  const [dropCourseCards, setDropCourseCards] = useState<CourseCard[]>([
+    {
+      id: "drop-1",
       selectedCourseCode: [],
       selectedCourseName: [],
       selectedSection: [],
@@ -76,8 +88,9 @@ export default function StudentDetailPage() {
 
   // Get available sections for a specific course card
   const getAvailableSections = useCallback(
-    (cardId: string) => {
-      const card = courseCards.find((c) => c.id === cardId);
+    (cardId: string, isDropCourse: boolean = false) => {
+      const cards = isDropCourse ? dropCourseCards : courseCards;
+      const card = cards.find((c) => c.id === cardId);
       if (!courses || !card) return [];
 
       const matchingCourses = courses.filter((course) => {
@@ -100,12 +113,12 @@ export default function StudentDetailPage() {
 
       return matchingCourses;
     },
-    [courses, courseCards]
+    [courses, courseCards, dropCourseCards]
   );
 
   const getSectionOptions = useCallback(
-    (cardId: string) => {
-      const availableSections = getAvailableSections(cardId);
+    (cardId: string, isDropCourse: boolean = false) => {
+      const availableSections = getAvailableSections(cardId, isDropCourse);
       if (availableSections.length === 0) return [];
 
       const uniqueSections = [
@@ -137,25 +150,56 @@ export default function StudentDetailPage() {
     setCourseCards((prev) => prev.filter((card) => card.id !== cardId));
   }, []);
 
+  // Add new drop course card
+  const addDropCourseCard = useCallback(() => {
+    const newCard: CourseCard = {
+      id: `drop-${Date.now()}`,
+      selectedCourseCode: [],
+      selectedCourseName: [],
+      selectedSection: [],
+      selectedCourse: null,
+    };
+    setDropCourseCards((prev) => [...prev, newCard]);
+  }, []);
+
+  // Remove drop course card
+  const removeDropCourseCard = useCallback((cardId: string) => {
+    setDropCourseCards((prev) => prev.filter((card) => card.id !== cardId));
+  }, []);
+
   // Update course card field
   const updateCourseCard = useCallback(
-    (cardId: string, field: keyof CourseCard, value: any) => {
-      setCourseCards((prev) =>
-        prev.map((card) =>
-          card.id === cardId ? { ...card, [field]: value } : card
-        )
-      );
+    (
+      cardId: string,
+      field: keyof CourseCard,
+      value: any,
+      isDropCourse: boolean = false
+    ) => {
+      if (isDropCourse) {
+        setDropCourseCards((prev) =>
+          prev.map((card) =>
+            card.id === cardId ? { ...card, [field]: value } : card
+          )
+        );
+      } else {
+        setCourseCards((prev) =>
+          prev.map((card) =>
+            card.id === cardId ? { ...card, [field]: value } : card
+          )
+        );
+      }
     },
     []
   );
 
   // Handler for course code selection
   const handleCourseCodeChange = useCallback(
-    (cardId: string, options: Option[]) => {
-      const card = courseCards.find((c) => c.id === cardId);
+    (cardId: string, options: Option[], isDropCourse: boolean = false) => {
+      const cards = isDropCourse ? dropCourseCards : courseCards;
+      const card = cards.find((c) => c.id === cardId);
       if (!card) return;
 
-      updateCourseCard(cardId, "selectedCourseCode", options);
+      updateCourseCard(cardId, "selectedCourseCode", options, isDropCourse);
 
       if (options.length > 0 && courses) {
         const selectedCode = options[0].value;
@@ -164,31 +208,42 @@ export default function StudentDetailPage() {
         );
 
         if (courseWithCode) {
-          updateCourseCard(cardId, "selectedCourseName", [
-            {
-              value: courseWithCode.course_name,
-              label: courseWithCode.course_name,
-            },
-          ]);
-          updateCourseCard(cardId, "selectedCourse", courseWithCode);
+          updateCourseCard(
+            cardId,
+            "selectedCourseName",
+            [
+              {
+                value: courseWithCode.course_name,
+                label: courseWithCode.course_name,
+              },
+            ],
+            isDropCourse
+          );
+          updateCourseCard(
+            cardId,
+            "selectedCourse",
+            courseWithCode,
+            isDropCourse
+          );
         }
       } else {
-        updateCourseCard(cardId, "selectedCourseName", []);
-        updateCourseCard(cardId, "selectedCourse", null);
+        updateCourseCard(cardId, "selectedCourseName", [], isDropCourse);
+        updateCourseCard(cardId, "selectedCourse", null, isDropCourse);
       }
 
-      updateCourseCard(cardId, "selectedSection", []);
+      updateCourseCard(cardId, "selectedSection", [], isDropCourse);
     },
-    [courses, courseCards, updateCourseCard]
+    [courses, courseCards, dropCourseCards, updateCourseCard]
   );
 
   // Handler for course name selection
   const handleCourseNameChange = useCallback(
-    (cardId: string, options: Option[]) => {
-      const card = courseCards.find((c) => c.id === cardId);
+    (cardId: string, options: Option[], isDropCourse: boolean = false) => {
+      const cards = isDropCourse ? dropCourseCards : courseCards;
+      const card = cards.find((c) => c.id === cardId);
       if (!card) return;
 
-      updateCourseCard(cardId, "selectedCourseName", options);
+      updateCourseCard(cardId, "selectedCourseName", options, isDropCourse);
 
       if (options.length > 0 && courses) {
         const selectedName = options[0].value;
@@ -197,31 +252,42 @@ export default function StudentDetailPage() {
         );
 
         if (courseWithName) {
-          updateCourseCard(cardId, "selectedCourseCode", [
-            {
-              value: courseWithName.course_code,
-              label: courseWithName.course_code,
-            },
-          ]);
-          updateCourseCard(cardId, "selectedCourse", courseWithName);
+          updateCourseCard(
+            cardId,
+            "selectedCourseCode",
+            [
+              {
+                value: courseWithName.course_code,
+                label: courseWithName.course_code,
+              },
+            ],
+            isDropCourse
+          );
+          updateCourseCard(
+            cardId,
+            "selectedCourse",
+            courseWithName,
+            isDropCourse
+          );
         }
       } else {
-        updateCourseCard(cardId, "selectedCourseCode", []);
-        updateCourseCard(cardId, "selectedCourse", null);
+        updateCourseCard(cardId, "selectedCourseCode", [], isDropCourse);
+        updateCourseCard(cardId, "selectedCourse", null, isDropCourse);
       }
 
-      updateCourseCard(cardId, "selectedSection", []);
+      updateCourseCard(cardId, "selectedSection", [], isDropCourse);
     },
-    [courses, courseCards, updateCourseCard]
+    [courses, courseCards, dropCourseCards, updateCourseCard]
   );
 
   // Handler for section selection
   const handleSectionChange = useCallback(
-    (cardId: string, options: Option[]) => {
-      const card = courseCards.find((c) => c.id === cardId);
+    (cardId: string, options: Option[], isDropCourse: boolean = false) => {
+      const cards = isDropCourse ? dropCourseCards : courseCards;
+      const card = cards.find((c) => c.id === cardId);
       if (!card) return;
 
-      updateCourseCard(cardId, "selectedSection", options);
+      updateCourseCard(cardId, "selectedSection", options, isDropCourse);
 
       if (
         options.length > 0 &&
@@ -241,7 +307,7 @@ export default function StudentDetailPage() {
         );
 
         if (exactCourse) {
-          updateCourseCard(cardId, "selectedCourse", exactCourse);
+          updateCourseCard(cardId, "selectedCourse", exactCourse, isDropCourse);
         }
       } else if (
         courses &&
@@ -258,13 +324,18 @@ export default function StudentDetailPage() {
         );
 
         if (courseWithCodeAndName) {
-          updateCourseCard(cardId, "selectedCourse", courseWithCodeAndName);
+          updateCourseCard(
+            cardId,
+            "selectedCourse",
+            courseWithCodeAndName,
+            isDropCourse
+          );
         }
       } else {
-        updateCourseCard(cardId, "selectedCourse", null);
+        updateCourseCard(cardId, "selectedCourse", null, isDropCourse);
       }
     },
-    [courses, courseCards, updateCourseCard]
+    [courses, courseCards, dropCourseCards, updateCourseCard]
   );
 
   if (loading) {
@@ -342,7 +413,7 @@ export default function StudentDetailPage() {
         </div>
       </div>
 
-      <div className="">
+      <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Register Courses</h2>
           <Button
@@ -359,14 +430,14 @@ export default function StudentDetailPage() {
         {/* Multiple Course Cards */}
         <div className="space-y-6">
           {courseCards.map((card, index) => {
-            const sectionOptions = getSectionOptions(card.id);
+            const sectionOptions = getSectionOptions(card.id, false);
 
             return (
               <Card key={card.id} className="border-gray-200">
-                <CardHeader className="pb-3">
+                <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-base font-medium">
-                      Course {index + 1}
+                    <CardTitle className="text-green-500 font-semibold">
+                      # Course {index + 1}
                     </CardTitle>
                     {courseCards.length > 1 && (
                       <Button
@@ -382,7 +453,7 @@ export default function StudentDetailPage() {
                 </CardHeader>
                 <CardContent>
                   {/* Course Selection Row */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                     <div className="space-y-2">
                       <Label
                         htmlFor={`courseCode-${card.id}`}
@@ -397,7 +468,7 @@ export default function StudentDetailPage() {
                         <MultipleSelector
                           value={card.selectedCourseCode}
                           onChange={(options) =>
-                            handleCourseCodeChange(card.id, options)
+                            handleCourseCodeChange(card.id, options, false)
                           }
                           options={courseCodeOptions}
                           placeholder={
@@ -443,7 +514,7 @@ export default function StudentDetailPage() {
                         <MultipleSelector
                           value={card.selectedCourseName}
                           onChange={(options) =>
-                            handleCourseNameChange(card.id, options)
+                            handleCourseNameChange(card.id, options, false)
                           }
                           options={courseNameOptions}
                           placeholder={
@@ -482,7 +553,269 @@ export default function StudentDetailPage() {
                         <MultipleSelector
                           value={card.selectedSection}
                           onChange={(options) =>
-                            handleSectionChange(card.id, options)
+                            handleSectionChange(card.id, options, false)
+                          }
+                          options={sectionOptions}
+                          placeholder={
+                            coursesLoading
+                              ? "Loading sections..."
+                              : !card.selectedCourse
+                              ? "Select a course first"
+                              : sectionOptions.length === 0
+                              ? "No sections available"
+                              : "Select section"
+                          }
+                          maxSelected={1}
+                          disabled={
+                            coursesLoading ||
+                            !card.selectedCourse ||
+                            sectionOptions.length === 0
+                          }
+                          className={coursesError ? "border-red-300" : ""}
+                        />
+                        {coursesLoading && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      {coursesError && (
+                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>Failed to load sections</span>
+                        </div>
+                      )}
+                      {!coursesError &&
+                        card.selectedCourse &&
+                        sectionOptions.length === 0 && (
+                          <div className="flex items-center gap-1 text-xs text-amber-600 mt-1">
+                            <AlertCircle className="h-3 w-3" />
+                            <span>No sections available for this course</span>
+                          </div>
+                        )}
+                    </div>
+                  </div>
+
+                  {/* Course Information Display */}
+                  {card.selectedCourse && (
+                    <div className="mt-6">
+                      <h3 className="text-md font-medium mb-3">
+                        Course Information
+                      </h3>
+                      <div className="grid grid-cols-4 gap-x-4 gap-y-3 text-sm">
+                        <div>
+                          <div className="text-gray-500">Course Code</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.course_code}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Course Name</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.course_name}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Section</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.section}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Instructor</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.instructor}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Credits</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.credits}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Room</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.room}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Schedule</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.schedule}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Days</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.days}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Time</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.time}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">School</div>
+                          <div className="font-medium">
+                            {card.selectedCourse.school}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="mb-6 mt-3">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium">Drop Courses</h2>
+          <Button
+            onClick={addDropCourseCard}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Course
+          </Button>
+        </div>
+
+        {/* Multiple Drop Course Cards */}
+        <div className="space-y-6">
+          {dropCourseCards.map((card, index) => {
+            const sectionOptions = getSectionOptions(card.id, true);
+
+            return (
+              <Card key={card.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base font-semibold text-red-600">
+                      # Drop Course {index + 1}
+                    </CardTitle>
+                    {dropCourseCards.length > 1 && (
+                      <Button
+                        onClick={() => removeDropCourseCard(card.id)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Course Selection Row */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={`dropCourseCode-${card.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Course Code
+                        <span className="text-sm text-gray-500 ml-1">
+                          Only one value can be selected
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <MultipleSelector
+                          value={card.selectedCourseCode}
+                          onChange={(options) =>
+                            handleCourseCodeChange(card.id, options, true)
+                          }
+                          options={courseCodeOptions}
+                          placeholder={
+                            coursesLoading
+                              ? "Loading courses..."
+                              : "Select course code"
+                          }
+                          maxSelected={1}
+                          disabled={coursesLoading}
+                          className={coursesError ? "border-red-300" : ""}
+                        />
+                        {coursesLoading && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      {coursesError && (
+                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>Failed to load courses</span>
+                          <button
+                            onClick={refetchCourses}
+                            className="text-blue-500 underline hover:no-underline"
+                            type="button"
+                          >
+                            Retry
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={`dropCourseName-${card.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Course Name
+                        <span className="text-sm text-gray-500 ml-1">
+                          Only one value can be selected
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <MultipleSelector
+                          value={card.selectedCourseName}
+                          onChange={(options) =>
+                            handleCourseNameChange(card.id, options, true)
+                          }
+                          options={courseNameOptions}
+                          placeholder={
+                            coursesLoading
+                              ? "Loading courses..."
+                              : "Select course name"
+                          }
+                          maxSelected={1}
+                          disabled={coursesLoading}
+                          className={coursesError ? "border-red-300" : ""}
+                        />
+                        {coursesLoading && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      {coursesError && (
+                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>Failed to load courses</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={`dropSection-${card.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Section
+                        <span className="text-sm text-gray-500 ml-1">
+                          Only one value can be selected
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <MultipleSelector
+                          value={card.selectedSection}
+                          onChange={(options) =>
+                            handleSectionChange(card.id, options, true)
                           }
                           options={sectionOptions}
                           placeholder={
