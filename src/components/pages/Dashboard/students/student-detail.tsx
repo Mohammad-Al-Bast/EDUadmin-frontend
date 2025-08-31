@@ -9,6 +9,7 @@ import {
   Plus,
   X,
   CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +39,127 @@ interface CourseCard {
   selectedSection: Option[];
   selectedCourse: Course | null;
 }
+
+// Time conflict detection utilities
+interface ParsedSchedule {
+  days: string[];
+  startTime: number; // in minutes from 00:00
+  endTime: number; // in minutes from 00:00
+}
+
+// Parse schedule string like "MTWTH" into individual days
+const parseDays = (schedule: string): string[] => {
+  const days: string[] = [];
+  let i = 0;
+
+  while (i < schedule.length) {
+    if (i < schedule.length - 1 && schedule.substring(i, i + 2) === "TH") {
+      days.push("TH");
+      i += 2;
+    } else {
+      days.push(schedule[i]);
+      i += 1;
+    }
+  }
+
+  return days;
+};
+
+// Convert time string like "12:00" to minutes from 00:00
+const timeToMinutes = (timeStr: string): number => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
+// Parse time range like "12:00-13:50" into start and end minutes
+const parseTimeRange = (timeRange: string): { start: number; end: number } => {
+  const [startStr, endStr] = timeRange.split("-");
+  return {
+    start: timeToMinutes(startStr),
+    end: timeToMinutes(endStr),
+  };
+};
+
+// Parse full schedule and time into structured format
+const parseSchedule = (schedule: string, time: string): ParsedSchedule => {
+  const days = parseDays(schedule);
+  const { start, end } = parseTimeRange(time);
+
+  return {
+    days,
+    startTime: start,
+    endTime: end,
+  };
+};
+
+// Check if two time ranges overlap
+const timeRangesOverlap = (
+  range1: { start: number; end: number },
+  range2: { start: number; end: number }
+): boolean => {
+  return range1.start < range2.end && range2.start < range1.end;
+};
+
+// Check if two courses have schedule conflicts
+const hasTimeConflict = (course1: Course, course2: Course): boolean => {
+  try {
+    const schedule1 = parseSchedule(course1.schedule, course1.time);
+    const schedule2 = parseSchedule(course2.schedule, course2.time);
+
+    // Check if any days overlap
+    const daysOverlap = schedule1.days.some((day) =>
+      schedule2.days.includes(day)
+    );
+
+    if (!daysOverlap) {
+      return false;
+    }
+
+    // Check if times overlap
+    return timeRangesOverlap(
+      { start: schedule1.startTime, end: schedule1.endTime },
+      { start: schedule2.startTime, end: schedule2.endTime }
+    );
+  } catch (error) {
+    console.error("Error parsing schedule:", error);
+    return false;
+  }
+};
+
+// Find all time conflicts among selected courses
+const findTimeConflicts = (
+  courseCards: CourseCard[]
+): { cardId1: string; cardId2: string; course1: Course; course2: Course }[] => {
+  const conflicts: {
+    cardId1: string;
+    cardId2: string;
+    course1: Course;
+    course2: Course;
+  }[] = [];
+  const selectedCourses = courseCards.filter((card) => card.selectedCourse);
+
+  for (let i = 0; i < selectedCourses.length; i++) {
+    for (let j = i + 1; j < selectedCourses.length; j++) {
+      const card1 = selectedCourses[i];
+      const card2 = selectedCourses[j];
+
+      if (
+        card1.selectedCourse &&
+        card2.selectedCourse &&
+        hasTimeConflict(card1.selectedCourse, card2.selectedCourse)
+      ) {
+        conflicts.push({
+          cardId1: card1.id,
+          cardId2: card2.id,
+          course1: card1.selectedCourse,
+          course2: card2.selectedCourse,
+        });
+      }
+    }
+  }
+
+  return conflicts;
+};
 
 export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -224,6 +346,21 @@ Submitted at: ${new Date().toLocaleString()}`;
     }));
     return options;
   }, [courses]);
+
+  // Detect time conflicts among selected courses
+  const timeConflicts = useMemo(() => {
+    return findTimeConflicts(courseCards);
+  }, [courseCards]);
+
+  // Helper function to check if a specific card has conflicts
+  const getCardConflicts = useCallback(
+    (cardId: string) => {
+      return timeConflicts.filter(
+        (conflict) => conflict.cardId1 === cardId || conflict.cardId2 === cardId
+      );
+    },
+    [timeConflicts]
+  );
 
   // Get available sections for a specific course card
   const getAvailableSections = useCallback(
@@ -868,6 +1005,68 @@ Submitted at: ${new Date().toLocaleString()}`;
                           </div>
                         </div>
                       </div>
+
+                      {/* Time Conflict Warning */}
+                      {(() => {
+                        const conflicts = getCardConflicts(card.id);
+                        if (conflicts.length > 0) {
+                          return (
+                            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                              <div className="flex items-start gap-2">
+                                <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <h4 className="text-sm font-medium text-red-800 mb-2">
+                                    Time Conflict Detected
+                                  </h4>
+                                  <div className="space-y-1">
+                                    {conflicts.map(
+                                      (conflict, conflictIndex) => {
+                                        const conflictingCourse =
+                                          conflict.cardId1 === card.id
+                                            ? conflict.course2
+                                            : conflict.course1;
+                                        const conflictingCardIndex =
+                                          courseCards.findIndex(
+                                            (c) =>
+                                              c.id ===
+                                              (conflict.cardId1 === card.id
+                                                ? conflict.cardId2
+                                                : conflict.cardId1)
+                                          );
+
+                                        return (
+                                          <div
+                                            key={conflictIndex}
+                                            className="text-sm text-red-700"
+                                          >
+                                            This course conflicts with{" "}
+                                            <strong>
+                                              Course {conflictingCardIndex + 1}
+                                            </strong>
+                                            :
+                                            <br />
+                                            <span className="font-medium">
+                                              {conflictingCourse.course_code} -{" "}
+                                              {conflictingCourse.course_name}
+                                            </span>
+                                            <br />
+                                            <span className="text-xs text-red-600">
+                                              Schedule:{" "}
+                                              {conflictingCourse.schedule} |
+                                              Time: {conflictingCourse.time}
+                                            </span>
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
                   )}
                 </CardContent>
@@ -1149,39 +1348,6 @@ Submitted at: ${new Date().toLocaleString()}`;
             placeholder="Type your reason for course registration/drop here..."
             className="min-h-[120px] resize-none border-gray-200 text-sm"
           />
-
-          {/* Debug Section - Remove this in production */}
-          {process.env.NODE_ENV === "development" && (
-            <details className="mt-4 text-xs">
-              <summary className="cursor-pointer text-gray-500">
-                Debug: Form Data
-              </summary>
-              <pre className="mt-2 p-2 bg-gray-50 rounded text-xs overflow-auto">
-                {JSON.stringify(
-                  {
-                    university_id: student?.university_id,
-                    courses: [
-                      ...courseCards
-                        .filter((card) => card.selectedCourse)
-                        .map((card) => ({
-                          courseId: card.selectedCourse!.course_id,
-                          action: "register",
-                        })),
-                      ...dropCourseCards
-                        .filter((card) => card.selectedCourse)
-                        .map((card) => ({
-                          courseId: card.selectedCourse!.course_id,
-                          action: "drop",
-                        })),
-                    ],
-                    reason: reason.trim(),
-                  },
-                  null,
-                  2
-                )}
-              </pre>
-            </details>
-          )}
 
           {(submitError || validationErrors) && (
             <div className="mt-2 space-y-2">
