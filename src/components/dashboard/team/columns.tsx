@@ -21,6 +21,16 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { DeleteUserDialog } from "@/components/dashboard/team/delete-user-dialog";
 import { AdminResetPasswordDialog } from "@/components/dashboard/team/admin-reset-password-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Cell component for actions to use hooks
 function ActionsCell({
@@ -40,6 +50,7 @@ function ActionsCell({
   const [currentAction, setCurrentAction] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showAdminResetDialog, setShowAdminResetDialog] = useState(false);
+  const [showBlockDialog, setShowBlockDialog] = useState(false);
 
   const handleVerifyUser = async () => {
     try {
@@ -62,12 +73,6 @@ function ActionsCell({
   };
 
   const handleBlockUser = async () => {
-    // Add confirmation for blocking
-    const confirmBlock = window.confirm(
-      `Are you sure you want to block ${user.name}? This action will prevent them from accessing the system.`
-    );
-    if (!confirmBlock) return;
-
     try {
       setCurrentAction("block");
       const response = await blockUser(user.id);
@@ -77,6 +82,7 @@ function ActionsCell({
       });
       // Refresh the user list
       onRefetch?.();
+      setShowBlockDialog(false);
     } catch (error: any) {
       toast.error("Block Failed", {
         description:
@@ -178,7 +184,7 @@ function ActionsCell({
             Reset Password
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={handleBlockUser}
+            onClick={() => setShowBlockDialog(true)}
             disabled={isLoading || isBlocked}
           >
             {currentAction === "block" ? (
@@ -213,6 +219,30 @@ function ActionsCell({
         userName={user.name}
         isLoading={currentAction === "admin-reset"}
       />
+      <AlertDialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Block User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to block {user.name}? This action will
+              prevent them from accessing the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBlockUser}
+              disabled={currentAction === "block"}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {currentAction === "block" ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              Block User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

@@ -776,7 +776,7 @@ Submitted at: ${new Date().toLocaleString()}`;
             const sectionOptions = getSectionOptions(card.id, false);
 
             return (
-              <Card key={card.id} className="border-gray-200">
+              <Card key={card.id}>
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-green-500 font-semibold">
@@ -1348,7 +1348,7 @@ Submitted at: ${new Date().toLocaleString()}`;
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Type your reason for course registration/drop here..."
-            className="min-h-[120px] resize-none border-gray-200 text-sm"
+            className="min-h-[120px] resize-none text-sm"
           />
 
           {(submitError || validationErrors) && (
