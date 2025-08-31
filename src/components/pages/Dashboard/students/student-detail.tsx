@@ -479,7 +479,7 @@ Submitted at: ${new Date().toLocaleString()}`;
 
   // Form submission handler
   const handleSubmit = useCallback(async () => {
-    if (!student || !reason.trim()) {
+    if (!student) {
       return;
     }
 
@@ -1209,7 +1209,6 @@ Submitted at: ${new Date().toLocaleString()}`;
               onClick={handleSubmit}
               disabled={
                 submitLoading ||
-                !reason.trim() ||
                 (courseCards.every((card) => !card.selectedCourse) &&
                   dropCourseCards.every((card) => !card.selectedCourse))
               }
