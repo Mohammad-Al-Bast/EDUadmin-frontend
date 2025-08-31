@@ -38,6 +38,7 @@ const AddTeamMemberForm: React.FC<AddTeamMemberFormProps> = ({
     defaultValues: {
       name: "",
       email: "",
+      locked_user_email: "",
       password: "",
       confirmPassword: "",
     },
@@ -90,6 +91,7 @@ const AddTeamMemberForm: React.FC<AddTeamMemberFormProps> = ({
       await register({
         name: data.name,
         email: data.email,
+        locked_user_email: data.locked_user_email,
         password: data.password,
         password_confirmation: data.confirmPassword,
       });
@@ -139,6 +141,25 @@ const AddTeamMemberForm: React.FC<AddTeamMemberFormProps> = ({
                   {...field}
                   type="email"
                   placeholder="Enter email address"
+                  disabled={loading}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="locked_user_email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Locked User Email</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder="Enter locked user email address"
                   disabled={loading}
                 />
               </FormControl>

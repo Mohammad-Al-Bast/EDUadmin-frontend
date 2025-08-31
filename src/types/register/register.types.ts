@@ -1,6 +1,7 @@
 export interface RegisterRequest {
     name: string;
     email: string;
+    locked_user_email: string;
     password: string;
     password_confirmation: string;
     [key: string]: unknown;

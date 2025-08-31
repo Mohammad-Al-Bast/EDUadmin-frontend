@@ -10,6 +10,10 @@ export const registerSchema = z.object({
         .email('Please enter a valid email address')
         .min(1, 'Email is required')
         .max(254, 'Email is too long'),
+    locked_user_email: z
+        .email('Please enter a valid email address')
+        .min(1, 'Locked user email is required')
+        .max(254, 'Email is too long'),
     password: z
         .string()
         .min(8, 'Password must be at least 8 characters')
