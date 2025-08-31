@@ -512,6 +512,12 @@ Submitted at: ${new Date().toLocaleString()}`;
 
     try {
       console.log("Submitting form data:", formData);
+      console.log("University ID being sent:", {
+        value: student.university_id,
+        type: typeof student.university_id,
+        length: String(student.university_id).length,
+        stringValue: String(student.university_id),
+      });
       await submitForm(formData);
       setSubmittedFormData(formData);
       setShowSuccessModal(true);
@@ -524,6 +530,14 @@ Submitted at: ${new Date().toLocaleString()}`;
           errors: (error as any).errors,
           status: (error as any).status,
         });
+
+        // Log specific university_id validation errors
+        if ((error as any).errors && (error as any).errors.university_id) {
+          console.error(
+            "University ID validation errors:",
+            (error as any).errors.university_id
+          );
+        }
       }
     }
   }, [student, reason, courseCards, dropCourseCards, submitForm]);

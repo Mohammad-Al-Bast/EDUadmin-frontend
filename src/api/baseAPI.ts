@@ -92,6 +92,14 @@ const APIClient = async <T = unknown>(
     params?: ApiParams
 ): Promise<ApiClientResponse<T>> => {
     try {
+        // Log outgoing request details for debugging
+        console.log(`API ${method} ${url}:`, {
+            data,
+            params,
+            dataType: typeof data,
+            dataString: JSON.stringify(data)
+        });
+        
         const response: AxiosResponse<T> = await APIinstance({
             method,
             url,
@@ -105,6 +113,12 @@ const APIClient = async <T = unknown>(
 
         if (axiosError.response) {
             const responseData = axiosError.response.data;
+            
+            console.error(`API ${method} ${url} Error:`, {
+                status: axiosError.response.status,
+                data: responseData,
+                headers: axiosError.response.headers
+            });
             
             // Handle different error response formats
             let errorMessage = 'Server error occurred';
