@@ -2,7 +2,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useStudent } from "@/hooks/students/use-students";
 import { Button } from "@/components/ui/button";
 import { ErrorDisplay } from "@/components/ui/error-display";
-import { AlertCircle, ArrowLeft, Loader2, Plus, X } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Loader2,
+  Plus,
+  X,
+  CheckCircle,
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCourses } from "@/hooks/courses/use-courses";
@@ -12,6 +19,16 @@ import { Label } from "@/components/ui/label";
 import { useCallback, useMemo, useState } from "react";
 import type { Course } from "@/types/courses.types";
 import { Separator } from "@/components/ui/separator";
+import { useRegisterDropCourses } from "@/hooks/register-drop-courses";
+import { useReportGenerator } from "@/hooks/reports/use-report-generator";
+import type { RegisterDropCourseFormData } from "@/services/register-drop-courses";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Interface for individual course card data
 interface CourseCard {
@@ -25,6 +42,9 @@ interface CourseCard {
 export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  // State for comments/reason
+  const [reason, setReason] = useState<string>("");
 
   // State for multiple course cards (register)
   const [courseCards, setCourseCards] = useState<CourseCard[]>([
@@ -48,10 +68,129 @@ export default function StudentDetailPage() {
     },
   ]);
 
+  // Success modal and form submission state
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [submittedFormData, setSubmittedFormData] =
+    useState<RegisterDropCourseFormData | null>(null);
+
   // Convert string ID to number
   const studentId = id ? parseInt(id, 10) : 0;
 
   const { student, loading, error } = useStudent(studentId);
+
+  // Hook for register/drop courses functionality
+  const {
+    loading: submitLoading,
+    error: submitError,
+    validationErrors,
+    success,
+    submitForm,
+    resetFormStatus,
+  } = useRegisterDropCourses();
+
+  // Simple report generation handlers for register/drop courses
+  const handlePreviewReport = useCallback(() => {
+    if (!submittedFormData || !student) return;
+
+    const reportContent = `
+      COURSE REGISTRATION/DROP REQUEST REPORT
+      
+      Student Information:
+      - ID: ${student.university_id}
+      - Name: ${student.student_name}
+      - Campus: ${student.campus || "N/A"}
+      - Major: ${student.major || "N/A"}
+      
+      Requested Actions:
+      ${submittedFormData.courses
+        .map(
+          (course) =>
+            `- ${course.action.toUpperCase()}: Course ID ${course.courseId}`
+        )
+        .join("\n      ")}
+      
+      Reason: ${submittedFormData.reason}
+      
+      Submitted at: ${new Date().toLocaleString()}
+    `;
+
+    const newWindow = window.open("", "_blank");
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head><title>Course Registration/Drop Report</title></head>
+          <body style="font-family: monospace; white-space: pre-wrap; padding: 20px;">
+            ${reportContent}
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+    }
+  }, [submittedFormData, student]);
+
+  const handleDownloadReport = useCallback(() => {
+    if (!submittedFormData || !student) return;
+
+    const reportContent = `COURSE REGISTRATION/DROP REQUEST REPORT
+
+Student Information:
+- ID: ${student.university_id}
+- Name: ${student.student_name}
+- Campus: ${student.campus || "N/A"}
+- Major: ${student.major || "N/A"}
+
+Requested Actions:
+${submittedFormData.courses
+  .map(
+    (course) => `- ${course.action.toUpperCase()}: Course ID ${course.courseId}`
+  )
+  .join("\n")}
+
+Reason: ${submittedFormData.reason}
+
+Submitted at: ${new Date().toLocaleString()}`;
+
+    const blob = new Blob([reportContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `register-drop-report-${
+      student.university_id
+    }-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [submittedFormData, student]);
+
+  const handleEmailReport = useCallback(() => {
+    if (!submittedFormData || !student) return;
+
+    const subject = `Course Registration/Drop Request - ${student.student_name} (${student.university_id})`;
+    const body = `Please find the course registration/drop request details below:
+
+Student Information:
+- ID: ${student.university_id}
+- Name: ${student.student_name}
+- Campus: ${student.campus || "N/A"}
+- Major: ${student.major || "N/A"}
+
+Requested Actions:
+${submittedFormData.courses
+  .map(
+    (course) => `- ${course.action.toUpperCase()}: Course ID ${course.courseId}`
+  )
+  .join("\n")}
+
+Reason: ${submittedFormData.reason}
+
+Submitted at: ${new Date().toLocaleString()}`;
+
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+  }, [submittedFormData, student]);
 
   // Hook for fetching courses data
   const {
@@ -337,6 +476,57 @@ export default function StudentDetailPage() {
     },
     [courses, courseCards, dropCourseCards, updateCourseCard]
   );
+
+  // Form submission handler
+  const handleSubmit = useCallback(async () => {
+    if (!student || !reason.trim()) {
+      return;
+    }
+
+    // Prepare courses data
+    const registerCourses = courseCards
+      .filter((card) => card.selectedCourse)
+      .map((card) => ({
+        courseId: card.selectedCourse!.course_id,
+        action: "register" as const,
+      }));
+
+    const dropCourses = dropCourseCards
+      .filter((card) => card.selectedCourse)
+      .map((card) => ({
+        courseId: card.selectedCourse!.course_id,
+        action: "drop" as const,
+      }));
+
+    const allCourses = [...registerCourses, ...dropCourses];
+
+    if (allCourses.length === 0) {
+      return;
+    }
+
+    const formData: RegisterDropCourseFormData = {
+      university_id: student.university_id,
+      courses: allCourses,
+      reason: reason.trim(),
+    };
+
+    try {
+      console.log("Submitting form data:", formData);
+      await submitForm(formData);
+      setSubmittedFormData(formData);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      // Additional logging for debugging
+      if (error && typeof error === "object") {
+        console.error("Error details:", {
+          message: (error as any).message,
+          errors: (error as any).errors,
+          status: (error as any).status,
+        });
+      }
+    }
+  }, [student, reason, courseCards, dropCourseCards, submitForm]);
 
   if (loading) {
     return <main className="container mx-auto p-6 space-y-6">loading...</main>;
@@ -940,17 +1130,159 @@ export default function StudentDetailPage() {
         <h2 className="text-lg font-medium mb-2">Your Comments</h2>
         <div className="relative">
           <Textarea
-            placeholder="Type your message here."
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Type your reason for course registration/drop here..."
             className="min-h-[120px] resize-none border-gray-200 text-sm"
           />
 
+          {/* Debug Section - Remove this in production */}
+          {process.env.NODE_ENV === "development" && (
+            <details className="mt-4 text-xs">
+              <summary className="cursor-pointer text-gray-500">
+                Debug: Form Data
+              </summary>
+              <pre className="mt-2 p-2 bg-gray-50 rounded text-xs overflow-auto">
+                {JSON.stringify(
+                  {
+                    university_id: student?.university_id,
+                    courses: [
+                      ...courseCards
+                        .filter((card) => card.selectedCourse)
+                        .map((card) => ({
+                          courseId: card.selectedCourse!.course_id,
+                          action: "register",
+                        })),
+                      ...dropCourseCards
+                        .filter((card) => card.selectedCourse)
+                        .map((card) => ({
+                          courseId: card.selectedCourse!.course_id,
+                          action: "drop",
+                        })),
+                    ],
+                    reason: reason.trim(),
+                  },
+                  null,
+                  2
+                )}
+              </pre>
+            </details>
+          )}
+
+          {(submitError || validationErrors) && (
+            <div className="mt-2 space-y-2">
+              {submitError && (
+                <div className="flex items-center gap-1 text-xs text-red-500">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>{submitError}</span>
+                </div>
+              )}
+              {validationErrors && (
+                <div className="space-y-1">
+                  {Object.entries(validationErrors).map(([field, errors]) => (
+                    <div key={field} className="text-xs text-red-500">
+                      <strong className="capitalize">{field}:</strong>{" "}
+                      {Array.isArray(errors) ? errors.join(", ") : errors}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex justify-end mt-4">
-            <Button className="bg-black text-white text-sm px-6 py-2 rounded">
-              Send Request
+            <Button
+              onClick={handleSubmit}
+              disabled={
+                submitLoading ||
+                !reason.trim() ||
+                (courseCards.every((card) => !card.selectedCourse) &&
+                  dropCourseCards.every((card) => !card.selectedCourse))
+              }
+              className="bg-black text-white text-sm px-6 py-2 rounded"
+            >
+              {submitLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Send Request"
+              )}
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-green-700">
+              <CheckCircle className="h-5 w-5" />
+              Request Submitted Successfully!
+            </DialogTitle>
+            <DialogDescription>
+              Your course registration/drop request has been submitted and is
+              being processed.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 mt-4">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                handlePreviewReport();
+                setShowSuccessModal(false);
+              }}
+            >
+              Preview Report
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                handleDownloadReport();
+                setShowSuccessModal(false);
+              }}
+            >
+              Download Report
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                handleEmailReport();
+                setShowSuccessModal(false);
+              }}
+            >
+              Email Report
+            </Button>
+
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowSuccessModal(false)}
+              >
+                Close
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  navigate("/dashboard/students");
+                }}
+              >
+                Back to Students
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

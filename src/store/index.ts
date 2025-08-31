@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
+import registerDropCoursesReducer from './slices/registerDropCoursesSlice';
 
 // Redux persist configuration
 const persistConfig = {
@@ -13,6 +14,7 @@ const persistConfig = {
 // Combine reducers
 const rootReducer = combineReducers({
     auth: authReducer,
+    registerDropCourses: registerDropCoursesReducer,
 });
 
 // Create persisted reducer
