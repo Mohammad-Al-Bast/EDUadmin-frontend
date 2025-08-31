@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent
+  ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
   BarChart,
@@ -32,7 +32,6 @@ import {
   Shield,
   UserCheck,
   UserX,
-  Building,
   Calendar,
   RefreshCw,
   AlertCircle,
@@ -71,7 +70,7 @@ const HomePage = () => {
 
   if (hasError) {
     return (
-      <div className="p-6">
+      <div>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -93,7 +92,7 @@ const HomePage = () => {
 
   if (!summary) {
     return (
-      <div className="p-6">
+      <div>
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>No dashboard data available</AlertDescription>
@@ -103,13 +102,19 @@ const HomePage = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            {summary.datetime.human_readable}
+            {new Date().toLocaleString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </p>
         </div>
         <Button onClick={refetchAll} variant="outline">
@@ -127,64 +132,65 @@ const HomePage = () => {
       )}
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Students by Year */}
-        <ChartCard
-          title="Students by Year"
-          description="Distribution of students across academic years"
-          icon={<GraduationCap className="h-4 w-4" />}
-        >
-          <StudentsByYearChart data={summary.charts.students_by_year} />
-        </ChartCard>
-
-        {/* Students by Campus */}
-        <ChartCard
-          title="Students by Campus"
-          description="Student distribution across campuses"
-          icon={<Building className="h-4 w-4" />}
-        >
-          <StudentsByCampusChart data={summary.charts.students_by_campus} />
-        </ChartCard>
+        <div className="overflow-hidden flex justify-center items-center">
+          <ChartCard
+            title="Students by Year"
+            description="Distribution of students across academic years"
+            icon={<GraduationCap className="h-4 w-4" />}
+          >
+            <StudentsByYearChart data={summary.charts.students_by_year} />
+          </ChartCard>
+        </div>
 
         {/* Students by School */}
-        <ChartCard
-          title="Students by School"
-          description="Student enrollment by school"
-          icon={<GraduationCap className="h-4 w-4" />}
-        >
-          <StudentsBySchoolChart data={summary.charts.students_by_school} />
-        </ChartCard>
+        <div className="overflow-hidden flex justify-center items-center">
+          <ChartCard
+            title="Students by School"
+            description="Student enrollment by school"
+            icon={<GraduationCap className="h-4 w-4" />}
+          >
+            <StudentsBySchoolChart data={summary.charts.students_by_school} />
+          </ChartCard>
+        </div>
 
         {/* Users Verification */}
-        <ChartCard
-          title="User Verification Status"
-          description="Breakdown of verified vs unverified users"
-          icon={<UserCheck className="h-4 w-4" />}
-        >
-          <UsersVerificationChart data={summary.charts.users_verification} />
-        </ChartCard>
+        <div className="overflow-hidden flex justify-center items-center">
+          <ChartCard
+            title="User Verification Status"
+            description="Breakdown of verified vs unverified users"
+            icon={<UserCheck className="h-4 w-4" />}
+          >
+            <UsersVerificationChart data={summary.charts.users_verification} />
+          </ChartCard>
+        </div>
 
         {/* Users Role */}
-        <ChartCard
-          title="User Roles"
-          description="Distribution of user roles"
-          icon={<Shield className="h-4 w-4" />}
-        >
-          <UsersRoleChart data={summary.charts.users_role} />
-        </ChartCard>
+        <div className="overflow-hidden flex justify-center items-center">
+          <ChartCard
+            title="User Roles"
+            description="Distribution of user roles"
+            icon={<Shield className="h-4 w-4" />}
+          >
+            <UsersRoleChart data={summary.charts.users_role} />
+          </ChartCard>
+        </div>
 
         {/* Students by Semester */}
-        {stats && (
-          <ChartCard
-            title="Students by Semester"
-            description="Student enrollment per semester"
-            icon={<Calendar className="h-4 w-4" />}
-          >
-            <StudentsBySemesterChart
-              data={stats.additional_charts.students_by_semester}
-            />
-          </ChartCard>
-        )}
+        <div className="overflow-hidden flex justify-center items-center">
+          {stats && (
+            <ChartCard
+              title="Students by Semester"
+              description="Student enrollment per semester"
+              icon={<Calendar className="h-4 w-4" />}
+            >
+              <StudentsBySemesterChart
+                data={stats.additional_charts.students_by_semester}
+              />
+            </ChartCard>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -298,7 +304,7 @@ const ChartCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Card>
+    <Card className="w-full!">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           {icon}
@@ -306,7 +312,9 @@ const ChartCard = ({
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className=" flex items-center justify-center">
+        {children}
+      </CardContent>
     </Card>
   );
 };
@@ -331,31 +339,6 @@ const StudentsByYearChart = ({ data }: { data: any[] }) => {
         <YAxis />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar dataKey="count" fill={COLORS.blue} radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ChartContainer>
-  );
-};
-
-const StudentsByCampusChart = ({ data }: { data: any[] }) => {
-  if (!data || data.length === 0) {
-    return <EmptyChart message="No campus data available" />;
-  }
-
-  const chartConfig = {
-    count: {
-      label: "Students",
-      color: COLORS.green,
-    },
-  };
-
-  return (
-    <ChartContainer config={chartConfig} className="h-[300px]">
-      <BarChart data={data} layout="horizontal">
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" />
-        <YAxis dataKey="campus" type="category" width={100} />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="count" fill={COLORS.green} radius={[0, 4, 4, 0]} />
       </BarChart>
     </ChartContainer>
   );
@@ -519,7 +502,7 @@ const EmptyChart = ({ message }: { message: string }) => {
 
 const DashboardSkeleton = () => {
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header Skeleton */}
       <div className="flex items-center justify-between">
         <div>
@@ -567,7 +550,7 @@ const DashboardSkeleton = () => {
       </Card>
 
       {/* Charts Skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {Array.from({ length: 6 }).map((_, index) => (
           <Card key={index}>
             <CardHeader>

@@ -36,7 +36,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ routes }) => {
       </div>
 
       {/* Main Content */}
-      <main className="w-full max-w-[350px] mx-auto my-auto">
+      <main className="w-full max-w-[350px] mx-auto my-8">
         <div className="text-2xl text-center mb-6">
           {currentRoute && (
             <div className="flex flex-col items-center gap-2">
