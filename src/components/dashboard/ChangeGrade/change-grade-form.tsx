@@ -563,9 +563,9 @@ export function ChangeGradeForm() {
   };
 
   return (
-    <div className="">
+    <div className="overflow-x-hidden">
       {/* Student Information Row */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Student id */}
         <div className="space-y-2">
           <Label htmlFor="studentId" className="text-sm font-medium">
@@ -632,7 +632,7 @@ export function ChangeGradeForm() {
       </div>
 
       {/* Course Information Row */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Major */}
         <div className="space-y-2">
           <Label htmlFor="major" className="text-sm font-medium">
@@ -677,7 +677,7 @@ export function ChangeGradeForm() {
       </div>
 
       {/* Course Details Row */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="space-y-2">
           <Label htmlFor="courseCode" className="text-sm font-medium">
             Course Code
@@ -704,7 +704,7 @@ export function ChangeGradeForm() {
             )}
           </div>
           {coursesError && (
-            <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+            <div className="flex items-center gap-1 text-red-500 mt-1">
               <AlertCircle className="h-3 w-3" />
               <span>Failed to load courses</span>
               <button
@@ -743,7 +743,7 @@ export function ChangeGradeForm() {
             )}
           </div>
           {coursesError && (
-            <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+            <div className="flex items-center gap-1 text-red-500 mt-1">
               <AlertCircle className="h-3 w-3" />
               <span>Failed to load courses</span>
             </div>
@@ -783,13 +783,13 @@ export function ChangeGradeForm() {
             )}
           </div>
           {coursesError && (
-            <div className="flex items-center gap-1 text-xs text-red-500 mt-1">
+            <div className="flex items-center gap-1 text-red-500 mt-1">
               <AlertCircle className="h-3 w-3" />
               <span>Failed to load sections</span>
             </div>
           )}
           {!coursesError && selectedCourse && sectionOptions.length === 0 && (
-            <div className="flex items-center gap-1 text-xs text-amber-600 mt-1">
+            <div className="flex items-center gap-1 text-amber-600 mt-1">
               <AlertCircle className="h-3 w-3" />
               <span>No sections available for this course</span>
             </div>
@@ -800,17 +800,15 @@ export function ChangeGradeForm() {
       {/* Course Grades Section */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <Label className="text-sm font-medium">Course Grades</Label>
+          <Label className="font-medium">Course Grades</Label>
           <Button type="button" onClick={addGradeRow}>
             Add Custom
           </Button>
         </div>
 
         {/* Grade Headers */}
-        <div className="grid grid-cols-6 gap-2 mb-2 text-xs text-gray-600 font-medium">
+        <div className="grid grid-cols-4 gap-2 mb-2 text-gray-600 font-medium">
           <div>Grade Type</div>
-          {/* <div>Predefined %</div>
-          <div>Custom %</div> */}
           <div>Grade Percentage</div>
           <div>Grade</div>
           <div>Remove</div>
@@ -818,14 +816,14 @@ export function ChangeGradeForm() {
 
         {/* Grade Rows */}
         {gradeRows.map((row) => (
-          <div key={row.id} className="grid grid-cols-6 gap-2 mb-2">
+          <div key={row.id} className="grid grid-cols-4 gap-2 mb-2">
             <Select
               value={row.gradeType}
               onValueChange={(value) =>
                 updateGradeRow(row.id, "gradeType", value)
               }
             >
-              <SelectTrigger className="text-xs">
+              <SelectTrigger>
                 <SelectValue placeholder="Grade Type" />
               </SelectTrigger>
               <SelectContent>
@@ -836,22 +834,6 @@ export function ChangeGradeForm() {
                 <SelectItem value="final">Final</SelectItem>
               </SelectContent>
             </Select>
-            {/* <Input
-              value={row.predefinedPercent}
-              onChange={(e) =>
-                updateGradeRow(row.id, "predefinedPercent", e.target.value)
-              }
-              placeholder="Predefined %"
-              className="text-xs"
-            />
-            <Input
-              value={row.customPercent}
-              onChange={(e) =>
-                updateGradeRow(row.id, "customPercent", e.target.value)
-              }
-              placeholder="Custom %"
-              className="text-xs"
-            /> */}
             <Input
               value={row.tenPercent}
               onChange={(e) =>
@@ -863,14 +845,12 @@ export function ChangeGradeForm() {
               value={row.grade}
               onChange={(e) => updateGradeRow(row.id, "grade", e.target.value)}
               placeholder="Grade"
-              className="text-xs"
             />
             <div className="flex justify-start">
               {gradeRows.length > 2 && row.id !== "1" && row.id !== "2" ? (
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
                   onClick={() => removeGradeRow(row.id)}
                   className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                 >
@@ -895,58 +875,57 @@ export function ChangeGradeForm() {
       )}
 
       {/* Curve and Final Grade Headers */}
-      <div className="grid grid-cols-6 gap-2 mb-2 text-xs text-gray-600 font-medium">
-        <div>Curve Adjustment</div>
-        <div>Final Grade</div>
-        <div>Letter Grade</div>
-        <div></div>
-        <div></div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2 text-gray-600 font-medium">
+        <div className="hidden md:block">Curve Adjustment</div>
+        <div className="hidden md:block">Final Grade</div>
+        <div className="hidden md:block">Letter Grade</div>
       </div>
 
       {/* Curve and Final Grade Row */}
-      <div className="grid grid-cols-6 gap-2 mb-6">
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={decreaseCurve}
-            className="h-7 w-7 p-0"
-          >
-            <Minus className="h-3 w-3" />
-          </Button>
-          <Input
-            id="curve"
-            value={curve.toString()}
-            onChange={(e) => handleCurveInputChange(e.target.value)}
-            className="text-xs text-center h-7"
-            placeholder="0"
-            min="0"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={increaseCurve}
-            className="h-7 w-7 p-0"
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
+        <div className="flex gap-2 items-center">
+          <div className="mb-2 text-gray-600 font-medium md:hidden">
+            Curve Adjustment:
+          </div>
+          <div className="flex items-center gap-1">
+            <Button type="button" variant="outline" onClick={decreaseCurve}>
+              <Minus className="h-3 w-3" />
+            </Button>
+            <Input
+              id="curve"
+              value={curve.toString()}
+              onChange={(e) => handleCurveInputChange(e.target.value)}
+              className="text-center"
+              placeholder="0"
+              min="0"
+            />
+            <Button type="button" variant="outline" onClick={increaseCurve}>
+              <Plus className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
-        <Input
-          id="final-grade"
-          value={(calculateWeightedGrade() + curve).toFixed(1)}
-          disabled
-          className="text-xs"
-        />
-        <Input
-          id="letter-grade"
-          value={getLetterGrade(calculateWeightedGrade() + curve)}
-          disabled
-          className="text-xs text-center font-medium"
-        />
-        <div></div>
-        <div></div>
+
+        <div className="flex gap-2 items-center">
+          <div className="mb-2 text-gray-600 font-medium md:hidden">
+            Final Grade:
+          </div>
+          <Input
+            id="final-grade"
+            value={(calculateWeightedGrade() + curve).toFixed(1)}
+            disabled
+          />
+        </div>
+
+        <div className="flex gap-2 items-center">
+          <div className="mb-2 text-gray-600 font-medium md:hidden">
+            Letter Grade:
+          </div>
+          <Input
+            id="letter-grade"
+            value={getLetterGrade(calculateWeightedGrade() + curve)}
+            className="text-center font-medium"
+          />
+        </div>
       </div>
 
       {/* Reason for Change */}
@@ -1153,7 +1132,6 @@ export function ChangeGradeForm() {
               <div className="flex gap-2 justify-center flex-wrap">
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => {
                     handlePreviewReport();
                     setShowSuccessModal(false);
@@ -1171,7 +1149,6 @@ export function ChangeGradeForm() {
 
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => {
                     handleDownloadReport();
                     setShowSuccessModal(false);
@@ -1189,7 +1166,6 @@ export function ChangeGradeForm() {
 
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => {
                     handleEmailReport();
                     setShowSuccessModal(false);
