@@ -1210,7 +1210,8 @@ Submitted at: ${new Date().toLocaleString()}`;
               disabled={
                 submitLoading ||
                 (courseCards.every((card) => !card.selectedCourse) &&
-                  dropCourseCards.every((card) => !card.selectedCourse))
+                  dropCourseCards.every((card) => !card.selectedCourse)) ||
+                !!submittedFormData
               }
               className="bg-black text-white text-sm px-6 py-2 rounded"
             >
@@ -1219,10 +1220,33 @@ Submitted at: ${new Date().toLocaleString()}`;
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Submitting...
                 </>
+              ) : submittedFormData ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Submitted Successfully
+                </>
               ) : (
                 "Send Request"
               )}
             </Button>
+            {submittedFormData && (
+              <>
+                <Button
+                  variant="default"
+                  onClick={() => setShowSuccessModal(true)}
+                  className="ml-2"
+                >
+                  Generate Reports
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/dashboard/students")}
+                  className="ml-2"
+                >
+                  Back to Students
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
