@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useStudent } from "@/hooks/students/use-students";
 import { Button } from "@/components/ui/button";
 import { ErrorDisplay } from "@/components/ui/error-display";
+import { StudentDetailSkeleton } from "./student-detail-skeleton";
 import {
   AlertCircle,
   ArrowLeft,
@@ -21,7 +22,6 @@ import { useCallback, useMemo, useState } from "react";
 import type { Course } from "@/types/courses.types";
 import { Separator } from "@/components/ui/separator";
 import { useRegisterDropCourses } from "@/hooks/register-drop-courses";
-import { useReportGenerator } from "@/hooks/reports/use-report-generator";
 import type { RegisterDropCourseFormData } from "@/services/register-drop-courses";
 import {
   Dialog,
@@ -205,9 +205,7 @@ export default function StudentDetailPage() {
     loading: submitLoading,
     error: submitError,
     validationErrors,
-    success,
     submitForm,
-    resetFormStatus,
   } = useRegisterDropCourses();
 
   // Simple report generation handlers for register/drop courses
@@ -680,7 +678,11 @@ Submitted at: ${new Date().toLocaleString()}`;
   }, [student, reason, courseCards, dropCourseCards, submitForm]);
 
   if (loading) {
-    return <main className="container mx-auto p-6 space-y-6">loading...</main>;
+    return (
+      <main className="container mx-auto space-y-6">
+        <StudentDetailSkeleton />
+      </main>
+    );
   }
 
   if (error) {
