@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -24,6 +23,15 @@ export default function TeamsPage() {
 
   const handleAddClick = () => {
     setIsDialogOpen(true);
+  };
+
+  const handleAddSuccess = () => {
+    setIsDialogOpen(false);
+    refetch(); // Refresh the team members list
+  };
+
+  const handleAddCancel = () => {
+    setIsDialogOpen(false);
   };
 
   if (loading) {
@@ -68,17 +76,17 @@ export default function TeamsPage() {
       </main>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add Team Member</DialogTitle>
             <DialogDescription>
               Add new team member to the system
             </DialogDescription>
           </DialogHeader>
-          <AddTeamMemberForm />
-          <DialogFooter>
-            <Button type="submit">Send Invite</Button>
-          </DialogFooter>
+          <AddTeamMemberForm
+            onSuccess={handleAddSuccess}
+            onCancel={handleAddCancel}
+          />
         </DialogContent>
       </Dialog>
     </>
