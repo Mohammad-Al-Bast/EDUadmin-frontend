@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import type { ChangeGradeFormData } from '@/services/change-grade';
+import { selectUser } from '@/store/selectors/authSelectors';
 import { 
   generateHTMLReport, 
   convertFormDataToReportData, 
@@ -15,6 +17,7 @@ interface UseReportGeneratorOptions {
 
 export const useReportGenerator = (options: UseReportGeneratorOptions = {}) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const currentUser = useSelector(selectUser);
 
   const generateReport = async (
     formData: ChangeGradeFormData,
@@ -23,11 +26,11 @@ export const useReportGenerator = (options: UseReportGeneratorOptions = {}) => {
     setIsGenerating(true);
     
     try {
-      // Mock submitter info - in a real app, this would come from auth context
+      // Get submitter info from the logged-in user
       const submitterInfo = {
-        name: 'Current User', // This should come from authentication context
-        email: 'user@liu.edu.lb', // This should come from authentication context
-        role: 'Faculty Member', // This should come from user role
+        name: currentUser?.name || 'Current User',
+        email: currentUser?.email || 'user@liu.edu.lb',
+        role: currentUser?.is_admin ? 'Administrator' : 'Faculty Member',
         ip: '192.168.1.100' // This could be obtained from a service
       };
 

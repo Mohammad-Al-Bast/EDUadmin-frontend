@@ -11,6 +11,9 @@ import {
   X,
   CheckCircle,
   AlertTriangle,
+  FileText,
+  Download,
+  Mail,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +25,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { Course } from "@/types/courses.types";
 import { Separator } from "@/components/ui/separator";
 import { useRegisterDropCourses } from "@/hooks/register-drop-courses";
+import { useCourseRegistrationReportGenerator } from "@/hooks/reports";
 import type { RegisterDropCourseFormData } from "@/services/register-drop-courses";
 import {
   Dialog,
@@ -208,109 +212,16 @@ export default function StudentDetailPage() {
     submitForm,
   } = useRegisterDropCourses();
 
-  // Simple report generation handlers for register/drop courses
-  const handlePreviewReport = useCallback(() => {
-    if (!submittedFormData || !student) return;
-
-    const reportContent = `
-      COURSE REGISTRATION/DROP REQUEST REPORT
-      
-      Student Information:
-      - ID: ${student.university_id}
-      - Name: ${student.student_name}
-      - Campus: ${student.campus || "N/A"}
-      - Major: ${student.major || "N/A"}
-      
-      Requested Actions:
-      ${submittedFormData.courses
-        .map(
-          (course) =>
-            `- ${course.action.toUpperCase()}: Course ID ${course.courseId}`
-        )
-        .join("\n      ")}
-      
-      Reason: ${submittedFormData.reason}
-      
-      Submitted at: ${new Date().toLocaleString()}
-    `;
-
-    const newWindow = window.open("", "_blank");
-    if (newWindow) {
-      newWindow.document.write(`
-        <html>
-          <head><title>Course Registration/Drop Report</title></head>
-          <body style="font-family: monospace; white-space: pre-wrap; padding: 20px;">
-            ${reportContent}
-          </body>
-        </html>
-      `);
-      newWindow.document.close();
-    }
-  }, [submittedFormData, student]);
-
-  const handleDownloadReport = useCallback(() => {
-    if (!submittedFormData || !student) return;
-
-    const reportContent = `COURSE REGISTRATION/DROP REQUEST REPORT
-
-Student Information:
-- ID: ${student.university_id}
-- Name: ${student.student_name}
-- Campus: ${student.campus || "N/A"}
-- Major: ${student.major || "N/A"}
-
-Requested Actions:
-${submittedFormData.courses
-  .map(
-    (course) => `- ${course.action.toUpperCase()}: Course ID ${course.courseId}`
-  )
-  .join("\n")}
-
-Reason: ${submittedFormData.reason}
-
-Submitted at: ${new Date().toLocaleString()}`;
-
-    const blob = new Blob([reportContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `register-drop-report-${
-      student.university_id
-    }-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, [submittedFormData, student]);
-
-  const handleEmailReport = useCallback(() => {
-    if (!submittedFormData || !student) return;
-
-    const subject = `Course Registration/Drop Request - ${student.student_name} (${student.university_id})`;
-    const body = `Please find the course registration/drop request details below:
-
-Student Information:
-- ID: ${student.university_id}
-- Name: ${student.student_name}
-- Campus: ${student.campus || "N/A"}
-- Major: ${student.major || "N/A"}
-
-Requested Actions:
-${submittedFormData.courses
-  .map(
-    (course) => `- ${course.action.toUpperCase()}: Course ID ${course.courseId}`
-  )
-  .join("\n")}
-
-Reason: ${submittedFormData.reason}
-
-Submitted at: ${new Date().toLocaleString()}`;
-
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
-  }, [submittedFormData, student]);
+  // Hook for course registration report generation
+  const { generateReportPreview, downloadReport, emailReport } =
+    useCourseRegistrationReportGenerator({
+      onSuccess: (_reportData) => {
+        // Report generated successfully
+      },
+      onError: (_error) => {
+        // Handle report generation error
+      },
+    });
 
   // Hook for fetching courses data
   const {
@@ -676,6 +587,22 @@ Submitted at: ${new Date().toLocaleString()}`;
       }
     }
   }, [student, reason, courseCards, dropCourseCards, submitForm]);
+
+  // Report generation handlers using proper course registration report generator
+  const handlePreviewReport = useCallback(() => {
+    if (!submittedFormData || !student || !courses) return;
+    generateReportPreview(submittedFormData, student, courses);
+  }, [submittedFormData, student, courses, generateReportPreview]);
+
+  const handleDownloadReport = useCallback(() => {
+    if (!submittedFormData || !student || !courses) return;
+    downloadReport(submittedFormData, student, courses);
+  }, [submittedFormData, student, courses, downloadReport]);
+
+  const handleEmailReport = useCallback(() => {
+    if (!submittedFormData || !student || !courses) return;
+    emailReport(submittedFormData, student, courses);
+  }, [submittedFormData, student, courses, emailReport]);
 
   if (loading) {
     return (
@@ -1433,50 +1360,58 @@ Submitted at: ${new Date().toLocaleString()}`;
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 mt-4">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                handlePreviewReport();
-                setShowSuccessModal(false);
-              }}
-            >
-              Preview Report
-            </Button>
+          <div className="space-y-4 mt-4">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-4 font-medium">
+                Generate Report
+              </p>
+              <div className="flex gap-2 justify-center flex-wrap">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handlePreviewReport();
+                    setShowSuccessModal(false);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <FileText className="h-4 w-4" />
+                  Preview
+                </Button>
 
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                handleDownloadReport();
-                setShowSuccessModal(false);
-              }}
-            >
-              Download Report
-            </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleDownloadReport();
+                    setShowSuccessModal(false);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </Button>
 
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                handleEmailReport();
-                setShowSuccessModal(false);
-              }}
-            >
-              Email Report
-            </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleEmailReport();
+                    setShowSuccessModal(false);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Mail className="h-4 w-4" />
+                  Email
+                </Button>
+              </div>
+            </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex justify-center gap-2 pt-4 border-t">
               <Button
                 variant="outline"
-                className="flex-1"
                 onClick={() => setShowSuccessModal(false)}
               >
                 Close
               </Button>
               <Button
-                className="flex-1"
                 onClick={() => {
                   setShowSuccessModal(false);
                   navigate("/dashboard/students");

@@ -1,4 +1,7 @@
 import type { ChangeGradeFormData } from '@/services/change-grade';
+import type { RegisterDropCourseFormData } from '@/services/register-drop-courses';
+import type { Course } from '@/types/courses.types';
+import type { Student } from '@/types/students/students.types';
 
 export interface ReportData {
   // Organization info
@@ -276,14 +279,6 @@ export const getReportHTMLTemplate = (): string => {
                     <td style="padding:3px 0; color:#444;">User Email:</td>
                     <td style="padding:3px 0; color:#222;">{{submitted_by_email}}</td>
                   </tr>
-                  <tr>
-                    <td style="padding:3px 0; color:#444;">IP Address:</td>
-                    <td style="padding:3px 0; color:#222;">{{submitted_by_ip}}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:3px 0; color:#444;">Request Status:</td>
-                    <td style="padding:3px 0; color:#0f4c81; font-weight:600;">{{status}}</td>
-                  </tr>
                 </table>
               </td>
               <td style="padding:12px 16px; vertical-align:top; width:50%;">
@@ -394,56 +389,34 @@ export const getReportHTMLTemplate = (): string => {
               <tr>
                 <td style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de; border-bottom:1px solid #d0d7de;">
                   <div style="font-weight:600; color:#333;">Instructor</div>
-                  <div style="margin-top:28px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{instructor_name}}</div>
-                  <div style="font-size:11px; color:#777;">Signed: {{instructor_signed_at}}</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{instructor_name}}</div>
                 </td>
                 <td style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de; border-bottom:1px solid #d0d7de;">
                   <div style="font-weight:600; color:#333;">Chair / Associate Chair</div>
-                  <div style="margin-top:28px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{chair_name}}</div>
-                  <div style="font-size:11px; color:#777;">Signed: {{chair_signed_at}}</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{chair_name}}</div>
                 </td>
                 <td style="padding:10px 12px; width:34%; border-bottom:1px solid #d0d7de;">
                   <div style="font-weight:600; color:#333;">Dean</div>
-                  <div style="margin-top:28px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{dean_name}}</div>
-                  <div style="font-size:11px; color:#777;">Signed: {{dean_signed_at}}</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{dean_name}}</div>
                 </td>
               </tr>
               <tr>
                 <td style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de;">
                   <div style="font-weight:600; color:#333;">Academic Director</div>
-                  <div style="margin-top:28px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{academic_director_name}}</div>
-                  <div style="font-size:11px; color:#777;">Signed: {{academic_director_signed_at}}</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{academic_director_name}}</div>
                 </td>
                 <td style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de;">
                   <div style="font-weight:600; color:#333;">VPA / Admin</div>
-                  <div style="margin-top:28px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{vpa_admin_name}}</div>
-                  <div style="font-size:11px; color:#777;">Signed: {{vpa_admin_signed_at}}</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{vpa_admin_name}}</div>
                 </td>
                 <td style="padding:10px 12px; width:34%;">
                   <div style="font-weight:600; color:#333;">Registrar</div>
-                  <div style="margin-top:28px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{registrar_name}}</div>
-                  <div style="font-size:11px; color:#777;">Signed: {{registrar_signed_at}}</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">{{registrar_name}}</div>
                 </td>
               </tr>
             </tbody>
           </table>
           <div style="font-size:11px; color:#666; margin-top:6px;">(Digital timestamps represent electronic approval where applicable.)</div>
-        </td>
-      </tr>
-    </table>
-
-    <!-- Required Documents -->
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
-      <tr>
-        <td style="padding:0 24px 16px 24px;">
-          <div style="font-weight:600; font-size:14px; margin:0 0 6px 0; color:#0f4c81;">Required Documents</div>
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse; font-size:12px; border:1px solid #d0d7de; background:#fff;">
-            <tbody>
-              <tr>
-                <td style="padding:12px; color:#777; font-style:italic; text-align:center;">{{additional_notes}}</td>
-              </tr>
-            </tbody>
-          </table>
         </td>
       </tr>
     </table>
@@ -500,6 +473,561 @@ export const openReportInNewWindow = (htmlContent: string): void => {
 };
 
 export const downloadReportAsHTML = (htmlContent: string, filename: string = 'change-grade-report.html'): void => {
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
+
+// ===============================
+// COURSE REGISTRATION REPORT DATA
+// ===============================
+
+export interface CourseRegistrationReportData {
+  // Organization info
+  logo_url: string;
+  organization_name: string;
+  department_or_faculty: string;
+  
+  // Report meta
+  report_id: string;
+  report_generated_at: string;
+  
+  // Submission details
+  submitted_at: string;
+  submitted_by_name: string;
+  submitted_by_role: string;
+  submitted_by_email: string;
+  submitted_by_ip: string;
+  status: string;
+  
+  // Student info
+  student_name: string;
+  student_id: string;
+  student_major: string;
+  semester: string;
+  campus: string;
+  
+  // Courses
+  registered_courses: CourseInfo[];
+  dropped_courses: CourseInfo[];
+  
+  // Signatures (initially empty for new submissions)
+  instructor_name: string;
+  instructor_signed_at: string;
+  chair_name: string;
+  chair_signed_at: string;
+  dean_name: string;
+  dean_signed_at: string;
+  academic_director_name: string;
+  academic_director_signed_at: string;
+  vpa_admin_name: string;
+  vpa_admin_signed_at: string;
+  registrar_name: string;
+  registrar_signed_at: string;
+  
+  // Additional
+  additional_notes: string;
+}
+
+export interface CourseInfo {
+  course_code: string;
+  course_name: string;
+  section: string;
+  semester: string;
+  campus: string;
+  instructor?: string;
+  credits?: number;
+  room?: string;
+  schedule?: string;
+  days?: string;
+  time?: string;
+}
+
+export const convertCourseFormDataToReportData = (
+  formData: RegisterDropCourseFormData,
+  studentData: Student,
+  coursesData: Course[],
+  submitterInfo: {
+    name: string;
+    email: string;
+    role: string;
+    ip: string;
+  }
+): CourseRegistrationReportData => {
+  const reportId = generateReportId();
+  const currentDateTime = getCurrentDateTime();
+  
+  // Separate registered and dropped courses
+  const registeredCourseIds = formData.courses
+    .filter(course => course.action === 'register')
+    .map(course => course.courseId);
+    
+  const droppedCourseIds = formData.courses
+    .filter(course => course.action === 'drop')
+    .map(course => course.courseId);
+  
+  // Get course details from coursesData
+  const registeredCourses: CourseInfo[] = registeredCourseIds.map(courseId => {
+    const courseDetail = coursesData.find(c => c.course_id === courseId);
+    return courseDetail ? {
+      course_code: courseDetail.course_code,
+      course_name: courseDetail.course_name,
+      section: courseDetail.section,
+      semester: `${studentData.semester || 'N/A'}/${studentData.year || 'N/A'}`,
+      campus: studentData.campus || 'N/A',
+      instructor: courseDetail.instructor,
+      credits: courseDetail.credits,
+      room: courseDetail.room,
+      schedule: courseDetail.schedule,
+      days: courseDetail.days,
+      time: courseDetail.time
+    } : {
+      course_code: 'N/A',
+      course_name: 'Course not found',
+      section: 'N/A',
+      semester: `${studentData.semester || 'N/A'}/${studentData.year || 'N/A'}`,
+      campus: studentData.campus || 'N/A'
+    };
+  });
+  
+  const droppedCourses: CourseInfo[] = droppedCourseIds.map(courseId => {
+    const courseDetail = coursesData.find(c => c.course_id === courseId);
+    return courseDetail ? {
+      course_code: courseDetail.course_code,
+      course_name: courseDetail.course_name,
+      section: courseDetail.section,
+      semester: `${studentData.semester || 'N/A'}/${studentData.year || 'N/A'}`,
+      campus: studentData.campus || 'N/A',
+      instructor: courseDetail.instructor,
+      credits: courseDetail.credits,
+      room: courseDetail.room,
+      schedule: courseDetail.schedule,
+      days: courseDetail.days,
+      time: courseDetail.time
+    } : {
+      course_code: 'N/A',
+      course_name: 'Course not found',
+      section: 'N/A',
+      semester: `${studentData.semester || 'N/A'}/${studentData.year || 'N/A'}`,
+      campus: studentData.campus || 'N/A'
+    };
+  });
+
+  return {
+    // Organization info
+    logo_url: '/images/liu.png',
+    organization_name: 'Lebanese International University',
+    department_or_faculty: 'Academic Affairs',
+    
+    // Report meta
+    report_id: reportId,
+    report_generated_at: currentDateTime,
+    
+    // Submission details
+    submitted_at: currentDateTime,
+    submitted_by_name: submitterInfo.name,
+    submitted_by_role: submitterInfo.role,
+    submitted_by_email: submitterInfo.email,
+    submitted_by_ip: submitterInfo.ip,
+    status: 'Pending Review',
+    
+    // Student info
+    student_name: studentData.student_name,
+    student_id: studentData.university_id.toString(),
+    student_major: studentData.major || 'N/A',
+    semester: `${studentData.semester || 'N/A'}/${studentData.year || 'N/A'}`,
+    campus: studentData.campus || 'N/A',
+    
+    // Courses
+    registered_courses: registeredCourses,
+    dropped_courses: droppedCourses,
+    
+    // Signatures (empty for new submissions)
+    instructor_name: 'Pending',
+    instructor_signed_at: 'Pending',
+    chair_name: 'Pending',
+    chair_signed_at: 'Pending',
+    dean_name: 'Pending',
+    dean_signed_at: 'Pending',
+    academic_director_name: 'Pending',
+    academic_director_signed_at: 'Pending',
+    vpa_admin_name: 'Pending',
+    vpa_admin_signed_at: 'Pending',
+    registrar_name: 'Pending',
+    registrar_signed_at: 'Pending',
+    
+    // Additional
+    additional_notes: formData.reason || 'No additional notes provided.'
+  };
+};
+
+// Course Registration HTML Template
+export const getCourseRegistrationReportHTMLTemplate = (): string => {
+  return `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Course Registration Submission Report</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <style>
+    /* Print & general fallback styles (email clients that keep <style>) */
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 11pt;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .page-wrapper {
+        box-shadow: none !important;
+        margin: 0 !important;
+        border: none !important;
+      }
+
+      a {
+        color: #000 !important;
+        text-decoration: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body
+  style="margin:0; padding:0; background:#f2f4f7; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; color:#222; line-height:1.4;">
+  <!-- Wrapper (kept narrow for email clients, centered for print) -->
+  <div class="page-wrapper"
+    style="max-width:800px; margin:24px auto; background:#ffffff; border:1px solid #d9dde3; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.08); overflow:hidden;">
+
+    <!-- Header with Logo & Title -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+      style="border-collapse:collapse; background:#ffffff;">
+      <tr>
+        <td style="padding:20px 24px; border-bottom:2px solid #0f4c81;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
+            <tr>
+              <td valign="middle" style="width:72px; padding:0 16px 0 0;">
+                <!-- Replace src with actual logo URL -->
+                <img src="{{logo_url}}" alt="Company Logo" style="display:block; max-width:72px; height:auto;" />
+              </td>
+              <td valign="middle" style="padding:0;">
+                <div
+                  style="font-size:18px; font-weight:600; letter-spacing:.5px; color:#0f4c81; text-transform:uppercase;">
+                  {{organization_name}}</div>
+                <div style="font-size:14px; color:#555; margin-top:2px;">{{department_or_faculty}}</div>
+                <div style="font-size:22px; font-weight:600; margin-top:10px; color:#222;">Course Registration Form
+                  Submission</div>
+                <div style="font-size:12px; color:#777; margin-top:4px;">Report ID: {{report_id}} &nbsp;|&nbsp;
+                  Generated: {{report_generated_at}}</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Notice / Intro -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
+      <tr>
+        <td style="padding:16px 24px 8px 24px;">
+          <p style="margin:0 0 8px 0; font-size:13px; color:#555;">
+            Below is a structured summary of the submitted Course Registration request. Please review all fields carefully.
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Submission Meta Section -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+      style="border-collapse:collapse; font-size:13px;">
+      <tr>
+        <td style="padding:4px 24px 16px 24px;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+            style="border-collapse:collapse; background:#f7f9fc; border:1px solid #dbe2ea; border-radius:4px;">
+            <tr>
+              <td style="padding:12px 16px; vertical-align:top; width:50%;">
+                <div style="font-weight:600; font-size:14px; margin:0 0 6px 0; color:#0f4c81;">Submission Details</div>
+                <table cellpadding="0" cellspacing="0" role="presentation"
+                  style="border-collapse:collapse; width:100%; font-size:12px;">
+                  <tr>
+                    <td style="padding:3px 0; width:110px; color:#444;">Submitted At:</td>
+                    <td style="padding:3px 0; font-weight:500; color:#222;">{{submitted_at}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 0; color:#444;">Submitted By:</td>
+                    <td style="padding:3px 0; font-weight:500; color:#222;">{{submitted_by_name}}
+                      ({{submitted_by_role}})</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 0; color:#444;">User Email:</td>
+                    <td style="padding:3px 0; color:#222;">{{submitted_by_email}}</td>
+                  </tr>
+                </table>
+              </td>
+              <td style="padding:12px 16px; vertical-align:top; width:50%;">
+                <div style="font-weight:600; font-size:14px; margin:0 0 6px 0; color:#0f4c81;">Student</div>
+                <table cellpadding="0" cellspacing="0" role="presentation"
+                  style="border-collapse:collapse; width:100%; font-size:12px;">
+                  <tr>
+                    <td style="padding:3px 0; width:110px; color:#444;">Student Name:</td>
+                    <td style="padding:3px 0; font-weight:500; color:#222;">{{student_name}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 0; color:#444;">Student ID:</td>
+                    <td style="padding:3px 0; color:#222;">{{student_id}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 0; color:#444;">Major:</td>
+                    <td style="padding:3px 0; color:#222;">{{student_major}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 0; color:#444;">Semester:</td>
+                    <td style="padding:3px 0; color:#222;">{{semester}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 0; color:#444;">Campus:</td>
+                    <td style="padding:3px 0; color:#222;">{{campus}}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Registered Courses -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+      style="border-collapse:collapse; font-size:13px;">
+      <tr>
+        <td style="padding:0 24px 16px 24px;">
+          <div style="background:#ffffff; border:1px solid #dbe2ea; border-radius:4px;">
+            <div
+              style="padding:12px 16px; border-bottom:1px solid #e5ebf1; background:#f0f5fa; font-weight:600; font-size:14px; color:#0f4c81;">
+              Registered Courses
+            </div>
+            <div style="padding:14px 16px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                style="border-collapse:collapse; font-size:13px;">
+                {{registered_courses_table_content}}
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Dropped Courses -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+      style="border-collapse:collapse; font-size:13px;">
+      <tr>
+        <td style="padding:0 24px 16px 24px;">
+          <div style="background:#ffffff; border:1px solid #dbe2ea; border-radius:4px;">
+            <div
+              style="padding:12px 16px; border-bottom:1px solid #e5ebf1; background:#f0f5fa; font-weight:600; font-size:14px; color:#b00020;">
+              Dropped Courses
+            </div>
+            <div style="padding:14px 16px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                style="border-collapse:collapse; font-size:13px;">
+                {{dropped_courses_table_content}}
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Signatures Section -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
+      <tr>
+        <td style="padding:0 24px 16px 24px;">
+          <div style="font-weight:600; font-size:14px; margin:0 0 8px 0; color:#0f4c81;">Authorization & Signatures
+          </div>
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+            style="border-collapse:collapse; font-size:12px; border:1px solid #d0d7de; background:#ffffff;">
+            <tbody>
+              <tr>
+                <td
+                  style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de; border-bottom:1px solid #d0d7de;">
+                  <div style="font-weight:600; color:#333;">Instructor</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">
+                    {{instructor_name}}</div>
+                </td>
+                <td
+                  style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de; border-bottom:1px solid #d0d7de;">
+                  <div style="font-weight:600; color:#333;">Chair / Associate Chair</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">
+                    {{chair_name}}</div>
+                </td>
+                <td style="padding:10px 12px; width:34%; border-bottom:1px solid #d0d7de;">
+                  <div style="font-weight:600; color:#333;">Dean</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">
+                    {{dean_name}}</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de;">
+                  <div style="font-weight:600; color:#333;">Academic Director</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">
+                    {{academic_director_name}}</div>
+                </td>
+                <td style="padding:10px 12px; width:33%; border-right:1px solid #d0d7de;">
+                  <div style="font-weight:600; color:#333;">VPA / Admin</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">
+                    {{vpa_admin_name}}</div>
+                </td>
+                <td style="padding:10px 12px; width:34%;">
+                  <div style="font-weight:600; color:#333;">Registrar</div>
+                  <div style="margin-top:15px; margin-bottom: 15px; border-top:1px solid #ccc; padding-top:4px; font-size:11px; color:#444;">
+                    {{registrar_name}}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px; color:#666; margin-top:6px;">(Digital timestamps represent electronic approval
+            where applicable.)</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Additional Notes -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
+      <tr>
+        <td style="padding:0 24px 20px 24px;">
+          <div style="font-weight:600; font-size:14px; margin:0 0 6px 0; color:#0f4c81;">Additional Notes</div>
+          <div
+            style="padding:12px 14px; border:1px solid #dbe2ea; background:#f9fbfd; border-radius:4px; font-size:12px; color:#333; min-height:40px;">
+            {{additional_notes}}
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Footer -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+      style="border-collapse:collapse; background:#0f4c81;">
+      <tr>
+        <td style="padding:12px 24px; text-align:center; font-size:11px; color:#e0ecf5;">
+          Confidential academic record. Generated automatically on {{report_generated_at}}. Reference: {{report_id}}.
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Optional action hints (hidden in print) -->
+  <div class="no-print" style="text-align:center; font-size:11px; color:#8a8f98; margin:12px 0 24px 0;">
+    <span style="display:inline-block; margin:0 6px;">To print: Ctrl/Cmd + P</span>
+  </div>
+
+</body>
+</html>`;
+};
+
+export const generateCourseRegistrationHTMLReport = (reportData: CourseRegistrationReportData): string => {
+  let htmlTemplate = getCourseRegistrationReportHTMLTemplate();
+  
+  // Generate course rows
+  const generateCourseRows = (courses: CourseInfo[]) => {
+    return courses.map(course => `
+      <tr>
+        <td style="padding:8px; border-bottom:1px solid #e5ebf1; color:#333;">${course.course_code}</td>
+        <td style="padding:8px; border-bottom:1px solid #e5ebf1; color:#333;">${course.course_name}</td>
+        <td style="padding:8px; border-bottom:1px solid #e5ebf1; color:#333;">${course.section}</td>
+        <td style="padding:8px; border-bottom:1px solid #e5ebf1; color:#333;">${course.semester}</td>
+        <td style="padding:8px; border-bottom:1px solid #e5ebf1; color:#333;">${course.campus}</td>
+      </tr>
+    `).join('');
+  };
+  
+  // Generate table content for registered courses
+  const generateRegisteredCoursesTableContent = () => {
+    if (reportData.registered_courses.length === 0) {
+      return `<tbody>
+        <tr>
+          <td style="padding:16px; color:#666; text-align:center; font-style:italic;">No registered courses found.</td>
+        </tr>
+      </tbody>`;
+    }
+    
+    return `<thead>
+      <tr style="background:#f0f5fa;">
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left;">Course Code</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left;">Course Name</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left;">Section</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left;">Semester</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left;">Campus</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${generateCourseRows(reportData.registered_courses)}
+    </tbody>`;
+  };
+  
+  // Generate table content for dropped courses
+  const generateDroppedCoursesTableContent = () => {
+    if (reportData.dropped_courses.length === 0) {
+      return `<tbody>
+        <tr>
+          <td style="padding:16px; color:#666; text-align:center; font-style:italic;">No dropped courses found.</td>
+        </tr>
+      </tbody>`;
+    }
+    
+    return `<thead>
+      <tr style="background:#f0f5fa;">
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left;">Course Code</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left;">Course Name</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left;">Section</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left;">Semester</th>
+        <th style="padding:8px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left;">Campus</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${generateCourseRows(reportData.dropped_courses)}
+    </tbody>`;
+  };
+  
+  // Replace table content placeholders
+  htmlTemplate = htmlTemplate.replace('{{registered_courses_table_content}}', generateRegisteredCoursesTableContent());
+  htmlTemplate = htmlTemplate.replace('{{dropped_courses_table_content}}', generateDroppedCoursesTableContent());
+  
+  // Replace all other placeholders with actual data
+  Object.entries(reportData).forEach(([key, value]) => {
+    if (key !== 'registered_courses' && key !== 'dropped_courses') {
+      const placeholder = `{{${key}}}`;
+      htmlTemplate = htmlTemplate.replace(new RegExp(placeholder, 'g'), String(value));
+    }
+  });
+  
+  return htmlTemplate;
+};
+
+export const openCourseRegistrationReportInNewWindow = (htmlContent: string): void => {
+  const newWindow = window.open('', '_blank', 'width=800,height=600');
+  if (newWindow) {
+    newWindow.document.write(htmlContent);
+    newWindow.document.close();
+  }
+};
+
+export const downloadCourseRegistrationReportAsHTML = (htmlContent: string, filename: string = 'course-registration-report.html'): void => {
   const blob = new Blob([htmlContent], { type: 'text/html' });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
