@@ -35,9 +35,9 @@ import {
   Minus,
   Trash2,
   FileText,
-  Download,
   Mail,
 } from "lucide-react";
+import { DownloadReportButton } from "@/components/ui/download-report-button";
 
 interface GradeRow {
   id: string;
@@ -188,15 +188,20 @@ export function ChangeGradeForm() {
   } = useChangeGradeForm();
 
   // Hook for report generation
-  const { isGenerating, generateReportPreview, downloadReport, emailReport } =
-    useReportGenerator({
-      onSuccess: (_reportData) => {
-        // Report generated successfully
-      },
-      onError: (_error) => {
-        // Handle report generation error
-      },
-    });
+  const {
+    isGenerating,
+    generateReportPreview,
+    downloadReport,
+    downloadReportPDF,
+    emailReport,
+  } = useReportGenerator({
+    onSuccess: (_reportData) => {
+      // Report generated successfully
+    },
+    onError: (_error) => {
+      // Handle report generation error
+    },
+  });
 
   // Effect to update student data when fetched
   useEffect(() => {
@@ -519,6 +524,13 @@ export function ChangeGradeForm() {
     }
     downloadReport(submittedFormData);
   }, [submittedFormData, downloadReport]);
+
+  const handleDownloadReportPDF = useCallback(() => {
+    if (!submittedFormData) {
+      return;
+    }
+    downloadReportPDF(submittedFormData);
+  }, [submittedFormData, downloadReportPDF]);
 
   const handleEmailReport = useCallback(() => {
     if (!submittedFormData) {
@@ -1147,22 +1159,18 @@ export function ChangeGradeForm() {
                   Preview
                 </Button>
 
-                <Button
-                  variant="outline"
-                  onClick={() => {
+                <DownloadReportButton
+                  onDownloadHTML={() => {
                     handleDownloadReport();
                     setShowSuccessModal(false);
                   }}
-                  disabled={isGenerating}
-                  className="flex items-center gap-2"
-                >
-                  {isGenerating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                  Download
-                </Button>
+                  onDownloadPDF={() => {
+                    handleDownloadReportPDF();
+                    setShowSuccessModal(false);
+                  }}
+                  isGenerating={isGenerating}
+                  variant="outline"
+                />
 
                 <Button
                   variant="outline"

@@ -9,6 +9,7 @@ import {
   convertCourseFormDataToReportData, 
   openCourseRegistrationReportInNewWindow, 
   downloadCourseRegistrationReportAsHTML,
+  downloadCourseRegistrationReportAsPDF,
   type CourseRegistrationReportData 
 } from '@/utils/reportGenerator';
 
@@ -25,7 +26,7 @@ export const useCourseRegistrationReportGenerator = (options: UseCourseRegistrat
     formData: RegisterDropCourseFormData,
     studentData: Student,
     coursesData: Course[],
-    action: 'preview' | 'download' | 'email' = 'preview'
+    action: 'preview' | 'download' | 'downloadPDF' | 'email' = 'preview'
   ) => {
     setIsGenerating(true);
     
@@ -53,6 +54,10 @@ export const useCourseRegistrationReportGenerator = (options: UseCourseRegistrat
         case 'download':
           const filename = `course-registration-report-${reportData.student_id}-${new Date().getFullYear()}.html`;
           downloadCourseRegistrationReportAsHTML(htmlContent, filename);
+          break;
+          
+        case 'downloadPDF':
+          await downloadCourseRegistrationReportAsPDF(htmlContent, reportData.student_id);
           break;
           
         case 'email':
@@ -91,6 +96,14 @@ export const useCourseRegistrationReportGenerator = (options: UseCourseRegistrat
     return generateReport(formData, studentData, coursesData, 'download');
   };
 
+  const downloadReportPDF = (
+    formData: RegisterDropCourseFormData,
+    studentData: Student,
+    coursesData: Course[]
+  ) => {
+    return generateReport(formData, studentData, coursesData, 'downloadPDF');
+  };
+
   const emailReport = (
     formData: RegisterDropCourseFormData,
     studentData: Student,
@@ -104,6 +117,7 @@ export const useCourseRegistrationReportGenerator = (options: UseCourseRegistrat
     generateReport,
     generateReportPreview,
     downloadReport,
+    downloadReportPDF,
     emailReport
   };
 };

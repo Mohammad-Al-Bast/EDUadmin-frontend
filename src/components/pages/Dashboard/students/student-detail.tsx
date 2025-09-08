@@ -12,7 +12,6 @@ import {
   CheckCircle,
   AlertTriangle,
   FileText,
-  Download,
   Mail,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,6 +33,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DownloadReportButton } from "@/components/ui/download-report-button";
+import {
+  printCourseRegistrationReportToPDF,
+  generateCourseRegistrationHTMLReport,
+  convertCourseFormDataToReportData,
+} from "@/utils/reportGenerator";
 
 // Interface for individual course card data
 interface CourseCard {
@@ -213,15 +218,19 @@ export default function StudentDetailPage() {
   } = useRegisterDropCourses();
 
   // Hook for course registration report generation
-  const { generateReportPreview, downloadReport, emailReport } =
-    useCourseRegistrationReportGenerator({
-      onSuccess: (_reportData) => {
-        // Report generated successfully
-      },
-      onError: (_error) => {
-        // Handle report generation error
-      },
-    });
+  const {
+    generateReportPreview,
+    downloadReport,
+    downloadReportPDF,
+    emailReport,
+  } = useCourseRegistrationReportGenerator({
+    onSuccess: (_reportData) => {
+      // Report generated successfully
+    },
+    onError: (_error) => {
+      // Handle report generation error
+    },
+  });
 
   // Hook for fetching courses data
   const {
@@ -598,6 +607,35 @@ export default function StudentDetailPage() {
     if (!submittedFormData || !student || !courses) return;
     downloadReport(submittedFormData, student, courses);
   }, [submittedFormData, student, courses, downloadReport]);
+
+  const handleDownloadReportPDF = useCallback(() => {
+    if (!submittedFormData || !student || !courses) return;
+    downloadReportPDF(submittedFormData, student, courses);
+  }, [submittedFormData, student, courses, downloadReportPDF]);
+
+  const handlePrintReportToPDF = useCallback(() => {
+    if (!submittedFormData || !student || !courses) return;
+
+    // Get the current user info (simplified version)
+    const submitterInfo = {
+      name: "Current User",
+      email: "user@liu.edu.lb",
+      role: "Academic Advisor",
+      ip: "192.168.1.100",
+    };
+
+    // Generate the report data and HTML
+    const reportData = convertCourseFormDataToReportData(
+      submittedFormData,
+      student,
+      courses,
+      submitterInfo
+    );
+    const htmlContent = generateCourseRegistrationHTMLReport(reportData);
+
+    // Use print function
+    printCourseRegistrationReportToPDF(htmlContent);
+  }, [submittedFormData, student, courses]);
 
   const handleEmailReport = useCallback(() => {
     if (!submittedFormData || !student || !courses) return;
@@ -1378,17 +1416,22 @@ export default function StudentDetailPage() {
                   Preview
                 </Button>
 
-                <Button
-                  variant="outline"
-                  onClick={() => {
+                <DownloadReportButton
+                  onDownloadHTML={() => {
                     handleDownloadReport();
                     setShowSuccessModal(false);
                   }}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Download
-                </Button>
+                  onDownloadPDF={() => {
+                    handleDownloadReportPDF();
+                    setShowSuccessModal(false);
+                  }}
+                  onPrintToPDF={() => {
+                    handlePrintReportToPDF();
+                    setShowSuccessModal(false);
+                  }}
+                  variant="outline"
+                  showDebugOptions={true}
+                />
 
                 <Button
                   variant="outline"

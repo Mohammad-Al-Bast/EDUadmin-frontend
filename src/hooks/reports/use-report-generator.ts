@@ -7,6 +7,7 @@ import {
   convertFormDataToReportData, 
   openReportInNewWindow, 
   downloadReportAsHTML,
+  downloadReportAsPDF,
   type ReportData 
 } from '@/utils/reportGenerator';
 
@@ -21,7 +22,7 @@ export const useReportGenerator = (options: UseReportGeneratorOptions = {}) => {
 
   const generateReport = async (
     formData: ChangeGradeFormData,
-    action: 'preview' | 'download' | 'email' = 'preview'
+    action: 'preview' | 'download' | 'downloadPDF' | 'email' = 'preview'
   ) => {
     setIsGenerating(true);
     
@@ -49,6 +50,10 @@ export const useReportGenerator = (options: UseReportGeneratorOptions = {}) => {
         case 'download':
           const filename = `change-grade-report-${reportData.student_id}-${reportData.course_code}.html`;
           downloadReportAsHTML(htmlContent, filename);
+          break;
+          
+        case 'downloadPDF':
+          await downloadReportAsPDF(htmlContent, reportData.student_id, reportData.course_code);
           break;
           
         case 'email':
@@ -79,6 +84,10 @@ export const useReportGenerator = (options: UseReportGeneratorOptions = {}) => {
     return generateReport(formData, 'download');
   };
 
+  const downloadReportPDF = (formData: ChangeGradeFormData) => {
+    return generateReport(formData, 'downloadPDF');
+  };
+
   const emailReport = (formData: ChangeGradeFormData) => {
     return generateReport(formData, 'email');
   };
@@ -88,6 +97,7 @@ export const useReportGenerator = (options: UseReportGeneratorOptions = {}) => {
     generateReport,
     generateReportPreview,
     downloadReport,
+    downloadReportPDF,
     emailReport
   };
 };
