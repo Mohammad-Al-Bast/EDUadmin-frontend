@@ -92,13 +92,6 @@ const APIClient = async <T = unknown>(
     params?: ApiParams
 ): Promise<ApiClientResponse<T>> => {
     try {
-        // Log outgoing request details for debugging
-        console.log(`API ${method} ${url}:`, {
-            data,
-            params,
-            dataType: typeof data,
-            dataString: JSON.stringify(data)
-        });
         
         const response: AxiosResponse<T> = await APIinstance({
             method,

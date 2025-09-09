@@ -221,14 +221,6 @@ export const generatePDFFromHTML = async (
       throw new Error("Unable to find body element in iframe");
     }
 
-    console.log("Starting canvas generation from iframe content...");
-    console.log(
-      "Body element dimensions:",
-      bodyElement.scrollWidth,
-      "x",
-      bodyElement.scrollHeight
-    );
-
     // Generate canvas from the iframe content
     const canvas = await html2canvas(bodyElement, {
       allowTaint: true,
@@ -256,8 +248,6 @@ export const generatePDFFromHTML = async (
     // Clean up iframe
     document.body.removeChild(iframe);
 
-    console.log("Canvas generated:", canvas.width, "x", canvas.height);
-
     // Validate canvas
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
       throw new Error("Generated canvas is empty or invalid");
@@ -265,7 +255,6 @@ export const generatePDFFromHTML = async (
 
     // Create PDF
     const imgData = canvas.toDataURL("image/jpeg", 0.95);
-    console.log("Image data generated, length:", imgData.length);
 
     if (imgData.length < 1000) {
       throw new Error("Generated image data appears to be empty");
@@ -283,8 +272,6 @@ export const generatePDFFromHTML = async (
     const imgWidth = pageWidth - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    console.log("PDF page dimensions:", pageWidth, "x", pageHeight);
-    console.log("Image dimensions for PDF:", imgWidth, "x", imgHeight);
 
     let heightLeft = imgHeight;
     let position = margin;
@@ -302,7 +289,6 @@ export const generatePDFFromHTML = async (
     }
 
     const pdfBlob = pdf.output("blob");
-    console.log("PDF generated successfully, size:", pdfBlob.size, "bytes");
 
     if (pdfBlob.size < 1000) {
       throw new Error("Generated PDF appears to be empty");
@@ -426,12 +412,6 @@ export const generateReportPDF = async (
   const filename = `${reportType}-report-${studentId}-${timestamp}.pdf`;
 
   try {
-    console.log("Starting PDF generation for:", reportType, studentId);
-    console.log("HTML content length:", htmlContent.length);
-
-    // Log first 500 characters of HTML for debugging
-    console.log("HTML preview:", htmlContent.substring(0, 500));
-
     // First try the main PDF generation method
     const enhancedHTML = `
       <!DOCTYPE html>
@@ -490,11 +470,9 @@ export const generateReportPDF = async (
       quality: 1.0, // Reduced quality for better performance
     });
 
-    console.log("PDF generation successful, size:", result.size);
     return result;
   } catch (error) {
     console.warn("Primary PDF generation failed:", error);
-    console.log("Trying fallback method...");
     // Fallback to simpler PDF generation
     return await generateSimplePDF(htmlContent, filename);
   }
@@ -746,8 +724,6 @@ export const generateStyledPDFFromHTML = async (
 
     // Close the print window
     printWindow.close();
-
-    console.log("Styled canvas generated:", canvas.width, "x", canvas.height);
 
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
       throw new Error("Styled canvas generation failed");

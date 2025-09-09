@@ -566,13 +566,6 @@ export default function StudentDetailPage() {
     };
 
     try {
-      console.log("Submitting form data:", formData);
-      console.log("University ID being sent:", {
-        value: student.university_id,
-        type: typeof student.university_id,
-        length: String(student.university_id).length,
-        stringValue: String(student.university_id),
-      });
       await submitForm(formData);
       setSubmittedFormData(formData);
       setShowSuccessModal(true);

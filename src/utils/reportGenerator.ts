@@ -524,19 +524,16 @@ export const downloadReportAsPDF = async (
   courseCode: string = ""
 ): Promise<void> => {
   try {
-    console.log("Starting PDF generation for student:", studentId);
     const pdfBlob = await generateReportPDF(
       htmlContent,
       "change-grade",
       studentId
     );
-    console.log("PDF generated successfully, size:", pdfBlob.size);
 
     const filename = `change-grade-report-${studentId}${
       courseCode ? "-" + courseCode : ""
     }.pdf`;
     downloadPDFBlob(pdfBlob, filename);
-    console.log("PDF download initiated:", filename);
   } catch (error) {
     console.error("Error generating PDF:", error);
     alert(
@@ -1162,12 +1159,6 @@ export const downloadCourseRegistrationReportAsPDF = async (
   studentId: string
 ): Promise<void> => {
   try {
-    console.log(
-      "Starting course registration PDF generation for student:",
-      studentId
-    );
-    console.log("HTML content received, length:", htmlContent?.length || 0);
-
     if (!htmlContent || htmlContent.length < 100) {
       throw new Error("HTML content is empty or too short");
     }
@@ -1177,10 +1168,6 @@ export const downloadCourseRegistrationReportAsPDF = async (
       "course-registration",
       studentId
     );
-    console.log(
-      "Course registration PDF generated successfully, size:",
-      pdfBlob.size
-    );
 
     if (pdfBlob.size < 1000) {
       throw new Error("Generated PDF is too small, likely empty");
@@ -1188,7 +1175,6 @@ export const downloadCourseRegistrationReportAsPDF = async (
 
     const filename = `course-registration-report-${studentId}.pdf`;
     downloadPDFBlob(pdfBlob, filename);
-    console.log("Course registration PDF download initiated:", filename);
   } catch (error) {
     console.error("Error generating course registration PDF:", error);
     alert(

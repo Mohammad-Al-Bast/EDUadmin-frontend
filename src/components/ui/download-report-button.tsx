@@ -42,10 +42,8 @@ export const DownloadReportButton: React.FC<DownloadReportButtonProps> = ({
 }) => {
   const handleTestPDF = async () => {
     try {
-      console.log("Testing basic PDF generation...");
       const testBlob = await generateTestPDF();
       downloadPDFBlob(testBlob, "test-basic.pdf");
-      console.log("Basic PDF test completed");
     } catch (error) {
       console.error("Basic PDF test failed:", error);
       alert(
@@ -57,10 +55,8 @@ export const DownloadReportButton: React.FC<DownloadReportButtonProps> = ({
 
   const handleTestHTMLToPDF = async () => {
     try {
-      console.log("Testing HTML to PDF conversion...");
       const testBlob = await testHTMLToPDF();
       downloadPDFBlob(testBlob, "test-html-to-pdf.pdf");
-      console.log("HTML to PDF test completed");
     } catch (error) {
       console.error("HTML to PDF test failed:", error);
       alert(
