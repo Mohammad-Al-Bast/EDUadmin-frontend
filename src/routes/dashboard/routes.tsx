@@ -17,6 +17,7 @@ const RoutesList = () => {
             component: HomePage,
             isAuthenticated: true,
             isShown: true,
+            isAdminOnly: false,
         },
         {
             path: "upload",
@@ -24,6 +25,7 @@ const RoutesList = () => {
             component: UploadPage,
             isAuthenticated: true,
             isShown: true,
+            isAdminOnly: false,
         },
         {
             path: "courses",
@@ -31,6 +33,7 @@ const RoutesList = () => {
             component: CoursesPage,
             isAuthenticated: true,
             isShown: true,
+            isAdminOnly: false,
         },
         {
             path: "students",
@@ -38,6 +41,7 @@ const RoutesList = () => {
             component: StudentsPage,
             isAuthenticated: true,
             isShown: true,
+            isAdminOnly: false,
         },
         {
             path: "change-grade",
@@ -45,12 +49,14 @@ const RoutesList = () => {
             component: ChangeGradePage,
             isAuthenticated: true,
             isShown: true,
+            isAdminOnly: true, // Only admins can change grades
         },
         {
             path: "profile",
             component: Profile,
             isAuthenticated: true,
             isShown: false,
+            isAdminOnly: false,
         },
         {
             path: "teams",
@@ -58,9 +64,10 @@ const RoutesList = () => {
             component: TeamsPage,
             isAuthenticated: true,
             isShown: true,
+            isAdminOnly: true, // Only admins can manage teams
         }
     ].map((route) =>
-        createDashboardRoute(route.path, route.component, route.icon, route.isShown, route.isAuthenticated)
+        createDashboardRoute(route.path, route.component, route.icon, route.isShown, route.isAuthenticated, route.isAdminOnly)
     );
 
     return dashboardRoutesList;

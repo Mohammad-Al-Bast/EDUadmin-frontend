@@ -5,10 +5,14 @@ import SidebarGroupComponent from './sidebar-group';
 import { SidebarUser } from './sidebar-user';
 import { useAppSelector } from '@/hooks/redux';
 import { selectUser } from '@/store/selectors/authSelectors';
+import { filterRoutesByAccess } from '@/utils/routeUtils';
 
 const DashboardSideBarComponent = () => {
     const routes = RoutesList();
     const user = useAppSelector(selectUser);
+
+    // Filter routes based on user permissions
+    const filteredRoutes = filterRoutesByAccess(routes, user);
 
     return (
         <Sidebar collapsible='icon'>
@@ -30,7 +34,7 @@ const DashboardSideBarComponent = () => {
             {/* Sidebar Content */}
             <SidebarContent className='overflow-y-auto flex-1 [&>*]:mb-[-1.2rem]'>
                 <h2 className='px-2 pb-2 pt-3'>{"Platform"}</h2>
-                {routes.filter(route => route.isShown).map((route) => (
+                {filteredRoutes.map((route) => (
                     <SidebarGroupComponent key={route.path} route={route} />
                 ))}
             </SidebarContent>

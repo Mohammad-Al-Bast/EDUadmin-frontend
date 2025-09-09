@@ -4,6 +4,7 @@ export interface DashboardRouteConfig {
     icon?: React.ReactNode;
     isShown: boolean;
     isAuthenticated?: boolean;
+    isAdminOnly?: boolean;
     permissions?: string[];
 }
 
@@ -13,13 +14,15 @@ const createDashboardRoute = (
     icon: React.ReactNode,
     isShown: boolean,
     isAuthenticated?: boolean,
+    isAdminOnly?: boolean,
 ): DashboardRouteConfig => {
     return {
         path,
         component,
         icon,
-        isShown,    
+        isShown,
         isAuthenticated,
+        isAdminOnly,
     };
 };
 
