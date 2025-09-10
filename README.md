@@ -343,4 +343,179 @@ export const coursesServices = {
   createCourse: (data: CreateCourseRequest) => Promise<Course>
   updateCourse: (id: number, data: UpdateCourseRequest) => Promise<Course>
   deleteCourse: (id: number) => Promise<{ message: string }>
+}
 ```
+
+### 🛡️ Error Handling
+
+- ✅ **Type-safe responses** with TypeScript interfaces
+- ✅ **Automatic retries** for failed requests
+- ✅ **Error boundaries** for graceful error handling
+- ✅ **User-friendly error messages**
+
+---
+
+## 🎨 UI Components
+
+### 🧩 Component Library
+
+Built with **shadcn/ui** components for consistency:
+
+- 📝 **Forms** - Validated forms with error handling
+- 📊 **Data Tables** - Sortable and filterable tables
+- 🎛️ **Command Palette** - Quick navigation and search
+- 📄 **Report Viewers** - Print-optimized layouts
+- 🌗 **Theme Toggle** - Dark/light mode switching
+
+### 🎨 Design System
+
+- 🎨 **Color Palette** - Consistent university branding
+- 📏 **Typography** - Clear hierarchy and readability
+- 🔲 **Spacing** - Consistent layout patterns
+- 🎯 **Interactive States** - Hover, focus, and active states
+
+---
+
+## 📱 Responsive Design
+
+### 📐 Breakpoints
+
+| Device      | Breakpoint       | Layout          |
+| ----------- | ---------------- | --------------- |
+| **Mobile**  | `< 768px`        | Single column   |
+| **Tablet**  | `768px - 1024px` | Adaptive layout |
+| **Desktop** | `> 1024px`       | Full layout     |
+
+### 🎯 Mobile Optimization
+
+- ✅ **Touch-friendly** interface elements
+- ✅ **Optimized images** and assets
+- ✅ **Fast loading** times
+- ✅ **Offline capability** (PWA ready)
+
+---
+
+## 🔐 Security
+
+### 🛡️ Security Features
+
+- ✅ **Input Validation** - Client and server-side validation
+- ✅ **XSS Protection** - Sanitized user inputs
+- ✅ **CSRF Protection** - Token-based protection
+- ✅ **Secure Headers** - Security-focused HTTP headers
+
+### 🔒 Authentication
+
+- ✅ **Role-based Access** - Different user permissions
+- ✅ **Session Management** - Secure session handling
+- ✅ **API Security** - Token-based authentication
+
+---
+
+## 🚀 Deployment
+
+### 🌐 Build for Production
+
+```bash
+# Create production build
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### ☁️ Deployment Options
+
+- ✅ **Vercel** - Recommended for React apps
+- ✅ **Netlify** - Static site hosting
+- ✅ **AWS S3/CloudFront** - Scalable hosting
+- ✅ **Docker** - Containerized deployment
+
+---
+
+## 🤝 Contributing
+
+### 👨‍💻 How to Contribute
+
+1. **🍴 Fork** the repository
+2. **🌿 Create** your feature branch (`git checkout -b feature/AmazingFeature`)
+3. **💾 Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
+4. **📤 Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **🔄 Open** a Pull Request
+
+### 📋 Contribution Guidelines
+
+- ✅ Follow existing **code patterns**
+- ✅ Write **TypeScript interfaces** for all data
+- ✅ Include **error handling** for API calls
+- ✅ Test across different **screen sizes**
+- ✅ Update **documentation** for new features
+
+### 👥 Code Review Process
+
+1. **📝 Submit PR** with clear description
+2. **🔍 Automated checks** must pass
+3. **👀 Peer review** required
+4. **✅ Approval** from maintainers
+5. **🔄 Merge** to main branch
+
+---
+
+## 📜 License
+
+This project is developed as part of an academic initiative at **Lebanese International University**.
+
+📧 For licensing information and usage rights, please contact the development team.
+
+---
+
+## 👥 Team
+
+### 🎓 Academic Project Team
+
+| Role                      | Contributor        |
+| ------------------------- | ------------------ |
+| **🏗️ Lead Developer**     | Mohammad Al-Bast   |
+| **🎨 UI/UX Design**       | Academic Team      |
+| **📊 Project Supervisor** | University Faculty |
+| **🔍 Quality Assurance**  | Peer Review Team   |
+
+---
+
+## 📞 Support
+
+### 🆘 Getting Help
+
+- 📖 **Documentation** - Check this README and inline comments
+- 🐛 **Issues** - [Report bugs](https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues)
+- 💬 **Discussions** - [GitHub Discussions](https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/discussions)
+- 📧 **Email** - Contact the development team
+
+### 📊 Project Status
+
+🚧 **Status**: Active Development  
+🎯 **Version**: 1.0.0-beta  
+📅 **Last Updated**: December 2024  
+🏫 **Institution**: Lebanese International University
+
+---
+
+<div align="center">
+  <p>
+    <strong>🎓 Built with ❤️ for Educational Excellence</strong>
+  </p>
+  <p>
+    <strong>Lebanese International University - Academic Affairs Department</strong>
+  </p>
+  
+  <br>
+  
+  <a href="https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/stargazers">⭐ Star this repo</a> •
+  <a href="https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues">🐛 Report Bug</a> •
+  <a href="https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues">✨ Request Feature</a>
+  
+  <br><br>
+  
+  <img src="https://img.shields.io/badge/Made%20with-React-61DAFB?style=for-the-badge&logo=react" alt="Made with React" />
+  <img src="https://img.shields.io/badge/Built%20with-TypeScript-3178C6?style=for-the-badge&logo=typescript" alt="Built with TypeScript" />
+</div>
