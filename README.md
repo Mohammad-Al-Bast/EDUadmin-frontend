@@ -3,14 +3,11 @@
   <h1>🎓 EDU Admin Suite</h1>
   <p><em>A comprehensive educational administration platform for managing academic operations</em></p>
   
-  [![React](https://img.shields.io/badge/React-18.x-blue.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
+  [![React](https://img.shields.io/badge/React-19.x-blue.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-  [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF.svg?style=for-the-badge&logo=vite)](https://vitejs.dev/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC.svg?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+  [![Vite](https://img.shields.io/badge/Vite-7.x-646CFF.svg?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC.svg?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
   
-  [![GitHub issues](https://img.shields.io/github/issues/Mohammad-Al-Bast/EDUadmin-frontend?style=flat-square)](https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues)
-  [![GitHub stars](https://img.shields.io/github/stars/Mohammad-Al-Bast/EDUadmin-frontend?style=flat-square)](https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/stargazers)
-  [![License](https://img.shields.io/badge/license-Academic-green?style=flat-square)](#license)
 </div>
 
 ---
@@ -81,7 +78,6 @@
 
 - ✅ **PDF Reports** - Professional, print-ready academic reports
 - ✅ **Custom Templates** - Branded report templates with university branding
-- ✅ **Real-time Data** - Live data integration for up-to-date reports
 - ✅ **Export Options** - Multiple format support (PDF, Print)
 
 ### 🎨 User Experience
@@ -122,15 +118,15 @@ graph TB
 
 | Technology     | Version | Purpose                                |
 | -------------- | ------- | -------------------------------------- |
-| **React**      | 18.x    | Modern UI framework with hooks         |
+| **React**      | 19.x    | Modern UI framework with hooks         |
 | **TypeScript** | 5.x     | Type-safe JavaScript development       |
-| **Vite**       | 5.x     | Fast build tool and development server |
+| **Vite**       | 7.x     | Fast build tool and development server |
 
 ### 🎨 Styling & UI
 
 | Technology       | Version | Purpose                         |
 | ---------------- | ------- | ------------------------------- |
-| **Tailwind CSS** | 3.x     | Utility-first CSS framework     |
+| **Tailwind CSS** | 4.x     | Utility-first CSS framework     |
 | **shadcn/ui**    | Latest  | High-quality React components   |
 | **Radix UI**     | Latest  | Accessible component primitives |
 | **Lucide React** | Latest  | Beautiful icon library          |
@@ -153,14 +149,6 @@ graph TB
 | ----------- | ----------- | ----------- |
 | **Node.js** | v18.0+      | v20.0+      |
 | **npm**     | v8.0+       | v9.0+       |
-| **RAM**     | 4GB         | 8GB+        |
-| **Storage** | 500MB       | 1GB+        |
-
-### 🖥️ Operating System Support
-
-- ✅ **Windows** 10/11
-- ✅ **macOS** 10.15+
-- ✅ **Linux** (Ubuntu 20.04+)
 
 ---
 
@@ -179,30 +167,9 @@ cd EDUadmin-frontend
 # Using npm (recommended)
 npm install
 
-# Or using yarn
-yarn install
 ```
 
-### 3️⃣ Environment Setup
-
-Create a `.env.local` file in the project root:
-
-```env
-# API Configuration
-VITE_API_BASE_URL=http://localhost:3000/api
-VITE_API_TIMEOUT=30000
-
-# Application Settings
-VITE_APP_NAME="EDU Admin Suite"
-VITE_ORGANIZATION_NAME="Lebanese International University"
-VITE_DEPARTMENT="Academic Affairs"
-
-# Feature Flags
-VITE_ENABLE_DEBUG=false
-VITE_ENABLE_ANALYTICS=true
-```
-
-### 4️⃣ Start Development Server
+### 3️⃣ Start Development Server
 
 ```bash
 npm run dev
@@ -236,96 +203,6 @@ src/
 │   └── pdfGenerator.ts        # PDF utilities
 └── index.css                  # Global styles
 ```
-
----
-
-## 🔧 Configuration
-
-### ⚙️ Available Scripts
-
-| Script          | Command              | Description              |
-| --------------- | -------------------- | ------------------------ |
-| **Development** | `npm run dev`        | Start development server |
-| **Build**       | `npm run build`      | Create production build  |
-| **Preview**     | `npm run preview`    | Preview production build |
-| **Lint**        | `npm run lint`       | Run ESLint checks        |
-| **Type Check**  | `npm run type-check` | TypeScript type checking |
-
-### 🎛️ Environment Variables
-
-| Variable                 | Default                             | Description       |
-| ------------------------ | ----------------------------------- | ----------------- |
-| `VITE_API_BASE_URL`      | `http://localhost:3000/api`         | Backend API URL   |
-| `VITE_APP_NAME`          | `EDU Admin Suite`                   | Application name  |
-| `VITE_ORGANIZATION_NAME` | `Lebanese International University` | Organization name |
-
----
-
-## 💻 Development
-
-### 🔧 Development Workflow
-
-1. **Create Feature Branch**
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Start Development Server**
-
-   ```bash
-   npm run dev
-   ```
-
-3. **Make Changes** - Follow existing patterns and conventions
-
-4. **Test Your Changes** - Ensure functionality works across devices
-
-5. **Commit Changes**
-   ```bash
-   git add .
-   git commit -m "feat: add your feature description"
-   ```
-
-### 📝 Coding Standards
-
-- ✅ **TypeScript** - Strict mode enabled
-- ✅ **ESLint** - Follow configured rules
-- ✅ **Component Structure** - Consistent file organization
-- ✅ **Error Handling** - Proper error boundaries
-- ✅ **Accessibility** - WCAG guidelines
-
-### 🎯 Best Practices
-
-- 🔧 **Use Custom Hooks** for reusable logic
-- 🎨 **Follow Design System** components from shadcn/ui
-- 🔒 **Implement Error Handling** for all API calls
-- ⚡ **Optimize Performance** with React.memo and useMemo
-- 📱 **Test Responsiveness** across different screen sizes
-
----
-
-## 🧪 Testing
-
-### 🔍 Testing Strategy
-
-```bash
-# Run all tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Generate coverage report
-npm run test:coverage
-```
-
-### 📊 Testing Coverage
-
-- ✅ **Unit Tests** - Component testing
-- ✅ **Integration Tests** - API integration
-- ✅ **E2E Tests** - User workflow testing
-- ✅ **Accessibility Tests** - WCAG compliance
 
 ---
 
@@ -376,127 +253,12 @@ Built with **shadcn/ui** components for consistency:
 
 ---
 
-## 📱 Responsive Design
-
-### 📐 Breakpoints
-
-| Device      | Breakpoint       | Layout          |
-| ----------- | ---------------- | --------------- |
-| **Mobile**  | `< 768px`        | Single column   |
-| **Tablet**  | `768px - 1024px` | Adaptive layout |
-| **Desktop** | `> 1024px`       | Full layout     |
-
-### 🎯 Mobile Optimization
-
-- ✅ **Touch-friendly** interface elements
-- ✅ **Optimized images** and assets
-- ✅ **Fast loading** times
-- ✅ **Offline capability** (PWA ready)
-
----
-
-## 🔐 Security
-
-### 🛡️ Security Features
-
-- ✅ **Input Validation** - Client and server-side validation
-- ✅ **XSS Protection** - Sanitized user inputs
-- ✅ **CSRF Protection** - Token-based protection
-- ✅ **Secure Headers** - Security-focused HTTP headers
-
-### 🔒 Authentication
-
-- ✅ **Role-based Access** - Different user permissions
-- ✅ **Session Management** - Secure session handling
-- ✅ **API Security** - Token-based authentication
-
----
-
-## 🚀 Deployment
-
-### 🌐 Build for Production
-
-```bash
-# Create production build
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-### ☁️ Deployment Options
-
-- ✅ **Vercel** - Recommended for React apps
-- ✅ **Netlify** - Static site hosting
-- ✅ **AWS S3/CloudFront** - Scalable hosting
-- ✅ **Docker** - Containerized deployment
-
----
-
-## 🤝 Contributing
-
-### 👨‍💻 How to Contribute
-
-1. **🍴 Fork** the repository
-2. **🌿 Create** your feature branch (`git checkout -b feature/AmazingFeature`)
-3. **💾 Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **📤 Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **🔄 Open** a Pull Request
-
-### 📋 Contribution Guidelines
-
-- ✅ Follow existing **code patterns**
-- ✅ Write **TypeScript interfaces** for all data
-- ✅ Include **error handling** for API calls
-- ✅ Test across different **screen sizes**
-- ✅ Update **documentation** for new features
-
-### 👥 Code Review Process
-
-1. **📝 Submit PR** with clear description
-2. **🔍 Automated checks** must pass
-3. **👀 Peer review** required
-4. **✅ Approval** from maintainers
-5. **🔄 Merge** to main branch
-
----
-
-## 📜 License
-
-This project is developed as part of an academic initiative at **Lebanese International University**.
-
-📧 For licensing information and usage rights, please contact the development team.
-
----
-
-## 👥 Team
-
-### 🎓 Academic Project Team
-
-| Role                      | Contributor        |
-| ------------------------- | ------------------ |
-| **🏗️ Lead Developer**     | Mohammad Al-Bast   |
-| **🎨 UI/UX Design**       | Academic Team      |
-| **📊 Project Supervisor** | University Faculty |
-| **🔍 Quality Assurance**  | Peer Review Team   |
-
----
-
 ## 📞 Support
 
 ### 🆘 Getting Help
 
 - 📖 **Documentation** - Check this README and inline comments
 - 🐛 **Issues** - [Report bugs](https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues)
-- 💬 **Discussions** - [GitHub Discussions](https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/discussions)
-- 📧 **Email** - Contact the development team
-
-### 📊 Project Status
-
-🚧 **Status**: Active Development  
-🎯 **Version**: 1.0.0-beta  
-📅 **Last Updated**: December 2024  
-🏫 **Institution**: Lebanese International University
 
 ---
 
@@ -504,18 +266,10 @@ This project is developed as part of an academic initiative at **Lebanese Intern
   <p>
     <strong>🎓 Built with ❤️ for Educational Excellence</strong>
   </p>
-  <p>
-    <strong>Lebanese International University - Academic Affairs Department</strong>
-  </p>
   
   <br>
   
   <a href="https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/stargazers">⭐ Star this repo</a> •
   <a href="https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues">🐛 Report Bug</a> •
-  <a href="https://github.com/Mohammad-Al-Bast/EDUadmin-frontend/issues">✨ Request Feature</a>
   
-  <br><br>
-  
-  <img src="https://img.shields.io/badge/Made%20with-React-61DAFB?style=for-the-badge&logo=react" alt="Made with React" />
-  <img src="https://img.shields.io/badge/Built%20with-TypeScript-3178C6?style=for-the-badge&logo=typescript" alt="Built with TypeScript" />
 </div>
