@@ -21,17 +21,8 @@
 - [📋 Prerequisites](#-prerequisites)
 - [🚀 Getting Started](#-getting-started)
 - [📁 Project Structure](#-project-structure)
-- [🔧 Configuration](#-configuration)
-- [💻 Development](#-development)
-- [🧪 Testing](#-testing)
 - [📊 API Documentation](#-api-documentation)
 - [🎨 UI Components](#-ui-components)
-- [📱 Responsive Design](#-responsive-design)
-- [🔐 Security](#-security)
-- [🚀 Deployment](#-deployment)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
-- [👥 Team](#-team)
 - [📞 Support](#-support)
 
 ---
