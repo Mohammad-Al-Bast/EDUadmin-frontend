@@ -3,206 +3,206 @@ import type { RegisterDropCourseFormData } from "@/services/register-drop-course
 import type { Course } from "@/types/courses.types";
 import type { Student } from "@/types/students/students.types";
 import {
-  generateReportPDF,
-  downloadPDFBlob,
-  printHTMLToPDF,
+	generateReportPDF,
+	downloadPDFBlob,
+	printHTMLToPDF,
 } from "./pdfGenerator";
 
 export interface ReportData {
-  // Organization info
-  logo_url: string;
-  organization_name: string;
-  department_or_faculty: string;
+	// Organization info
+	logo_url: string;
+	organization_name: string;
+	department_or_faculty: string;
 
-  // Report meta
-  report_id: string;
-  report_generated_at: string;
+	// Report meta
+	report_id: string;
+	report_generated_at: string;
 
-  // Submission details
-  submitted_at: string;
-  submitted_by_name: string;
-  submitted_by_role: string;
-  submitted_by_email: string;
-  submitted_by_ip: string;
-  status: string;
+	// Submission details
+	submitted_at: string;
+	submitted_by_name: string;
+	submitted_by_role: string;
+	submitted_by_email: string;
+	submitted_by_ip: string;
+	status: string;
 
-  // Student & Course
-  student_name: string;
-  student_id: string;
-  student_major: string;
-  course_code: string;
-  course_name: string;
-  course_section: string;
-  semester: string;
-  campus: string;
+	// Student & Course
+	student_name: string;
+	student_id: string;
+	student_major: string;
+	course_code: string;
+	course_name: string;
+	course_section: string;
+	semester: string;
+	campus: string;
 
-  // Grade change
-  original_grade: string;
-  requested_grade: string;
-  reason_for_change: string;
+	// Grade change
+	original_grade: string;
+	requested_grade: string;
+	reason_for_change: string;
 
-  // Grade breakdown
-  quizzes_score: string;
-  tests_score: string;
-  midterm_score: string;
-  final_score: string;
-  curve_value: string;
-  final_numeric_grade: string;
-  final_letter_grade: string;
+	// Grade breakdown
+	quizzes_score: string;
+	tests_score: string;
+	midterm_score: string;
+	final_score: string;
+	curve_value: string;
+	final_numeric_grade: string;
+	final_letter_grade: string;
 
-  // Signatures (initially empty for new submissions)
-  instructor_name: string;
-  instructor_signed_at: string;
-  chair_name: string;
-  chair_signed_at: string;
-  dean_name: string;
-  dean_signed_at: string;
-  academic_director_name: string;
-  academic_director_signed_at: string;
-  vpa_admin_name: string;
-  vpa_admin_signed_at: string;
-  registrar_name: string;
-  registrar_signed_at: string;
+	// Signatures (initially empty for new submissions)
+	instructor_name: string;
+	instructor_signed_at: string;
+	chair_name: string;
+	chair_signed_at: string;
+	dean_name: string;
+	dean_signed_at: string;
+	academic_director_name: string;
+	academic_director_signed_at: string;
+	vpa_admin_name: string;
+	vpa_admin_signed_at: string;
+	registrar_name: string;
+	registrar_signed_at: string;
 
-  // Additional
-  documents_available: boolean;
-  additional_notes: string;
+	// Additional
+	documents_available: boolean;
+	additional_notes: string;
 }
 
 export const generateReportId = (): string => {
-  const timestamp = new Date().getTime();
-  const random = Math.random().toString(36).substring(2, 8);
-  return `CGF-${timestamp}-${random.toUpperCase()}`;
+	const timestamp = new Date().getTime();
+	const random = Math.random().toString(36).substring(2, 8);
+	return `CGF-${timestamp}-${random.toUpperCase()}`;
 };
 
 export const getCurrentDateTime = (): string => {
-  return new Date().toLocaleString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZoneName: "short",
-  });
+	return new Date().toLocaleString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		timeZoneName: "short",
+	});
 };
 
 export const convertFormDataToReportData = (
-  formData: ChangeGradeFormData,
-  submitterInfo: {
-    name: string;
-    email: string;
-    role: string;
-    ip: string;
-  }
+	formData: ChangeGradeFormData,
+	submitterInfo: {
+		name: string;
+		email: string;
+		role: string;
+		ip: string;
+	},
 ): ReportData => {
-  const reportId = generateReportId();
-  const currentDateTime = getCurrentDateTime();
+	const reportId = generateReportId();
+	const currentDateTime = getCurrentDateTime();
 
-  // Extract individual grade scores from grades array
-  const gradeBreakdown = {
-    quizzes_score: "",
-    tests_score: "",
-    midterm_score: "",
-    final_score: "",
-  };
+	// Extract individual grade scores from grades array
+	const gradeBreakdown = {
+		quizzes_score: "",
+		tests_score: "",
+		midterm_score: "",
+		final_score: "",
+	};
 
-  formData.grades.forEach((grade) => {
-    switch (grade.gradeType.toLowerCase()) {
-      case "quiz":
-        gradeBreakdown.quizzes_score = `${grade.grade} (${grade.gradePercentage})`;
-        break;
-      case "test":
-        gradeBreakdown.tests_score = `${grade.grade} (${grade.gradePercentage})`;
-        break;
-      case "midterm":
-        gradeBreakdown.midterm_score = `${grade.grade} (${grade.gradePercentage})`;
-        break;
-      case "final":
-        gradeBreakdown.final_score = `${grade.grade} (${grade.gradePercentage})`;
-        break;
-      default:
-        // Handle other grade types
-        if (!gradeBreakdown.quizzes_score) {
-          gradeBreakdown.quizzes_score = `${grade.grade} (${grade.gradePercentage})`;
-        }
-        break;
-    }
-  });
+	formData.grades.forEach((grade) => {
+		switch (grade.gradeType.toLowerCase()) {
+			case "quiz":
+				gradeBreakdown.quizzes_score = `${grade.grade} (${grade.gradePercentage})`;
+				break;
+			case "test":
+				gradeBreakdown.tests_score = `${grade.grade} (${grade.gradePercentage})`;
+				break;
+			case "midterm":
+				gradeBreakdown.midterm_score = `${grade.grade} (${grade.gradePercentage})`;
+				break;
+			case "final":
+				gradeBreakdown.final_score = `${grade.grade} (${grade.gradePercentage})`;
+				break;
+			default:
+				// Handle other grade types
+				if (!gradeBreakdown.quizzes_score) {
+					gradeBreakdown.quizzes_score = `${grade.grade} (${grade.gradePercentage})`;
+				}
+				break;
+		}
+	});
 
-  return {
-    // Organization info
-    logo_url: "/images/liu.png", // Update with actual logo path
-    organization_name: "Lebanese International University",
-    department_or_faculty: "Academic Affairs",
+	return {
+		// Organization info
+		logo_url: "/images/liu.png", // Update with actual logo path
+		organization_name: "Lebanese International University",
+		department_or_faculty: "Academic Affairs",
 
-    // Report meta
-    report_id: reportId,
-    report_generated_at: currentDateTime,
+		// Report meta
+		report_id: reportId,
+		report_generated_at: currentDateTime,
 
-    // Submission details
-    submitted_at: currentDateTime,
-    submitted_by_name: submitterInfo.name,
-    submitted_by_role: submitterInfo.role,
-    submitted_by_email: submitterInfo.email,
-    submitted_by_ip: submitterInfo.ip,
-    status: "Pending Review",
+		// Submission details
+		submitted_at: currentDateTime,
+		submitted_by_name: submitterInfo.name,
+		submitted_by_role: submitterInfo.role,
+		submitted_by_email: submitterInfo.email,
+		submitted_by_ip: submitterInfo.ip,
+		status: "Pending Review",
 
-    // Student & Course
-    student_name: formData.student_full_name,
-    student_id: formData.university_id.toString(),
-    student_major: formData.major,
-    course_code: formData.course_code,
-    course_name: formData.course_name,
-    course_section: formData.section,
-    semester: formData.semester_year,
-    campus: formData.campus,
+		// Student & Course
+		student_name: formData.student_full_name,
+		student_id: formData.university_id.toString(),
+		student_major: formData.major,
+		course_code: formData.course_code,
+		course_name: formData.course_name,
+		course_section: formData.section,
+		semester: formData.semester_year,
+		campus: formData.campus,
 
-    // Grade change
-    original_grade: "N/A", // This would come from existing grade records
-    requested_grade: formData.letter_grade,
-    reason_for_change: formData.reason_for_change,
+		// Grade change
+		original_grade: "N/A", // This would come from existing grade records
+		requested_grade: formData.letter_grade,
+		reason_for_change: formData.reason_for_change,
 
-    // Grade breakdown
-    quizzes_score: gradeBreakdown.quizzes_score || "N/A",
-    tests_score: gradeBreakdown.tests_score || "N/A",
-    midterm_score: gradeBreakdown.midterm_score || "N/A",
-    final_score: gradeBreakdown.final_score || "N/A",
-    curve_value: formData.curve.toString(),
-    final_numeric_grade: formData.final_grade.toFixed(1),
-    final_letter_grade: formData.letter_grade,
+		// Grade breakdown
+		quizzes_score: gradeBreakdown.quizzes_score || "N/A",
+		tests_score: gradeBreakdown.tests_score || "N/A",
+		midterm_score: gradeBreakdown.midterm_score || "N/A",
+		final_score: gradeBreakdown.final_score || "N/A",
+		curve_value: formData.curve.toString(),
+		final_numeric_grade: formData.final_grade.toFixed(1),
+		final_letter_grade: formData.letter_grade,
 
-    // Signatures (empty for new submissions)
-    instructor_name: formData.instructor_name,
-    instructor_signed_at: "Pending",
-    chair_name: "Pending",
-    chair_signed_at: "Pending",
-    dean_name: "Pending",
-    dean_signed_at: "Pending",
-    academic_director_name: "Pending",
-    academic_director_signed_at: "Pending",
-    vpa_admin_name: "Pending",
-    vpa_admin_signed_at: "Pending",
-    registrar_name: "Pending",
-    registrar_signed_at: "Pending",
+		// Signatures (empty for new submissions)
+		instructor_name: formData.instructor_name,
+		instructor_signed_at: "Pending",
+		chair_name: "Pending",
+		chair_signed_at: "Pending",
+		dean_name: "Pending",
+		dean_signed_at: "Pending",
+		academic_director_name: "Pending",
+		academic_director_signed_at: "Pending",
+		vpa_admin_name: "Pending",
+		vpa_admin_signed_at: "Pending",
+		registrar_name: "Pending",
+		registrar_signed_at: "Pending",
 
-    // Additional
-    documents_available: Object.values(formData.attachments).some(Boolean),
-    additional_notes: formData.attachments.original_report
-      ? "Original grading report attached. "
-      : "" + formData.attachments.graded_exam
-      ? "Graded final exam attached. "
-      : "" + formData.attachments.tuition_report
-      ? "Tuition report attached. "
-      : "" + formData.attachments.final_pages
-      ? "Final report pages attached."
-      : "",
-  };
+		// Additional
+		documents_available: Object.values(formData.attachments).some(Boolean),
+		additional_notes: formData.attachments.original_report
+			? "Original grading report attached. "
+			: "" + formData.attachments.graded_exam
+				? "Graded final exam attached. "
+				: "" + formData.attachments.tuition_report
+					? "Tuition report attached. "
+					: "" + formData.attachments.final_pages
+						? "Final report pages attached."
+						: "",
+	};
 };
 
 // HTML Template - Your provided template with placeholder replacements
 export const getReportHTMLTemplate = (): string => {
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -296,7 +296,7 @@ body {
                 <div class="compact-section-title" style="font-weight:600; font-size:13px; margin:0 0 5px 0; color:#0f4c81;">Submission Details</div>
                 <table cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse; width:100%; font-size:11px;">
                   <tr>
-                    <td class="compact-meta-table" style="padding:2px 0; width:100px; color:#444;">Submitted At:</td>
+                    <td class="compact-meta-table" style="padding:2px 0; width:100px; color:#444;">Submitted Date:</td>
                     <td class="compact-meta-table" style="padding:2px 0; font-weight:500; color:#222;">{{submitted_at}}</td>
                   </tr>
                   <tr>
@@ -481,70 +481,70 @@ body {
 };
 
 export const generateHTMLReport = (reportData: ReportData): string => {
-  let htmlTemplate = getReportHTMLTemplate();
+	let htmlTemplate = getReportHTMLTemplate();
 
-  // Replace all placeholders with actual data
-  Object.entries(reportData).forEach(([key, value]) => {
-    const placeholder = `{{${key}}}`;
-    htmlTemplate = htmlTemplate.replace(
-      new RegExp(placeholder, "g"),
-      String(value)
-    );
-  });
+	// Replace all placeholders with actual data
+	Object.entries(reportData).forEach(([key, value]) => {
+		const placeholder = `{{${key}}}`;
+		htmlTemplate = htmlTemplate.replace(
+			new RegExp(placeholder, "g"),
+			String(value),
+		);
+	});
 
-  return htmlTemplate;
+	return htmlTemplate;
 };
 
 export const openReportInNewWindow = (htmlContent: string): void => {
-  const newWindow = window.open("", "_blank", "width=800,height=600");
-  if (newWindow) {
-    newWindow.document.write(htmlContent);
-    newWindow.document.close();
-  }
+	const newWindow = window.open("", "_blank", "width=800,height=600");
+	if (newWindow) {
+		newWindow.document.write(htmlContent);
+		newWindow.document.close();
+	}
 };
 
 export const downloadReportAsHTML = (
-  htmlContent: string,
-  filename: string = "change-grade-report.html"
+	htmlContent: string,
+	filename: string = "change-grade-report.html",
 ): void => {
-  const blob = new Blob([htmlContent], { type: "text/html" });
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  window.URL.revokeObjectURL(url);
+	const blob = new Blob([htmlContent], { type: "text/html" });
+	const url = window.URL.createObjectURL(blob);
+	const link = document.createElement("a");
+	link.href = url;
+	link.download = filename;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+	window.URL.revokeObjectURL(url);
 };
 
 export const downloadReportAsPDF = async (
-  htmlContent: string,
-  studentId: string,
-  courseCode: string = ""
+	htmlContent: string,
+	studentId: string,
+	courseCode: string = "",
 ): Promise<void> => {
-  try {
-    const pdfBlob = await generateReportPDF(
-      htmlContent,
-      "change-grade",
-      studentId
-    );
+	try {
+		const pdfBlob = await generateReportPDF(
+			htmlContent,
+			"change-grade",
+			studentId,
+		);
 
-    const filename = `change-grade-report-${studentId}${
-      courseCode ? "-" + courseCode : ""
-    }.pdf`;
-    downloadPDFBlob(pdfBlob, filename);
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    alert(
-      "Failed to generate PDF report. Please try downloading as HTML instead."
-    );
-    throw new Error("Failed to generate PDF report");
-  }
+		const filename = `change-grade-report-${studentId}${
+			courseCode ? "-" + courseCode : ""
+		}.pdf`;
+		downloadPDFBlob(pdfBlob, filename);
+	} catch (error) {
+		console.error("Error generating PDF:", error);
+		alert(
+			"Failed to generate PDF report. Please try downloading as HTML instead.",
+		);
+		throw new Error("Failed to generate PDF report");
+	}
 };
 
 export const printReportToPDF = (htmlContent: string): void => {
-  printHTMLToPDF(htmlContent);
+	printHTMLToPDF(htmlContent);
 };
 
 // ===============================
@@ -552,201 +552,203 @@ export const printReportToPDF = (htmlContent: string): void => {
 // ===============================
 
 export interface CourseRegistrationReportData {
-  // Organization info
-  logo_url: string;
-  organization_name: string;
-  department_or_faculty: string;
+	// Organization info
+	logo_url: string;
+	organization_name: string;
+	department_or_faculty: string;
 
-  // Report meta
-  report_id: string;
-  report_generated_at: string;
+	// Report meta
+	report_id: string;
+	report_generated_at: string;
 
-  // Submission details
-  submitted_at: string;
-  submitted_by_name: string;
-  submitted_by_role: string;
-  submitted_by_email: string;
-  submitted_by_ip: string;
-  status: string;
+	// Submission details
+	submitted_at: string;
+	submitted_by_name: string;
+	submitted_by_role: string;
+	submitted_by_email: string;
+	submitted_by_ip: string;
+	status: string;
 
-  // Student info
-  student_name: string;
-  student_id: string;
-  student_major: string;
-  semester: string;
-  campus: string;
+	// Student info
+	student_name: string;
+	student_id: string;
+	student_major: string;
+	semester: string;
+	campus: string;
 
-  // Courses
-  registered_courses: CourseInfo[];
-  dropped_courses: CourseInfo[];
+	// Courses
+	registered_courses: CourseInfo[];
+	dropped_courses: CourseInfo[];
 
-  // Signatures (initially empty for new submissions)
-  instructor_name: string;
-  instructor_signed_at: string;
-  chair_name: string;
-  chair_signed_at: string;
-  dean_name: string;
-  dean_signed_at: string;
-  academic_director_name: string;
-  academic_director_signed_at: string;
-  vpa_admin_name: string;
-  vpa_admin_signed_at: string;
-  registrar_name: string;
-  registrar_signed_at: string;
+	// Signatures (initially empty for new submissions)
+	instructor_name: string;
+	instructor_signed_at: string;
+	chair_name: string;
+	chair_signed_at: string;
+	dean_name: string;
+	dean_signed_at: string;
+	academic_director_name: string;
+	academic_director_signed_at: string;
+	vpa_admin_name: string;
+	vpa_admin_signed_at: string;
+	registrar_name: string;
+	registrar_signed_at: string;
 
-  // Additional
-  additional_notes: string;
+	// Additional
+	additional_notes: string;
 }
 
 export interface CourseInfo {
-  course_code: string;
-  course_name: string;
-  section: string;
-  semester: string;
-  campus: string;
-  instructor?: string;
-  credits?: number;
-  room?: string;
-  schedule?: string;
-  days?: string;
-  time?: string;
+	course_code: string;
+	course_name: string;
+	section: string;
+	semester: string;
+	campus: string;
+	instructor?: string;
+	credits?: number;
+	room?: string;
+	schedule?: string;
+	days?: string;
+	time?: string;
 }
 
 export const convertCourseFormDataToReportData = (
-  formData: RegisterDropCourseFormData,
-  studentData: Student,
-  coursesData: Course[],
-  submitterInfo: {
-    name: string;
-    email: string;
-    role: string;
-    ip: string;
-  }
+	formData: RegisterDropCourseFormData,
+	studentData: Student,
+	coursesData: Course[],
+	submitterInfo: {
+		name: string;
+		email: string;
+		role: string;
+		ip: string;
+	},
 ): CourseRegistrationReportData => {
-  const reportId = generateReportId();
-  const currentDateTime = getCurrentDateTime();
+	const reportId = generateReportId();
+	const currentDateTime = getCurrentDateTime();
 
-  // Separate registered and dropped courses
-  const registeredCourseIds = formData.courses
-    .filter((course) => course.action === "register")
-    .map((course) => course.courseId);
+	// Separate registered and dropped courses
+	const registeredCourseIds = formData.courses
+		.filter((course) => course.action === "register")
+		.map((course) => course.courseId);
 
-  const droppedCourseIds = formData.courses
-    .filter((course) => course.action === "drop")
-    .map((course) => course.courseId);
+	const droppedCourseIds = formData.courses
+		.filter((course) => course.action === "drop")
+		.map((course) => course.courseId);
 
-  // Get course details from coursesData
-  const registeredCourses: CourseInfo[] = registeredCourseIds.map(
-    (courseId) => {
-      const courseDetail = coursesData.find((c) => c.course_id === courseId);
-      return courseDetail
-        ? {
-            course_code: courseDetail.course_code,
-            course_name: courseDetail.course_name,
-            section: courseDetail.section,
-            semester: `${studentData.semester || "N/A"}/${
-              studentData.year || "N/A"
-            }`,
-            campus: studentData.campus || "N/A",
-            instructor: courseDetail.instructor,
-            credits: courseDetail.credits,
-            room: courseDetail.room,
-            schedule: courseDetail.schedule,
-            days: courseDetail.days,
-            time: courseDetail.time,
-          }
-        : {
-            course_code: "N/A",
-            course_name: "Course not found",
-            section: "N/A",
-            semester: `${studentData.semester || "N/A"}/${
-              studentData.year || "N/A"
-            }`,
-            campus: studentData.campus || "N/A",
-          };
-    }
-  );
+	// Get course details from coursesData
+	const registeredCourses: CourseInfo[] = registeredCourseIds.map(
+		(courseId) => {
+			const courseDetail = coursesData.find(
+				(c) => c.course_id === courseId,
+			);
+			return courseDetail
+				? {
+						course_code: courseDetail.course_code,
+						course_name: courseDetail.course_name,
+						section: courseDetail.section,
+						semester: `${studentData.semester || "N/A"}/${
+							studentData.year || "N/A"
+						}`,
+						campus: studentData.campus || "N/A",
+						instructor: courseDetail.instructor,
+						credits: courseDetail.credits,
+						room: courseDetail.room,
+						schedule: courseDetail.schedule,
+						days: courseDetail.days,
+						time: courseDetail.time,
+					}
+				: {
+						course_code: "N/A",
+						course_name: "Course not found",
+						section: "N/A",
+						semester: `${studentData.semester || "N/A"}/${
+							studentData.year || "N/A"
+						}`,
+						campus: studentData.campus || "N/A",
+					};
+		},
+	);
 
-  const droppedCourses: CourseInfo[] = droppedCourseIds.map((courseId) => {
-    const courseDetail = coursesData.find((c) => c.course_id === courseId);
-    return courseDetail
-      ? {
-          course_code: courseDetail.course_code,
-          course_name: courseDetail.course_name,
-          section: courseDetail.section,
-          semester: `${studentData.semester || "N/A"}/${
-            studentData.year || "N/A"
-          }`,
-          campus: studentData.campus || "N/A",
-          instructor: courseDetail.instructor,
-          credits: courseDetail.credits,
-          room: courseDetail.room,
-          schedule: courseDetail.schedule,
-          days: courseDetail.days,
-          time: courseDetail.time,
-        }
-      : {
-          course_code: "N/A",
-          course_name: "Course not found",
-          section: "N/A",
-          semester: `${studentData.semester || "N/A"}/${
-            studentData.year || "N/A"
-          }`,
-          campus: studentData.campus || "N/A",
-        };
-  });
+	const droppedCourses: CourseInfo[] = droppedCourseIds.map((courseId) => {
+		const courseDetail = coursesData.find((c) => c.course_id === courseId);
+		return courseDetail
+			? {
+					course_code: courseDetail.course_code,
+					course_name: courseDetail.course_name,
+					section: courseDetail.section,
+					semester: `${studentData.semester || "N/A"}/${
+						studentData.year || "N/A"
+					}`,
+					campus: studentData.campus || "N/A",
+					instructor: courseDetail.instructor,
+					credits: courseDetail.credits,
+					room: courseDetail.room,
+					schedule: courseDetail.schedule,
+					days: courseDetail.days,
+					time: courseDetail.time,
+				}
+			: {
+					course_code: "N/A",
+					course_name: "Course not found",
+					section: "N/A",
+					semester: `${studentData.semester || "N/A"}/${
+						studentData.year || "N/A"
+					}`,
+					campus: studentData.campus || "N/A",
+				};
+	});
 
-  return {
-    // Organization info
-    logo_url: "/images/liu.png",
-    organization_name: "Lebanese International University",
-    department_or_faculty: "Academic Affairs",
+	return {
+		// Organization info
+		logo_url: "/images/liu.png",
+		organization_name: "Lebanese International University",
+		department_or_faculty: "Academic Affairs",
 
-    // Report meta
-    report_id: reportId,
-    report_generated_at: currentDateTime,
+		// Report meta
+		report_id: reportId,
+		report_generated_at: currentDateTime,
 
-    // Submission details
-    submitted_at: currentDateTime,
-    submitted_by_name: submitterInfo.name,
-    submitted_by_role: submitterInfo.role,
-    submitted_by_email: submitterInfo.email,
-    submitted_by_ip: submitterInfo.ip,
-    status: "Pending Review",
+		// Submission details
+		submitted_at: currentDateTime,
+		submitted_by_name: submitterInfo.name,
+		submitted_by_role: submitterInfo.role,
+		submitted_by_email: submitterInfo.email,
+		submitted_by_ip: submitterInfo.ip,
+		status: "Pending Review",
 
-    // Student info
-    student_name: studentData.student_name,
-    student_id: studentData.university_id.toString(),
-    student_major: studentData.major || "N/A",
-    semester: `${studentData.semester || "N/A"}/${studentData.year || "N/A"}`,
-    campus: studentData.campus || "N/A",
+		// Student info
+		student_name: studentData.student_name,
+		student_id: studentData.university_id.toString(),
+		student_major: studentData.major || "N/A",
+		semester: `${studentData.semester || "N/A"}/${studentData.year || "N/A"}`,
+		campus: studentData.campus || "N/A",
 
-    // Courses
-    registered_courses: registeredCourses,
-    dropped_courses: droppedCourses,
+		// Courses
+		registered_courses: registeredCourses,
+		dropped_courses: droppedCourses,
 
-    // Signatures (empty for new submissions)
-    instructor_name: "Pending",
-    instructor_signed_at: "Pending",
-    chair_name: "Pending",
-    chair_signed_at: "Pending",
-    dean_name: "Pending",
-    dean_signed_at: "Pending",
-    academic_director_name: "Pending",
-    academic_director_signed_at: "Pending",
-    vpa_admin_name: "Pending",
-    vpa_admin_signed_at: "Pending",
-    registrar_name: "Pending",
-    registrar_signed_at: "Pending",
+		// Signatures (empty for new submissions)
+		instructor_name: "Pending",
+		instructor_signed_at: "Pending",
+		chair_name: "Pending",
+		chair_signed_at: "Pending",
+		dean_name: "Pending",
+		dean_signed_at: "Pending",
+		academic_director_name: "Pending",
+		academic_director_signed_at: "Pending",
+		vpa_admin_name: "Pending",
+		vpa_admin_signed_at: "Pending",
+		registrar_name: "Pending",
+		registrar_signed_at: "Pending",
 
-    // Additional
-    additional_notes: formData.reason || "No additional notes provided.",
-  };
+		// Additional
+		additional_notes: formData.reason || "No additional notes provided.",
+	};
 };
 
 // Course Registration HTML Template
 export const getCourseRegistrationReportHTMLTemplate = (): string => {
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -857,18 +859,12 @@ export const getCourseRegistrationReportHTMLTemplate = (): string => {
             style="border-collapse:collapse; background:#f7f9fc; border:1px solid #dbe2ea; border-radius:4px;">
             <tr>
               <td style="padding:10px 12px; vertical-align:top; width:50%;">
-                <div class="compact-section-title" style="font-weight:600; font-size:13px; margin:0 0 5px 0; color:#0f4c81;">Submission Details</div>
-                <table cellpadding="0" cellspacing="0" role="presentation"
-                  style="border-collapse:collapse; width:100%; font-size:11px;">
-                  <tr>
-                    <td class="compact-meta-table" style="padding:2px 0; width:100px; color:#444;">Submitted At:</td>
-                    <td class="compact-meta-table" style="padding:2px 0; font-weight:500; color:#222;">{{submitted_at}}</td>
-                  </tr>
-                  <tr>
-                    <td class="compact-meta-table" style="padding:2px 0; color:#444;">Submitted By:</td>
-                    <td class="compact-meta-table" style="padding:2px 0; font-weight:500; color:#222;">{{submitted_by_name}}
-                      ({{submitted_by_role}})</td>
-                  </tr>
+                <td valign="middle" style="padding:0;">
+              <div style="font-size:16px; font-weight:600; letter-spacing:.5px; color:#0f4c81; text-transform:uppercase;">{{organization_name}}</div>
+              <div style="font-size:12px; color:#555; margin-top:1px;">{{department_or_faculty}}</div>
+              <div class="compact-title" style="font-size:20px; font-weight:600; margin-top:8px; color:#222;">Registration Request</div>
+              <div class="compact-subtitle" style="font-size:11px; color:#777; margin-top:3px;">{{student_name}} - ID: {{student_id}}</div>
+            </td>
                   <tr>
                     <td class="compact-meta-table" style="padding:2px 0; color:#444;">User Email:</td>
                     <td class="compact-meta-table" style="padding:2px 0; color:#222;">{{submitted_by_email}}</td>
@@ -915,7 +911,7 @@ export const getCourseRegistrationReportHTMLTemplate = (): string => {
           <div style="background:#ffffff; border:1px solid #dbe2ea; border-radius:4px;">
             <div
               style="padding:8px 12px; border-bottom:1px solid #e5ebf1; background:#f0f5fa; font-weight:600; font-size:12px; color:#0f4c81;">
-              Registered Courses
+              Registration Request
             </div>
             <div style="padding:10px 12px;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
@@ -936,7 +932,7 @@ export const getCourseRegistrationReportHTMLTemplate = (): string => {
           <div style="background:#ffffff; border:1px solid #dbe2ea; border-radius:4px;">
             <div
               style="padding:8px 12px; border-bottom:1px solid #e5ebf1; background:#f0f5fa; font-weight:600; font-size:12px; color:#b00020;">
-              Dropped Courses
+              Dropping Request
             </div>
             <div style="padding:10px 12px;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
@@ -1036,15 +1032,15 @@ export const getCourseRegistrationReportHTMLTemplate = (): string => {
 };
 
 export const generateCourseRegistrationHTMLReport = (
-  reportData: CourseRegistrationReportData
+	reportData: CourseRegistrationReportData,
 ): string => {
-  let htmlTemplate = getCourseRegistrationReportHTMLTemplate();
+	let htmlTemplate = getCourseRegistrationReportHTMLTemplate();
 
-  // Generate course rows with compact styling
-  const generateCourseRows = (courses: CourseInfo[]) => {
-    return courses
-      .map(
-        (course) => `
+	// Generate course rows with compact styling
+	const generateCourseRows = (courses: CourseInfo[]) => {
+		return courses
+			.map(
+				(course) => `
       <tr>
         <td style="padding:6px; border-bottom:1px solid #e5ebf1; color:#333; font-size:11px;">${course.course_code}</td>
         <td style="padding:6px; border-bottom:1px solid #e5ebf1; color:#333; font-size:11px;">${course.course_name}</td>
@@ -1052,22 +1048,22 @@ export const generateCourseRegistrationHTMLReport = (
         <td style="padding:6px; border-bottom:1px solid #e5ebf1; color:#333; font-size:11px;">${course.semester}</td>
         <td style="padding:6px; border-bottom:1px solid #e5ebf1; color:#333; font-size:11px;">${course.campus}</td>
       </tr>
-    `
-      )
-      .join("");
-  };
+    `,
+			)
+			.join("");
+	};
 
-  // Generate table content for registered courses
-  const generateRegisteredCoursesTableContent = () => {
-    if (reportData.registered_courses.length === 0) {
-      return `<tbody>
+	// Generate table content for registered courses
+	const generateRegisteredCoursesTableContent = () => {
+		if (reportData.registered_courses.length === 0) {
+			return `<tbody>
         <tr>
           <td style="padding:12px; color:#666; text-align:center; font-style:italic; font-size:11px;">No registered courses found.</td>
         </tr>
       </tbody>`;
-    }
+		}
 
-    return `<thead>
+		return `<thead>
       <tr style="background:#f0f5fa;">
         <th style="padding:6px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left; font-size:11px;">Course Code</th>
         <th style="padding:6px; border-bottom:1px solid #e5ebf1; color:#0f4c81; font-weight:600; text-align:left; font-size:11px;">Course Name</th>
@@ -1079,19 +1075,19 @@ export const generateCourseRegistrationHTMLReport = (
     <tbody>
       ${generateCourseRows(reportData.registered_courses)}
     </tbody>`;
-  };
+	};
 
-  // Generate table content for dropped courses
-  const generateDroppedCoursesTableContent = () => {
-    if (reportData.dropped_courses.length === 0) {
-      return `<tbody>
+	// Generate table content for dropped courses
+	const generateDroppedCoursesTableContent = () => {
+		if (reportData.dropped_courses.length === 0) {
+			return `<tbody>
         <tr>
           <td style="padding:12px; color:#666; text-align:center; font-style:italic; font-size:11px;">No dropped courses found.</td>
         </tr>
       </tbody>`;
-    }
+		}
 
-    return `<thead>
+		return `<thead>
       <tr style="background:#f0f5fa;">
         <th style="padding:6px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left; font-size:11px;">Course Code</th>
         <th style="padding:6px; border-bottom:1px solid #e5ebf1; color:#b00020; font-weight:600; text-align:left; font-size:11px;">Course Name</th>
@@ -1103,91 +1099,91 @@ export const generateCourseRegistrationHTMLReport = (
     <tbody>
       ${generateCourseRows(reportData.dropped_courses)}
     </tbody>`;
-  };
+	};
 
-  // Replace table content placeholders
-  htmlTemplate = htmlTemplate.replace(
-    "{{registered_courses_table_content}}",
-    generateRegisteredCoursesTableContent()
-  );
-  htmlTemplate = htmlTemplate.replace(
-    "{{dropped_courses_table_content}}",
-    generateDroppedCoursesTableContent()
-  );
+	// Replace table content placeholders
+	htmlTemplate = htmlTemplate.replace(
+		"{{registered_courses_table_content}}",
+		generateRegisteredCoursesTableContent(),
+	);
+	htmlTemplate = htmlTemplate.replace(
+		"{{dropped_courses_table_content}}",
+		generateDroppedCoursesTableContent(),
+	);
 
-  // Replace all other placeholders with actual data
-  Object.entries(reportData).forEach(([key, value]) => {
-    if (key !== "registered_courses" && key !== "dropped_courses") {
-      const placeholder = `{{${key}}}`;
-      htmlTemplate = htmlTemplate.replace(
-        new RegExp(placeholder, "g"),
-        String(value)
-      );
-    }
-  });
+	// Replace all other placeholders with actual data
+	Object.entries(reportData).forEach(([key, value]) => {
+		if (key !== "registered_courses" && key !== "dropped_courses") {
+			const placeholder = `{{${key}}}`;
+			htmlTemplate = htmlTemplate.replace(
+				new RegExp(placeholder, "g"),
+				String(value),
+			);
+		}
+	});
 
-  return htmlTemplate;
+	return htmlTemplate;
 };
 
 export const openCourseRegistrationReportInNewWindow = (
-  htmlContent: string
+	htmlContent: string,
 ): void => {
-  const newWindow = window.open("", "_blank", "width=800,height=600");
-  if (newWindow) {
-    newWindow.document.write(htmlContent);
-    newWindow.document.close();
-  }
+	const newWindow = window.open("", "_blank", "width=800,height=600");
+	if (newWindow) {
+		newWindow.document.write(htmlContent);
+		newWindow.document.close();
+	}
 };
 
 export const downloadCourseRegistrationReportAsHTML = (
-  htmlContent: string,
-  filename: string = "course-registration-report.html"
+	htmlContent: string,
+	filename: string = "course-registration-report.html",
 ): void => {
-  const blob = new Blob([htmlContent], { type: "text/html" });
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  window.URL.revokeObjectURL(url);
+	const blob = new Blob([htmlContent], { type: "text/html" });
+	const url = window.URL.createObjectURL(blob);
+	const link = document.createElement("a");
+	link.href = url;
+	link.download = filename;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+	window.URL.revokeObjectURL(url);
 };
 
 export const downloadCourseRegistrationReportAsPDF = async (
-  htmlContent: string,
-  studentId: string
+	htmlContent: string,
+	studentId: string,
 ): Promise<void> => {
-  try {
-    if (!htmlContent || htmlContent.length < 100) {
-      throw new Error("HTML content is empty or too short");
-    }
+	try {
+		if (!htmlContent || htmlContent.length < 100) {
+			throw new Error("HTML content is empty or too short");
+		}
 
-    const pdfBlob = await generateReportPDF(
-      htmlContent,
-      "course-registration",
-      studentId
-    );
+		const pdfBlob = await generateReportPDF(
+			htmlContent,
+			"course-registration",
+			studentId,
+		);
 
-    if (pdfBlob.size < 1000) {
-      throw new Error("Generated PDF is too small, likely empty");
-    }
+		if (pdfBlob.size < 1000) {
+			throw new Error("Generated PDF is too small, likely empty");
+		}
 
-    const filename = `course-registration-report-${studentId}.pdf`;
-    downloadPDFBlob(pdfBlob, filename);
-  } catch (error) {
-    console.error("Error generating course registration PDF:", error);
-    alert(
-      `Failed to generate PDF report: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }. Please try downloading as HTML instead.`
-    );
-    throw error;
-  }
+		const filename = `course-registration-report-${studentId}.pdf`;
+		downloadPDFBlob(pdfBlob, filename);
+	} catch (error) {
+		console.error("Error generating course registration PDF:", error);
+		alert(
+			`Failed to generate PDF report: ${
+				error instanceof Error ? error.message : "Unknown error"
+			}. Please try downloading as HTML instead.`,
+		);
+		throw error;
+	}
 };
 
 export const printCourseRegistrationReportToPDF = (
-  htmlContent: string
+	htmlContent: string,
 ): void => {
-  printHTMLToPDF(htmlContent);
+	printHTMLToPDF(htmlContent);
 };
