@@ -955,7 +955,7 @@ export function ChangeGradeForm() {
       </div>
 
       {/* Report Options */}
-      <div className="space-y-3 mb-6">
+      {/* <div className="space-y-3 mb-6">
         <div className="flex items-center space-x-2">
           <Checkbox
             id="original-report"
@@ -1007,7 +1007,7 @@ export function ChangeGradeForm() {
             Copy of the first 10 pages of the final report.
           </Label>
         </div>
-      </div>
+      </div> */}
 
       {/* Submission Error */}
       {submissionError && (
